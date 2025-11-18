@@ -1,17 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:twynk_frontend/pages/shorts.dart';
 import 'package:twynk_frontend/portals/footer.dart';
 import 'package:twynk_frontend/portals/app_bar.dart';
 import 'package:twynk_frontend/portals/drawer.dart';
-import '../themes/default_dark.dart';
-import '../themes/default_light.dart';
 
 class HomeYouTubeStyleFlutter extends StatefulWidget {
-  const HomeYouTubeStyleFlutter({Key? key}) : super(key: key);
+  const HomeYouTubeStyleFlutter({super.key});
 
   @override
-  _HomeYouTubeStyleFlutterState createState() => _HomeYouTubeStyleFlutterState();
+  State<HomeYouTubeStyleFlutter> createState() => _HomeYouTubeStyleFlutterState();
 }
 
 class _HomeYouTubeStyleFlutterState extends State<HomeYouTubeStyleFlutter> {

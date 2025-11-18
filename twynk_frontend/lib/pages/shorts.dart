@@ -4,7 +4,7 @@ import 'package:twynk_frontend/portals/footer.dart';
 import 'package:twynk_frontend/portals/app_bar.dart';
 
 class ShortsPage extends StatefulWidget {
-  const ShortsPage({Key? key}) : super(key: key);
+  const ShortsPage({super.key});
 
   @override
   State<ShortsPage> createState() => _ShortsPageState();
@@ -145,14 +145,13 @@ class _ShortVideoPage extends StatefulWidget {
   final VoidCallback onProfile;
 
   const _ShortVideoPage({
-    Key? key,
     required this.index,
     required this.controller,
     required this.onInitializeRequested,
     required this.onLike,
     required this.onMessage,
     required this.onProfile,
-  }) : super(key: key);
+  });
 
   @override
   State<_ShortVideoPage> createState() => _ShortVideoPageState();
@@ -312,11 +311,10 @@ class _IconButtonColumn extends StatelessWidget {
   final VoidCallback onTap;
 
   const _IconButtonColumn({
-    Key? key,
     required this.icon,
     required this.label,
     required this.onTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

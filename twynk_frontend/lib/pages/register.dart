@@ -164,7 +164,7 @@ class _RegisterPageState extends State<RegisterPage> {
   }) {
     final theme = Theme.of(context);
     return DropdownButtonFormField<String>(
-      value: value,
+      initialValue: value,
       items: options
           .map((e) => DropdownMenuItem<String>(
                 value: e,
@@ -190,7 +190,7 @@ class _RegisterPageState extends State<RegisterPage> {
       menuMaxHeight: 320,
       icon: Icon(
         Icons.arrow_drop_down_outlined,
-        color: theme.colorScheme.onSurface.withOpacity(0.7),
+        color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
       ),
       // Estilo do texto selecionado (sem negrito)
       style: TextStyle(
@@ -236,9 +236,9 @@ class _RegisterPageState extends State<RegisterPage> {
         labelText: label,
         hintText: hint,
         hintStyle: TextStyle(
-          color: theme.colorScheme.onSurface.withOpacity(0.5),
+          color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
         ),
-        prefixIcon: icon != null ? Icon(icon, color: theme.colorScheme.onSurface.withOpacity(0.7)) : null,
+        prefixIcon: icon != null ? Icon(icon, color: theme.colorScheme.onSurface.withValues(alpha: 0.7)) : null,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
         ),
@@ -259,13 +259,13 @@ class _RegisterPageState extends State<RegisterPage> {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
         gradient: LinearGradient(
-          colors: [primary, primary.withOpacity(0.85)],
+          colors: [primary, primary.withValues(alpha: 0.85)],
           begin: Alignment.centerLeft,
           end: Alignment.centerRight,
         ),
         boxShadow: [
           BoxShadow(
-            color: primary.withOpacity(0.3),
+            color: primary.withValues(alpha: 0.3),
             blurRadius: 10,
             offset: const Offset(0, 5),
           ),
@@ -335,7 +335,6 @@ class _RegisterPageState extends State<RegisterPage> {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final screenWidth = MediaQuery.of(context).size.width;
-    final screenHeight = MediaQuery.of(context).size.height;
 
     final double cardMaxWidth = screenWidth < 600
         ? screenWidth * 0.98
@@ -351,12 +350,12 @@ class _RegisterPageState extends State<RegisterPage> {
         ? []
         : [
             BoxShadow(
-              color: Colors.black.withOpacity(isDark ? 0.4 : 0.1),
+              color: Colors.black.withValues(alpha: isDark ? 0.4 : 0.1),
               blurRadius: 25,
               offset: const Offset(0, 20),
             ),
             BoxShadow(
-              color: Colors.black.withOpacity(isDark ? 0.25 : 0.06),
+              color: Colors.black.withValues(alpha: isDark ? 0.25 : 0.06),
               blurRadius: 10,
               offset: const Offset(0, 8),
             ),
@@ -414,7 +413,7 @@ class _RegisterPageState extends State<RegisterPage> {
                             Text(
                               'Crie a sua conta',
                               style: TextStyle(
-                                color: theme.colorScheme.onSurface.withOpacity(0.6),
+                                color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                                 fontSize: 16,
                               ),
                             ),
@@ -504,7 +503,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         hint: 'seu@email.com',
                         validator: (v) {
                           if (v == null || v.isEmpty) return 'Digite seu e-mail';
-                          final emailRegex = RegExp(r'^[w-.]+@([w-]+.)+[w-]{2,4}$');
+                          final emailRegex = RegExp(r'^[\w\-\.]+@([\w\-]+\.)+[\w\-]{2,4}$');
                           if (!emailRegex.hasMatch(v)) return 'Digite um e-mail válido';
                           return null;
                         },
@@ -530,7 +529,7 @@ class _RegisterPageState extends State<RegisterPage> {
                               text: 'Verificar OTP',
                               onPressed: () {
                                 final email = _emailController.text.trim();
-                                final emailRegex = RegExp(r'^[w-.]+@([w-]+.)+[w-]{2,4}$');
+                                final emailRegex = RegExp(r'^[\w\-\.]+@([\w\-]+\.)+[\w\-]{2,4}$');
                                 if (email.isEmpty || !emailRegex.hasMatch(email)) {
                                   _showMessage('Informe um e-mail válido antes de verificar o OTP.', 'error');
                                   return;
@@ -582,7 +581,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                 text: TextSpan(
                                   text: 'Já é cadastrado? ',
                                   style: TextStyle(
-                                    color: theme.colorScheme.onSurface.withOpacity(0.7),
+                                    color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
                                     fontSize: 14,
                                   ),
                                   children: [

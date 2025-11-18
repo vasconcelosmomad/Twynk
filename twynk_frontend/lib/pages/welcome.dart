@@ -384,7 +384,6 @@ class _TwynkLandingPageState extends State<TwynkLandingPage> {
     final bool isMobile = screenWidth < 600;
 
     final Color headerBg = Theme.of(context).scaffoldBackgroundColor;
-    final Color altBg = Theme.of(context).cardColor;
     return Theme(
       data: Theme.of(context).copyWith(
         scaffoldBackgroundColor: headerBg,
@@ -1735,8 +1734,6 @@ class _FeaturesSection extends StatelessWidget {
               LayoutBuilder(
                 builder: (context, constraints) {
                   int crossAxisCount = 1;
-                  double childAspectRatio = 1.0;
-
                   double cardHeight = 200;
 
                   if (isDesktop || constraints.maxWidth > 900) {
@@ -1746,10 +1743,6 @@ class _FeaturesSection extends StatelessWidget {
                     crossAxisCount = 2;
                     cardHeight = 220;
                   }
-
-                  final double totalSpacing = 32.0 * (crossAxisCount - 1);
-                  final double itemWidth = (constraints.maxWidth - totalSpacing) / crossAxisCount;
-                  childAspectRatio = itemWidth / cardHeight;
 
                   return GridView.builder(
                     shrinkWrap: true,
@@ -1999,24 +1992,16 @@ class _DownloadSection extends StatelessWidget {
 
 class _StoreButton extends StatelessWidget {
   final String? assetIconPath;
-  final IconData? icon;
   final String text;
   final Color backgroundColor;
   final Color textColor;
-  final Gradient? gradientBackground;
-  final Color? borderColor;
-  final double? borderWidth;
   final VoidCallback onPressed;
 
   const _StoreButton({
     this.assetIconPath,
-    this.icon,
     required this.text,
     required this.backgroundColor,
     required this.textColor,
-    this.gradientBackground,
-    this.borderColor,
-    this.borderWidth,
     required this.onPressed,
   });
 
@@ -2036,41 +2021,25 @@ class _StoreButton extends StatelessWidget {
     final double radius = isMobile ? (isVerySmall ? 10 : 12) : 15;
     final double elevation = isMobile ? 4 : 8;
 
-    final bool useGradient = gradientBackground != null;
-
     final Widget leadingWidget = (assetIconPath != null)
         ? Image.asset(assetIconPath!, width: iconSz, height: iconSz, fit: BoxFit.contain)
-        : Icon(icon ?? Icons.apps, size: iconSz);
+        : Icon(Icons.apps, size: iconSz);
 
     final Widget button = ElevatedButton.icon(
       onPressed: onPressed,
       style: ElevatedButton.styleFrom(
-        backgroundColor: useGradient ? Colors.transparent : backgroundColor,
+        backgroundColor: backgroundColor,
         foregroundColor: textColor,
         padding: btnPadding,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(radius)),
-        elevation: useGradient ? 0 : elevation,
-        shadowColor: useGradient ? Colors.transparent : null,
-        side: !useGradient
-            ? (borderColor != null
-                ? BorderSide(color: borderColor!, width: borderWidth ?? 1.0)
-                : (backgroundColor == Colors.white ? BorderSide(color: Colors.grey.shade300) : null))
-            : null,
+        elevation: elevation,
+        side: backgroundColor == Colors.white ? BorderSide(color: Colors.grey.shade300) : null,
       ),
       icon: leadingWidget,
       label: Text(text, style: TextStyle(fontSize: fontSz, fontWeight: FontWeight.w700)),
     );
 
-    if (!useGradient) return button;
-
-    return Container(
-      decoration: BoxDecoration(
-        gradient: gradientBackground,
-        borderRadius: BorderRadius.circular(radius),
-        border: borderColor != null ? Border.all(color: borderColor!, width: borderWidth ?? 1.0) : null,
-      ),
-      child: button,
-    );
+    return button;
   }
 }
 

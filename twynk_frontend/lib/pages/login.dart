@@ -71,87 +71,7 @@ class _LoginPageState extends State<LoginPage> {
     _showMessage('A tentar iniciar sessão com $provider. Funcionalidade em desenvolvimento...', 'info');
   }
 
-  // Botão com gradiente
-  Widget _buildGradientButton({required String text, required VoidCallback onPressed}) {
-    return Container(
-      width: double.infinity,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-        gradient: const LinearGradient(
-          colors: [_primaryCyan, _secondaryBlue],
-          begin: Alignment.centerLeft,
-          end: Alignment.centerRight,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: _primaryCyan.withOpacity(0.3),
-            blurRadius: 10,
-            offset: const Offset(0, 5),
-          ),
-        ]
-      ),
-      child: ElevatedButton(
-        onPressed: onPressed,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.transparent, // Transparente para mostrar o Container gradiente
-          shadowColor: Colors.transparent,
-          padding: const EdgeInsets.symmetric(vertical: 14),
-          minimumSize: const Size.fromHeight(56),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          elevation: 0,
-        ),
-        child: Text(
-          text,
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-      ),
-    );
-  }
-
-  // Campo de texto usando TextFormField com prefixIcon e labelText
-  Widget _buildTextField({
-    required String labelText,
-    required TextEditingController controller,
-    required IconData icon,
-    bool isPassword = false,
-  }) {
-    final theme = Theme.of(context);
-    return TextFormField( // Usando TextFormField
-      controller: controller,
-      obscureText: isPassword,
-      style: TextStyle(
-        fontSize: 16,
-        color: theme.colorScheme.onSurface, // Cor do texto digitado adaptada
-      ),
-      decoration: InputDecoration(
-        // contentPadding definido explicitamente no widget (vertical: 14)
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: 14,
-        ),
-        labelText: labelText, // Rótulo (label) no topo do campo
-        prefixIcon: Icon(
-          icon,
-          color: theme.colorScheme.onSurface.withOpacity(0.7), // Cor do ícone theme-aware
-        ),
-        // O foco personalizado agora usa OutlineInputBorder com a borda de 1.5
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(
-            color: theme.colorScheme.primary, // Usa a cor primária (Accent)
-            width: 1.5, // 1.5 de largura
-          ),
-        ),
-        // O restante do estilo (border, enabledBorder, fillColor) é puxado do inputDecorationTheme.
-      ),
-    );
-  }
+  
 
   @override
   Widget build(BuildContext context) {
@@ -176,12 +96,12 @@ class _LoginPageState extends State<LoginPage> {
         : [
             // Sombras existentes para Tablet/Web/Desktop
             BoxShadow(
-              color: Colors.black.withOpacity(isDark ? 0.4 : 0.1),
+              color: Colors.black.withValues(alpha: isDark ? 0.4 : 0.1),
               blurRadius: 25,
               offset: const Offset(0, 20),
             ),
             BoxShadow(
-              color: Colors.black.withOpacity(isDark ? 0.25 : 0.06),
+              color: Colors.black.withValues(alpha: isDark ? 0.25 : 0.06),
               blurRadius: 10,
               offset: const Offset(0, 8),
             ),
@@ -231,7 +151,7 @@ class _LoginPageState extends State<LoginPage> {
                           'Encontre o seu par perfeito.',
                           style: TextStyle(
                             // Usa onSurface.withOpacity para se adaptar ao tema
-                            color: theme.colorScheme.onSurface.withOpacity(0.6),
+                            color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                             fontSize: 16,
                           ),
                         ),
@@ -314,7 +234,7 @@ class _LoginPageState extends State<LoginPage> {
                           'Esqueceu a palavra-passe?',
                           style: TextStyle(
                             fontSize: 12,
-                            color: theme.colorScheme.onSurface.withOpacity(0.7),
+                            color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
                           ),
                         ),
                       ),
@@ -358,7 +278,7 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: _primaryCyan.withOpacity(0.3),
+                          color: _primaryCyan.withValues(alpha: 0.3),
                           blurRadius: 10,
                           offset: const Offset(0, 5),
                         ),
@@ -397,7 +317,7 @@ class _LoginPageState extends State<LoginPage> {
                     child: RichText(
                       text: TextSpan(
                         text: 'Novo no Twynk? ',
-                        style: TextStyle(color: theme.colorScheme.onSurface.withOpacity(0.7), fontSize: 14),
+                        style: TextStyle(color: theme.colorScheme.onSurface.withValues(alpha: 0.7), fontSize: 14),
                         children: [
                           TextSpan(
                             text: 'Crie uma conta',
