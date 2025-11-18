@@ -187,10 +187,12 @@ class _ShortsPageState extends State<ShortsPage> {
           ),
         ],
       ),
-      bottomNavigationBar: Footer(
-        currentIndex: _selectedIndex,
-        onTap: (index) => _handleNavigation(index),
-      ),
+      bottomNavigationBar: isMobile
+          ? Footer(
+              currentIndex: _selectedIndex,
+              onTap: (index) => _handleNavigation(index),
+            )
+          : null,
     );
   }
 
