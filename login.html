@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zyngo | Login</title>
+    <!-- Carregar Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Usar a fonte Inter -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            /* Fundo gradiente suave para uma vibe de app de namoro (AZUL CLARO) */
+            background: linear-gradient(135deg, #e8f7ff 0%, #c4f8f7 100%);
+        }
+        .login-card {
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+        }
+        /* Cor de destaque principal: um ciano/azul vibrante */
+        .zyngo-gradient {
+            background: linear-gradient(90deg, #50c0c8 0%, #6bc9ff 100%);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4">
+
+    <!-- Caixa de Mensagem Customizada (Substitui alert()) -->
+    <div id="messageBox" class="fixed top-4 right-4 bg-white p-3 rounded-lg shadow-xl text-sm transition-opacity duration-300 opacity-0 z-50"></div>
+
+    <!-- Contêiner Principal do Cartão de Login -->
+    <div class="login-card w-full max-w-md bg-white rounded-xl overflow-hidden shadow-2xl p-6 sm:p-8">
+
+        <!-- Logotipo e Título -->
+        <div class="text-center mb-8">
+            <h1 class="text-6xl font-extrabold zyngo-gradient text-transparent bg-clip-text tracking-tight">
+                Zyngo
+            </h1>
+            <p class="text-gray-500 mt-2 text-lg">Encontre o seu par perfeito.</p>
+        </div>
+
+        <form id="loginForm">
+            <!-- Campo de Email -->
+            <div class="mb-5">
+                <label for="email" class="block text-sm font-medium text-gray-700 mb-1">E-mail</label>
+                <input type="email" id="email" name="email" required
+                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-cyan-500 focus:border-cyan-500 transition duration-150 ease-in-out placeholder-gray-400"
+                       placeholder="o-seu-email@exemplo.com">
+            </div>
+
+            <!-- Campo de Senha -->
+            <div class="mb-6">
+                <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Palavra-passe</label>
+                <input type="password" id="password" name="password" required
+                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-cyan-500 focus:border-cyan-500 transition duration-150 ease-in-out placeholder-gray-400"
+                       placeholder="Digite a sua palavra-passe">
+            </div>
+
+            <!-- Botão Principal de Login -->
+            <button type="submit"
+                    class="w-full zyngo-gradient text-white font-semibold py-3 rounded-xl hover:opacity-90 transition duration-300 ease-in-out transform hover:scale-[1.01] focus:outline-none focus:ring-4 focus:ring-cyan-500 focus:ring-opacity-50">
+                Entrar no Zyngo
+            </button>
+        </form>
+
+        <!-- Link "Esqueceu a Palavra-passe" -->
+        <div class="text-center mt-4">
+            <a href="#" onclick="showCustomMessage('A página de recuperação de palavra-passe ainda não está ligada.', 'info'); return false;"
+               class="text-sm text-gray-500 hover:text-cyan-600 transition duration-150">
+                Esqueceu a palavra-passe?
+            </a>
+        </div>
+
+        <div class="relative flex items-center justify-center my-8">
+            <div class="flex-grow border-t border-gray-300"></div>
+            <span class="flex-shrink mx-4 text-gray-400 text-sm font-medium">OU</span>
+            <div class="flex-grow border-t border-gray-300"></div>
+        </div>
+
+        <!-- Opções de Login Social (Apenas Google) -->
+        <div class="space-y-3">
+            <button onclick="handleSocialLogin('Google')"
+                    class="w-full flex items-center justify-center border border-gray-300 bg-white text-gray-700 font-medium py-3 rounded-xl hover:bg-gray-50 transition duration-150">
+                <!-- Ícone Google (SVG para um visual limpo) -->
+                <svg class="w-5 h-5 mr-3" viewBox="0 0 48 48">
+                    <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.6-6.44C38.03 4.6 32.73 2 24 2 15.35 2 7.85 5.56 3.97 11.23l7.74 6.09C15.65 12.8 19.85 9.5 24 9.5z"/>
+                    <path fill="#4285F4" d="M46.7 24.5c0-.82-.07-1.4-.17-2.14H24v4.61h12.87c-.57 2.92-2.3 5.3-4.92 6.89l7.74 6.09c4.51-4.4 7.15-10.87 7.15-18.45z"/>
+                    <path fill="#FBBC05" d="M11.77 28.52c-.74-2.22-.74-4.57 0-6.79l-7.74-6.09C1.94 18.23 2 21.05 2 24s-.06 5.77 1.83 8.36l7.74-6.09z"/>
+                    <path fill="#34A853" d="M24 46c5.2 0 9.87-1.74 13.16-4.71l-7.74-6.09c-2.11 1.34-4.72 2.14-7.42 2.14-4.81 0-8.91-3.37-10.32-7.89l-7.74 6.09C8.1 42.06 15.14 46 24 46z"/>
+                    <path fill="none" d="M0 0h48v48H0z"/>
+                </svg>
+                Continuar com Google
+            </button>
+        </div>
+
+        <!-- Link "Criar Conta" -->
+        <div class="text-center mt-8 pt-4 border-t border-gray-100">
+            <p class="text-gray-600">
+                Novo no Zyngo?
+                <a href="#" onclick="showCustomMessage('Será redirecionado para a página de registo.', 'success'); return false;"
+                   class="font-semibold text-cyan-600 hover:text-cyan-700 transition duration-150">
+                    Crie uma conta
+                </a>
+            </p>
+        </div>
+
+    </div>
+
+    <script>
+        // Função para mostrar mensagens personalizadas no canto superior direito
+        function showCustomMessage(message, type = 'info') {
+            const messageBox = document.getElementById('messageBox');
+            messageBox.textContent = message;
+
+            let bgColor = 'bg-blue-500';
+            let textColor = 'text-white';
+
+            if (type === 'error') {
+                bgColor = 'bg-red-500';
+            } else if (type === 'success') {
+                bgColor = 'bg-green-500';
+            } else if (type === 'info') {
+                // Nova cor de destaque (Cyan) para mensagens de informação
+                bgColor = 'bg-cyan-500';
+            }
+
+            messageBox.className = `fixed top-4 right-4 ${bgColor} ${textColor} p-3 rounded-lg shadow-xl text-sm transition-opacity duration-300 opacity-100 z-50`;
+
+            // Ocultar a mensagem após 3 segundos
+            setTimeout(() => {
+                messageBox.classList.remove('opacity-100');
+                messageBox.classList.add('opacity-0');
+            }, 3000);
+        }
+
+        // 1. Lógica de Submissão do Formulário
+        document.getElementById('loginForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Impedir o envio padrão do formulário
+
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            // Simulação de validação/envio
+            if (email && password.length >= 6) {
+                showCustomMessage('A iniciar sessão como ' + email + '. Bem-vindo ao Zyngo!', 'success');
+                // Aqui seria o código real para chamar a API de login (e.g., fetch('/api/login', ...))
+            } else if (!email || !password) {
+                showCustomMessage('Por favor, preencha o e-mail e a palavra-passe.', 'error');
+            } else {
+                showCustomMessage('Palavra-passe muito curta. Tente novamente.', 'error');
+            }
+        });
+
+        // 2. Lógica de Login Social
+        function handleSocialLogin(provider) {
+            showCustomMessage('A tentar iniciar sessão com ' + provider + '. Funcionalidade em desenvolvimento...', 'info');
+            // Aqui seria o código real para redirecionamento/popup de login social
+        }
+
+    </script>
+</body>
+</html>

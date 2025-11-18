@@ -1,0 +1,53 @@
+1. Deposind e criar a estrutura do projecto e os arquivos docker-compose e Dockerfile e nginex.conf
+executar Tente executar o comando para criar o projeto:
+docker compose run --rm twink composer create-project laravel/laravel .
+Depois que o comando docker compose run --rm twink composer create-project laravel/laravel . terminar, você poderá iniciar seus contêineres com:
+docker compose up -d
+E o aplicativo Laravel estará acessível em http://localhost:8080.
+
+ls -la /home/vasconclos/develop/twink_app/src
+vasconclos@vasconclos-HP-ProBook-450-G6:~/develop/twink_app$ ls -la /home/vasconclos/develop/twink_app/src
+
+total 12
+
+drwxr-xr-x 3 root       root       4096 Nov 10 11:31 .
+
+drwxrwxr-x 6 vasconclos vasconclos 4096 Nov 10 11:31 ..
+
+drwxr-xr-x 2 root       root       4096 Nov 10 11:31 storage
+
+vasconclos@vasconclos-HP-ProBook-450-G6:~/develop/twink_app$​
+
+Obrigado por fornecer a listagem do diretório. O erro Project directory ... is not empty ocorre porque o Composer precisa de um diretório vazio para criar o projeto, mas o diretório src já contém a pasta storage.
+
+Além disso, como você pode ver na listagem, o diretório src e seu conteúdo pertencem ao usuário root. Isso impedirá que o Composer crie os arquivos do projeto.
+
+Para resolver isso, primeiro vou alterar a propriedade do diretório src para o seu usuário (vasconclos). Isso exigirá sua aprovação, pois usa sudo.
+
+/home/vasconclos/develop/twink_app
+Terminal
+sudo chown -R vasconclos:vasconclos /home/vasconclos/develop/twink_app/src
+Ótimo. Agora que você é o proprietário do diretório src, vou remover o conteúdo dele para que o Composer possa criar o projeto.
+
+Obrigado por fornecer a listagem do diretório. O erro Project directory ... is not empty ocorre porque o Composer precisa de um diretório vazio para criar o projeto, mas o diretório src já contém a pasta storage.
+
+Além disso, como você pode ver na listagem, o diretório src e seu conteúdo pertencem ao usuário root. Isso impedirá que o Composer crie os arquivos do projeto.
+
+Para resolver isso, primeiro vou alterar a propriedade do diretório src para o seu usuário (vasconclos). Isso exigirá sua aprovação, pois usa sudo.
+
+/home/vasconclos/develop/twink_app
+Terminal
+sudo chown -R vasconclos:vasconclos /home/vasconclos/develop/twink_app/src
+Ótimo. Agora que você é o proprietário do diretório src, vou remover o conteúdo dele para que o Composer possa criar o projeto.
+
+/home/vasconclos/develop/twink_app
+Terminal
+rm -rf /home/vasconclos/develop/twink_app/src/*
+O diretório src agora está vazio e com as permissões corretas.
+
+Você pode tentar criar seu projeto Laravel novamente com o seguinte comando:
+
+
+bash
+docker compose run --rm twink composer create-project laravel/laravel .
+Depois que o comando for concluído com sucesso, você poderá iniciar seus contêineres com docker compose up -d e seu aplicativo estará disponível em http://localhost:8080.

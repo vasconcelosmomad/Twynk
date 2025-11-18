@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Twynk - Acenda a Faísca</title>
+    <!-- Carregamento do Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+    <style>
+        /* Define a fonte Inter como padrão */
+        body {
+            font-family: 'Inter', sans-serif;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        /* Classe de transição para o menu mobile */
+        #mobile-menu {
+            transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+            transform: translateX(100%);
+            opacity: 0;
+            pointer-events: none;
+        }
+        #mobile-menu.open {
+            transform: translateX(0);
+            opacity: 1;
+            pointer-events: auto;
+        }
+    </style>
+    <!-- Configuração do Tailwind para usar cores e fontes -->
+    <script>
+        tailwind.config = {
+            darkMode: 'class', // Ativa o modo escuro baseado na classe 'dark' no <html>
+            theme: {
+                extend: {
+                    colors: {
+                        'twynk-light': '#E0F2FE', // Azul claro de fundo
+                        'twynk-primary': '#0EA5E9', // Azul primário (sky-500)
+                        'twynk-dark': '#1E293B', // Cinza escuro para o modo dark (slate-800)
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-white text-gray-800 dark:bg-gray-900 dark:text-gray-100 min-h-screen">
+
+    <!-- Lógica de Tema Claro/Escuro & Menu Mobile (JavaScript) -->
+    <script>
+        // Função para alternar o tema e salvar a preferência
+        function toggleTheme() {
+            const htmlElement = document.documentElement;
+            const isDark = htmlElement.classList.contains('dark');
+
+            if (isDark) {
+                htmlElement.classList.remove('dark');
+                localStorage.setItem('theme', 'light');
+            } else {
+                htmlElement.classList.add('dark');
+                localStorage.setItem('theme', 'dark');
+            }
+            updateThemeIcon(!isDark);
+        }
+
+        // Função para atualizar o ícone do botão de tema
+        function updateThemeIcon(isDark) {
+            const icons = document.querySelectorAll('.theme-icon');
+            icons.forEach(icon => {
+                // Moon SVG (Modo Escuro)
+                const moonIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-moon-star"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/><path d="M19 3v4"/><path d="M21 5h-4"/></svg>`;
+                // Sun SVG (Modo Claro)
+                const sunIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sun"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>`;
+                
+                icon.innerHTML = isDark ? sunIcon : moonIcon;
+            });
+        }
+        
+        // Função para alternar o menu mobile
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            const toggleButton = document.getElementById('menu-toggle');
+            const isOpen = menu.classList.toggle('open');
+            
+            // Atualiza o ícone do botão (Hambúrguer <-> X)
+            toggleButton.innerHTML = isOpen 
+                ? `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>` // X
+                : `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-menu"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>`; // Menu
+        }
+
+        // Inicialização: carrega a preferência salva e configura listeners
+        window.onload = function() {
+            const savedTheme = localStorage.getItem('theme');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const htmlElement = document.documentElement;
+
+            // 1. Configura Tema
+            if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+                htmlElement.classList.add('dark');
+                updateThemeIcon(true);
+            } else {
+                htmlElement.classList.remove('dark');
+                updateThemeIcon(false);
+            }
+
+            // 2. Configura Listeners
+            document.getElementById('theme-toggle-desktop').addEventListener('click', toggleTheme);
+            document.getElementById('theme-toggle-mobile').addEventListener('click', toggleTheme);
+            document.getElementById('menu-toggle').addEventListener('click', toggleMobileMenu);
+
+            // 3. Fecha o menu ao clicar em um link (para navegação em SPA)
+            document.querySelectorAll('#mobile-menu a').forEach(link => {
+                link.addEventListener('click', () => {
+                    // Verifica se o menu está aberto antes de tentar fechar
+                    const menu = document.getElementById('mobile-menu');
+                    if(menu.classList.contains('open')) {
+                        toggleMobileMenu();
+                    }
+                });
+            });
+        };
+    </script>
+
+    <!-- Cabeçalho (Header) -->
+    <header class="sticky top-0 z-20 bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm border-b border-sky-100 dark:border-slate-800 shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex justify-between items-center">
+            
+            <!-- Logo/Nome do App -->
+            <a href="#" class="flex items-center space-x-2 text-2xl font-extrabold text-twynk-primary tracking-tight">
+                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sparkles"><path d="M9.9 10.9L12 1h.1L14.1 10.9"/><path d="M14.2 2.2l1.9 1.9"/><path d="m19.1 7.1-1.9 1.9"/><path d="M18 13.6L20 16l-1.9 2.1"/><path d="M10 20l2-4.1"/><path d="M12 17.6l2.1 1.9"/><path d="M4 16l2-4.1"/><path d="M5.9 13.9 4 16l2 4.1"/></svg>
+                <span>Twynk</span>
+            </a>
+
+            <!-- Navegação Desktop (Visível em sm e maior) -->
+            <nav class="hidden sm:flex items-center space-x-4">
+                <a href="#how-it-works" class="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-twynk-primary dark:hover:text-white transition duration-200 rounded-full">
+                    Como Funciona
+                </a>
+                <a href="#features" class="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-twynk-primary dark:hover:text-white transition duration-200 rounded-full">
+                    Recursos
+                </a>
+                <a href="#" class="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-twynk-primary dark:hover:text-white transition duration-200 rounded-full">
+                    Login
+                </a>
+                <a href="#download" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-full text-white bg-twynk-primary hover:bg-sky-600 transition duration-300 shadow-md">
+                    Cadastre-se
+                </a>
+                
+                <!-- Botão de Alternância de Tema - Desktop -->
+                <button id="theme-toggle-desktop" aria-label="Alternar Tema" class="p-2 rounded-full text-gray-500 dark:text-gray-400 hover:bg-sky-100 dark:hover:bg-slate-700 transition duration-300">
+                    <span class="theme-icon"></span>
+                </button>
+            </nav>
+
+            <!-- Botões Mobile (Visível apenas em mobile) -->
+            <div class="flex sm:hidden items-center space-x-2">
+                <!-- Botão de Alternância de Tema - Mobile -->
+                <button id="theme-toggle-mobile" aria-label="Alternar Tema" class="p-2 rounded-full text-gray-500 dark:text-gray-400 hover:bg-sky-100 dark:hover:bg-slate-700 transition duration-300">
+                    <span class="theme-icon"></span>
+                </button>
+
+                <!-- Botão de Menu Hambúrguer -->
+                <button id="menu-toggle" aria-label="Abrir Menu" class="p-2 rounded-full text-gray-700 dark:text-gray-300 hover:bg-sky-100 dark:hover:bg-slate-700 transition duration-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-menu"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
+                </button>
+            </div>
+        </div>
+    </header>
+    
+    <!-- Menu Mobile Overlay (Fixo e Ocupa Tela) -->
+    <div id="mobile-menu" class="fixed top-16 right-0 w-full h-[calc(100vh-4rem)] bg-white dark:bg-gray-900 z-10 p-6 shadow-2xl overflow-y-auto">
+        <nav class="flex flex-col space-y-4 pt-4">
+            <a href="#how-it-works" class="block text-lg font-semibold text-gray-700 dark:text-gray-300 hover:text-twynk-primary dark:hover:text-white transition duration-200 border-b border-sky-100 dark:border-slate-800 pb-3">
+                Como Funciona
+            </a>
+            <a href="#features" class="block text-lg font-semibold text-gray-700 dark:text-gray-300 hover:text-twynk-primary dark:hover:text-white transition duration-200 border-b border-sky-100 dark:border-slate-800 pb-3">
+                Recursos
+            </a>
+            <a href="#" class="block text-lg font-semibold text-gray-700 dark:text-gray-300 hover:text-twynk-primary dark:hover:text-white transition duration-200 border-b border-sky-100 dark:border-slate-800 pb-3">
+                Login
+            </a>
+            <a href="#download" class="block text-lg font-semibold text-white text-center bg-twynk-primary hover:bg-sky-600 transition duration-300 py-3 rounded-xl mt-4">
+                Cadastre-se
+            </a>
+        </nav>
+    </div>
+
+    <main>
+        <!-- Seção Hero: Frase de Impacto e Chamada -->
+        <section class="py-20 md:py-32 bg-twynk-light dark:bg-twynk-dark/50 transition duration-300">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                
+                <!-- Headline Principal (Frase Curta) -->
+                <h1 class="text-4xl sm:text-5xl lg:text-7xl font-extrabold mb-4 leading-tight text-gray-900 dark:text-white">
+                    Twynk — acenda a faísca, <br class="hidden sm:inline">encontre a conexão.
+                </h1>
+                
+                <!-- Subtítulo Explicativo -->
+                <p class="text-xl sm:text-2xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto mb-10">
+                    Descubra encontros reais, divirta-se e conecte-se com pessoas que brilham como você. O seu próximo crush está aqui.
+                </p>
+
+                <!-- CTA Principal -->
+                <div class="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4">
+                    <a href="#download" class="inline-flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-full shadow-lg text-white bg-twynk-primary hover:bg-sky-600 transition duration-300 transform hover:scale-105">
+                        Baixe Agora e Comece!
+                    </a>
+                    <a href="#features" class="inline-flex items-center justify-center px-8 py-3 border-2 border-twynk-primary text-base font-medium rounded-full text-twynk-primary bg-white dark:bg-gray-900 hover:bg-sky-50 dark:hover:bg-slate-800 transition duration-300">
+                        Saiba Mais Sobre Nossos Recursos
+                    </a>
+                </div>
+
+                <!-- Mockup de Tela (Placeholder) -->
+                <div class="mt-16">
+                    <div class="relative inline-block p-4 border-8 border-gray-200 dark:border-slate-700 bg-gray-100 dark:bg-slate-800 rounded-[2.5rem] shadow-2xl shadow-sky-400/30">
+                        <div class="w-[280px] h-[450px] sm:w-[320px] sm:h-[500px] bg-twynk-primary/20 rounded-3xl flex items-center justify-center text-sm font-semibold text-gray-500 dark:text-gray-400 border-dashed border-2 border-twynk-primary">
+                            [Imagem de Mockup da Tela do Twynk]
+                        </div>
+                        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-20 h-2 bg-gray-700 dark:bg-gray-300 rounded-b-lg"></div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+        
+        <!-- SEÇÃO: Como Funciona -->
+        <section id="how-it-works" class="py-20 md:py-28 bg-white dark:bg-gray-900 transition duration-300">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-16">
+                    <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+                        Como Funciona
+                    </h2>
+                    <p class="text-lg text-gray-500 dark:text-gray-400 max-w-2xl mx-auto">
+                        Começar é fácil. Em apenas três passos, você estará pronto para encontrar sua conexão.
+                    </p>
+                </div>
+
+                <div class="grid md:grid-cols-3 gap-8 sm:gap-12">
+                    <!-- Passo 1: Crie seu Perfil -->
+                    <div class="p-6 border-2 border-transparent hover:border-twynk-primary/50 rounded-xl transition duration-300">
+                        <!-- Número em Círculo no Canto Superior Esquerdo -->
+                        <div class="inline-flex items-center justify-center w-10 h-10 mb-4 text-lg font-bold text-white bg-twynk-primary rounded-full shadow-lg">
+                            01
+                        </div>
+                        <h3 class="text-xl font-semibold mb-2 text-gray-900 dark:text-white">
+                            Crie seu Perfil
+                        </h3>
+                        <p class="text-gray-600 dark:text-gray-300">
+                            Mostre sua personalidade. Adicione suas melhores fotos e conte um pouco sobre você.
+                        </p>
+                    </div>
+
+                    <!-- Passo 2: Deslize e Combine -->
+                    <div class="p-6 border-2 border-transparent hover:border-twynk-primary/50 rounded-xl transition duration-300">
+                        <!-- Número em Círculo no Canto Superior Esquerdo -->
+                        <div class="inline-flex items-center justify-center w-10 h-10 mb-4 text-lg font-bold text-white bg-twynk-primary rounded-full shadow-lg">
+                            02
+                        </div>
+                        <h3 class="text-xl font-semibold mb-2 text-gray-900 dark:text-white">
+                            Deslize e Combine
+                        </h3>
+                        <p class="text-gray-600 dark:text-gray-300">
+                            Explore perfis e encontre pessoas interessantes. Um deslize para a direita pode ser o início de algo novo.
+                        </p>
+                    </div>
+
+                    <!-- Passo 3: Inicie a Conversa -->
+                    <div class="p-6 border-2 border-transparent hover:border-twynk-primary/50 rounded-xl transition duration-300">
+                        <!-- Número em Círculo no Canto Superior Esquerdo -->
+                        <div class="inline-flex items-center justify-center w-10 h-10 mb-4 text-lg font-bold text-white bg-twynk-primary rounded-full shadow-lg">
+                            03
+                        </div>
+                        <h3 class="text-xl font-semibold mb-2 text-gray-900 dark:text-white">
+                            Inicie a Conversa
+                        </h3>
+                        <p class="text-gray-600 dark:text-gray-300">
+                            Deu match? Não espere! Envie uma mensagem e comece a construir uma conexão real.
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Seção de Recursos (Features) -->
+        <section id="features" class="py-20 md:py-28 bg-twynk-light dark:bg-twynk-dark/50 transition duration-300">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-16">
+                    <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+                        Conexões que Acontecem
+                    </h2>
+                    <p class="text-lg text-gray-500 dark:text-gray-400 max-w-2xl mx-auto">
+                        O Twynk foi projetado para ser intuitivo, seguro e focado na sua autenticidade.
+                    </p>
+                </div>
+
+                <div class="grid md:grid-cols-3 gap-10">
+                    <!-- Cartão de Recurso 1 -->
+                    <div class="bg-white dark:bg-slate-800 p-6 sm:p-8 rounded-xl shadow-md border-t-4 border-twynk-primary hover:shadow-xl transition duration-300 transform hover:-translate-y-1">
+                        <div class="text-twynk-primary mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-zap"><path d="M15 2L13.5 8H9l1.5 6L9 22H11l1.5-6H15l-1.5-6H18L16.5 2H15z"/></svg>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-3 text-gray-900 dark:text-white">
+                            Chat Instantâneo
+                        </h3>
+                        <p class="text-gray-600 dark:text-gray-300">
+                            Não espere. Converse em tempo real e comece a faísca com mensagens de texto, áudio e vídeo.
+                        </p>
+                    </div>
+                    
+                    <!-- Cartão de Recurso 2 -->
+                    <div class="bg-white dark:bg-slate-800 p-6 sm:p-8 rounded-xl shadow-md border-t-4 border-twynk-primary hover:shadow-xl transition duration-300 transform hover:-translate-y-1">
+                        <div class="text-twynk-primary mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-heart-handshake"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/><path d="M12 18H5a2 2 0 1 1 0-4h14a2 2 0 1 1 0 4h-7"/><path d="M18 14V9"/></svg>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-3 text-gray-900 dark:text-white">
+                            Perfis Autênticos
+                        </h3>
+                        <p class="text-gray-600 dark:text-gray-300">
+                            Verificação de fotos e filtros de interesse detalhados para garantir que você encontre o que procura.
+                        </p>
+                    </div>
+
+                    <!-- Cartão de Recurso 3 -->
+                    <div class="bg-white dark:bg-slate-800 p-6 sm:p-8 rounded-xl shadow-md border-t-4 border-twynk-primary hover:shadow-xl transition duration-300 transform hover:-translate-y-1">
+                        <div class="text-twynk-primary mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shield-half"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M12 22V2"/></svg>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-3 text-gray-900 dark:text-white">
+                            Segurança Primeiro
+                        </h3>
+                        <p class="text-gray-600 dark:text-gray-300">
+                            Ferramentas avançadas de denúncia e moderação 24/7 para manter sua experiência segura e divertida.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Seção de Download (CTA Final) -->
+        <section id="download" class="py-20 md:py-28 bg-twynk-primary dark:bg-twynk-dark">
+            <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <h2 class="text-4xl font-bold text-white mb-4">
+                    Pronto para Brilhar?
+                </h2>
+                <p class="text-xl text-sky-100 mb-8">
+                    Milhares de pessoas estão esperando para se conectar. Junte-se à comunidade Twynk hoje!
+                </p>
+                
+                <div class="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-6">
+                    <!-- Botão App Store -->
+                    <a href="#" class="inline-flex items-center justify-center px-6 py-3 bg-gray-900 text-white rounded-lg font-semibold hover:bg-gray-700 transition duration-300 shadow-xl">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-apple mr-3"><path d="M12 20.94c-1.8 0-3.37-.95-4.5-2.52-1.12-1.57-1.5-3.3-1.5-4.47 0-1.28.37-2.92 1.5-4.47 1.13-1.57 2.7-2.52 4.5-2.52 1.8 0 3.37.95 4.5 2.52 1.12 1.57 1.5 3.3 1.5 4.47 0 1.28-.37 2.92-1.5 4.47-1.13 1.57-2.7 2.52-4.5 2.52z"/><path d="M12 22c-5.52 0-10-4.48-10-10S6.48 2 12 2s10 4.48 10 10-4.48 10-10 10z"/></svg>
+                        App Store
+                    </a>
+                    
+                    <!-- Botão Google Play -->
+                    <a href="#" class="inline-flex items-center justify-center px-6 py-3 bg-white text-gray-900 rounded-lg font-semibold hover:bg-gray-200 transition duration-300 shadow-xl">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-google-play mr-3"><path d="M19 10a7 7 0 0 0-12 0v1h12z"/><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z"/><path d="M8.5 14h-1v-4h1v4z"/><path d="M11.5 14h-1v-4h1v4z"/><path d="M14.5 14h-1v-4h1v4z"/><path d="M17.5 14h-1v-4h1v4z"/></svg>
+                        Google Play
+                    </a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Rodapé (Footer) -->
+    <footer class="bg-white dark:bg-gray-900 border-t border-sky-100 dark:border-slate-800 py-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center text-center md:text-left">
+            <p class="text-gray-500 dark:text-gray-400 mb-4 md:mb-0">
+                &copy; 2025 Twynk App. Todos os direitos reservados.
+            </p>
+            <div class="space-x-4">
+                <a href="#" class="text-gray-500 hover:text-twynk-primary dark:hover:text-white transition duration-200">Termos de Uso</a>
+                <a href="#" class="text-gray-500 hover:text-twynk-primary dark:hover:text-white transition duration-200">Política de Privacidade</a>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>
