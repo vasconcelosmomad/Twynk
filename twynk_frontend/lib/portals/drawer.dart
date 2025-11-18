@@ -23,7 +23,9 @@ class SidebarMenu extends StatelessWidget {
       {'icon': Icons.person, 'label': 'Você'},
     ];
 
-    return Column(
+    return Container(
+      color: Theme.of(context).scaffoldBackgroundColor,
+      child: Column(
       children: [
         Expanded(
           child: ListView(
@@ -87,6 +89,7 @@ class SidebarMenu extends StatelessWidget {
           ),
         ),
       ],
-    );
+    ),
+  );
   }
 }
