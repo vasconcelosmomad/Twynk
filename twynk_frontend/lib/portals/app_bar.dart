@@ -92,13 +92,13 @@ class _TwynkAppBarState extends State<TwynkAppBar> {
         ),
       const SizedBox(width: 16.0),
       if (widget.isMobile)
-        IconButton.filled(
+        IconButton.filledTonal(
           onPressed: () {},
-          icon: const Icon(Icons.add_circle_outline),
+          icon: const Icon(Icons.add),
           tooltip: 'Criar',
           style: IconButton.styleFrom(
-            backgroundColor: Colors.blue,
-            foregroundColor: Colors.white,
+            backgroundColor: Colors.blue.withAlpha(25),
+            foregroundColor: Colors.blue,
           ),
         )
       else

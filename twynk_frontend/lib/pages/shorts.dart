@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:twynk_frontend/portals/app_bar.dart';
 import 'package:twynk_frontend/portals/drawer.dart';
+import 'package:twynk_frontend/portals/footer.dart';
 import 'package:video_player/video_player.dart';
 
 class ShortsPage extends StatefulWidget {
@@ -118,12 +119,10 @@ class _ShortsPageState extends State<ShortsPage> {
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       drawerScrimColor: Colors.transparent,
       onDrawerChanged: (open) => setState(() => _drawerOpen = open),
-      appBar: isMobile
-          ? null
-          : TwynkAppBar(
-              isMobile: isMobile,
-              drawerOpen: _drawerOpen,
-            ),
+      appBar: TwynkAppBar(
+        isMobile: isMobile,
+        drawerOpen: _drawerOpen,
+      ),
       drawer: !isMobile
           ? null
           : Drawer(
@@ -138,6 +137,17 @@ class _ShortsPageState extends State<ShortsPage> {
       body: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          if (!isMobile)
+            Container(
+              width: 240,
+              color: Theme.of(context).cardColor,
+              child: SidebarMenu(
+                compact: false,
+                showDrawerHeader: false,
+                selectedIndex: _selectedIndex,
+                onItemSelected: (index) => _handleNavigation(index),
+              ),
+            ),
           Expanded(
             child: PageView.builder(
               controller: _pageController,
@@ -177,7 +187,10 @@ class _ShortsPageState extends State<ShortsPage> {
           ),
         ],
       ),
-      bottomNavigationBar: null,
+      bottomNavigationBar: Footer(
+        currentIndex: _selectedIndex,
+        onTap: (index) => _handleNavigation(index),
+      ),
     );
   }
 
