@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:twynk_frontend/pages/shorts.dart';
+import 'package:twynk_frontend/pages/assinante.dart';
 import 'package:twynk_frontend/portals/footer.dart';
 import 'package:twynk_frontend/portals/app_bar.dart';
 import 'package:twynk_frontend/portals/drawer.dart';
@@ -24,6 +25,11 @@ class _HomeYouTubeStyleFlutterState extends State<HomeYouTubeStyleFlutter> {
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => ShortsPage()),
+      );
+    } else if (index == 3) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const PainelAssinantePage()),
       );
     } else if (MediaQuery.of(context).size.width < 1024) {
       Navigator.of(context).pop();

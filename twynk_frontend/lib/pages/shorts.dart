@@ -161,7 +161,6 @@ class _ShortsPageState extends State<ShortsPage> {
                   controller: _controllers[index],
                   onInitializeRequested: () => _initializeControllerAtIndex(index),
                   onLike: () => _onLike(index),
-                  onDislike: () => _onDislike(index),
                   onMessage: () => _onMessage(index),
                   onProfile: () => _onProfile(index),
                   onNext: () {
@@ -199,25 +198,19 @@ class _ShortsPageState extends State<ShortsPage> {
 
   void _onLike(int index) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Gostou do vídeo #$index')),
-    );
-  }
-
-  void _onDislike(int index) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Não gostou do vídeo #$index')),
+      SnackBar(content: Text('Gostou do vídeo #\$index')),
     );
   }
 
   void _onMessage(int index) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Abrir chat com usuário do vídeo #$index')),
+      SnackBar(content: Text('Abrir chat com usuário do vídeo #\$index')),
     );
   }
 
   void _onProfile(int index) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Abrir perfil do usuário do vídeo #$index')),
+      SnackBar(content: Text('Abrir perfil do usuário do vídeo #\$index')),
     );
   }
 }
@@ -228,7 +221,6 @@ class _ShortVideoPage extends StatefulWidget {
   final VideoPlayerController? controller;
   final VoidCallback onInitializeRequested;
   final VoidCallback onLike;
-  final VoidCallback onDislike;
   final VoidCallback onMessage;
   final VoidCallback onProfile;
   final VoidCallback onNext;
@@ -240,7 +232,6 @@ class _ShortVideoPage extends StatefulWidget {
     required this.controller,
     required this.onInitializeRequested,
     required this.onLike,
-    required this.onDislike,
     required this.onMessage,
     required this.onProfile,
     required this.onNext,
@@ -294,10 +285,6 @@ class _ShortVideoPageState extends State<_ShortVideoPage> {
     final Color outerBackground = theme.scaffoldBackgroundColor;
     final Color avatarBg =
         isDark ? Colors.white.withValues(alpha: 0.2) : Colors.black.withValues(alpha: 0.3);
-    final double viewportBottomPadding = MediaQuery.of(context).padding.bottom;
-    final double footerHeight = isDesktop ? 0 : kBottomNavigationBarHeight + viewportBottomPadding;
-    final double bottomInfoOffset = isDesktop ? 24 : 2 + footerHeight;
-    final double rightColumnOffset = isDesktop ? 120 : 80 + footerHeight;
 
     return GestureDetector(
       onTap: _togglePlayPause,
@@ -305,14 +292,11 @@ class _ShortVideoPageState extends State<_ShortVideoPage> {
         children: [
           Positioned.fill(child: Container(color: outerBackground)),
           Center(
-            child: OverflowBox(
-              maxHeight: isDesktop ? null : double.infinity,
-              alignment: Alignment.center,
-              child: AspectRatio(
-                aspectRatio: 9 / 16,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(isDesktop ? 16 : 0),
-                  child: Stack(
+            child: AspectRatio(
+              aspectRatio: 9 / 16,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(16),
+                child: Stack(
                   children: [
                     SizedBox.expand(
                       child: FittedBox(
@@ -346,23 +330,16 @@ class _ShortVideoPageState extends State<_ShortVideoPage> {
                         ),
                       ),
                     ),
-                    if (isDesktop)
                     Positioned(
                       right: 12,
-                      bottom: rightColumnOffset,
+                      bottom: 120,
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           _IconButtonColumn(
-                            icon: Icons.thumb_up,
+                            icon: Icons.favorite,
                             label: 'Like',
                             onTap: widget.onLike,
-                          ),
-                          const SizedBox(height: 16),
-                          _IconButtonColumn(
-                            icon: Icons.thumb_down,
-                            label: 'Dislike',
-                            onTap: widget.onDislike,
                           ),
                           const SizedBox(height: 16),
                           _IconButtonColumn(
@@ -370,13 +347,18 @@ class _ShortVideoPageState extends State<_ShortVideoPage> {
                             label: 'Msg',
                             onTap: widget.onMessage,
                           ),
+                          const SizedBox(height: 16),
+                          _IconButtonColumn(
+                            icon: Icons.person,
+                            label: 'Perfil',
+                            onTap: widget.onProfile,
+                          ),
                         ],
                       ),
                     ),
-                    if (isDesktop)
                     Positioned(
                       left: 16,
-                      bottom: bottomInfoOffset,
+                      bottom: 24,
                       right: 16,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -432,80 +414,10 @@ class _ShortVideoPageState extends State<_ShortVideoPage> {
                       ),
                     ),
                   ],
-                  ),
                 ),
               ),
             ),
           ),
-          if (!isDesktop)
-            Positioned(
-              right: 12,
-              bottom: rightColumnOffset,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  _IconButtonColumn(
-                    icon: Icons.thumb_up,
-                    label: 'Like',
-                    onTap: widget.onLike,
-                  ),
-                  const SizedBox(height: 16),
-                  _IconButtonColumn(
-                    icon: Icons.thumb_down,
-                    label: 'Dislike',
-                    onTap: widget.onDislike,
-                  ),
-                  const SizedBox(height: 16),
-                  _IconButtonColumn(
-                    icon: Icons.message,
-                    label: 'Msg',
-                    onTap: widget.onMessage,
-                  ),
-                ],
-              ),
-            ),
-          if (!isDesktop)
-            Positioned(
-              left: 16,
-              bottom: bottomInfoOffset,
-              right: 16,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Row(
-                    children: [
-                      GestureDetector(
-                        onTap: widget.onProfile,
-                        child: CircleAvatar(
-                          radius: 20,
-                          backgroundColor: avatarBg,
-                          child: const Icon(Icons.person, color: Colors.white),
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      const Expanded(
-                        child: Text(
-                          'Nome do Usuário',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  const Text(
-                    'Descrição curta do usuário - interesses, frase de efeito, etc.',
-                    style: TextStyle(color: Colors.white70),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
-              ),
-            ),
           if (isDesktop)
             Positioned(
               right: 24,
@@ -602,7 +514,7 @@ class _IconButtonColumn extends StatelessWidget {
           Container(
             decoration: BoxDecoration(
               color: Colors.black45,
-              shape: BoxShape.circle,
+              borderRadius: BorderRadius.circular(10),
             ),
             padding: const EdgeInsets.all(8),
             child: Icon(icon, size: 28, color: Colors.white),
