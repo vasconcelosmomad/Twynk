@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../portals/app_bar_copy.dart';
 import '../portals/drawer.dart';
+import '../portals/footer.dart';
+import 'shorts.dart';
 
 class PainelAssinantePage extends StatefulWidget {
   const PainelAssinantePage({super.key});
@@ -11,8 +13,28 @@ class PainelAssinantePage extends StatefulWidget {
 
 class _PainelAssinantePageState extends State<PainelAssinantePage> {
   String activeTab = 'recebidas';
-  int selectedDrawerIndex = 0;
+  int selectedDrawerIndex = 3;
   bool _drawerOpen = false;
+
+  void _onBottomNavTap(int index) {
+    final isMobile = MediaQuery.of(context).size.width < 1024;
+    setState(() => selectedDrawerIndex = index);
+    if (index == 0) {
+      if (isMobile && _drawerOpen) Navigator.of(context).pop();
+      Navigator.of(context).maybePop();
+      return;
+    }
+    if (index == 1) {
+      if (isMobile && _drawerOpen) Navigator.of(context).pop();
+      Navigator.push(context, MaterialPageRoute(builder: (context) => const ShortsPage()));
+      return;
+    }
+    if (index == 3) {
+      if (isMobile && _drawerOpen) Navigator.of(context).pop();
+      return;
+    }
+    if (isMobile && _drawerOpen) Navigator.of(context).pop();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,8 +58,23 @@ class _PainelAssinantePageState extends State<PainelAssinantePage> {
               ),
             )
           : null,
-      body: SafeArea(
-        child: LayoutBuilder(builder: (context, constraints) {
+      body: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (!isMobile)
+            Container(
+              width: 240,
+              color: Theme.of(context).cardColor,
+              child: SidebarMenu(
+                compact: false,
+                showDrawerHeader: false,
+                selectedIndex: selectedDrawerIndex,
+                onItemSelected: _onBottomNavTap,
+              ),
+            ),
+          Expanded(
+            child: SafeArea(
+              child: LayoutBuilder(builder: (context, constraints) {
           final width = constraints.maxWidth;
 
           // Use a centered max width like the original Tailwind layout
@@ -84,7 +121,16 @@ class _PainelAssinantePageState extends State<PainelAssinantePage> {
             ),
           );
         }),
+            ),
+          ),
+        ],
       ),
+      bottomNavigationBar: isMobile
+          ? Footer(
+              currentIndex: selectedDrawerIndex,
+              onTap: _onBottomNavTap,
+            )
+          : null,
     );
   }
 
