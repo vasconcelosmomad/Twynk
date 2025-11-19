@@ -602,7 +602,7 @@ class _IconButtonColumn extends StatelessWidget {
           Container(
             decoration: BoxDecoration(
               color: Colors.black45,
-              borderRadius: BorderRadius.circular(10),
+              shape: BoxShape.circle,
             ),
             padding: const EdgeInsets.all(8),
             child: Icon(icon, size: 28, color: Colors.white),
