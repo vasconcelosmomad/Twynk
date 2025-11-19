@@ -292,11 +292,14 @@ class _ShortVideoPageState extends State<_ShortVideoPage> {
         children: [
           Positioned.fill(child: Container(color: outerBackground)),
           Center(
-            child: AspectRatio(
-              aspectRatio: 9 / 16,
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(16),
-                child: Stack(
+            child: OverflowBox(
+              maxHeight: isDesktop ? null : double.infinity,
+              alignment: Alignment.center,
+              child: AspectRatio(
+                aspectRatio: 9 / 16,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(isDesktop ? 16 : 0),
+                  child: Stack(
                   children: [
                     SizedBox.expand(
                       child: FittedBox(
@@ -414,6 +417,7 @@ class _ShortVideoPageState extends State<_ShortVideoPage> {
                       ),
                     ),
                   ],
+                  ),
                 ),
               ),
             ),
