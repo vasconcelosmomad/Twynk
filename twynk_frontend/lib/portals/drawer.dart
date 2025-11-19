@@ -33,12 +33,25 @@ class SidebarMenu extends StatelessWidget {
             children: [
               if (showDrawerHeader)
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(4, 32, 16, 8),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Image.asset('assets/icons/logo_02.png', height: 32),
-                    ],
+                  padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
+                  child: SizedBox(
+                    height: kToolbarHeight,
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(4, 0, 16, 0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          IconButton(
+                            icon: const Icon(Icons.close),
+                            tooltip: 'Fechar',
+                            onPressed: () => Navigator.of(context).pop(),
+                          ),
+                          Image.asset('assets/icons/logo_02.png', height: 32),
+                          const SizedBox(width: 48),
+                        ],
+                      ),
+                    ),
                   ),
                 ),
               ...items.asMap().entries.map((entry) {
