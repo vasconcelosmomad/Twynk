@@ -4,14 +4,14 @@ class SidebarMenu extends StatelessWidget {
   final bool compact;
   final bool showDrawerHeader;
   final int selectedIndex;
-  final Function(int) onItemSelected;
+  final Function(int)? onItemSelected;
 
   const SidebarMenu({
     super.key,
     this.compact = false,
     this.showDrawerHeader = false,
-    required this.selectedIndex,
-    required this.onItemSelected,
+    this.selectedIndex = 0,
+    this.onItemSelected,
   });
 
   @override
@@ -49,7 +49,7 @@ class SidebarMenu extends StatelessWidget {
                   leading: Icon(item['icon'] as IconData),
                   title: compact ? null : Text(item['label'] as String),
                   selected: selectedIndex == index,
-                  onTap: () => onItemSelected(index),
+                  onTap: () => onItemSelected?.call(index),
                   selectedColor: Colors.lightBlue,
                   dense: true,
                   visualDensity: VisualDensity.compact,
@@ -61,7 +61,7 @@ class SidebarMenu extends StatelessWidget {
                 leading: const Icon(Icons.workspace_premium_outlined, color: Colors.amber),
                 title: compact ? null : const Text('Atualizar plano'),
                 selected: selectedIndex == 4,
-                onTap: () => onItemSelected(4),
+                onTap: () => onItemSelected?.call(4),
                 selectedColor: Colors.lightBlue,
                 dense: true,
                 visualDensity: VisualDensity.compact,
@@ -71,7 +71,7 @@ class SidebarMenu extends StatelessWidget {
                 leading: const Icon(Icons.exit_to_app, color: Colors.red),
                 title: compact ? null : const Text('Sair/Deslogar'),
                 selected: selectedIndex == 5,
-                onTap: () => onItemSelected(5),
+                onTap: () => onItemSelected?.call(5),
                 selectedColor: Colors.lightBlue,
                 dense: true,
                 visualDensity: VisualDensity.compact,

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../portals/app_bar_copy.dart';
+import '../portals/drawer.dart';
 
 class PainelAssinantePage extends StatefulWidget {
   const PainelAssinantePage({super.key});
@@ -9,28 +11,31 @@ class PainelAssinantePage extends StatefulWidget {
 
 class _PainelAssinantePageState extends State<PainelAssinantePage> {
   String activeTab = 'recebidas';
+  int selectedDrawerIndex = 0;
+  bool _drawerOpen = false;
 
   @override
   Widget build(BuildContext context) {
+    final isMobile = MediaQuery.of(context).size.width < 1024;
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        elevation: 1,
-        backgroundColor: const Color(0xFFFFFFFF), // Twynk AppBar BG
-        foregroundColor: Colors.black,
-        title: const Text('Painel do Assinante'),
-        actions: const [
-          Padding(
-            padding: EdgeInsets.only(right: 12),
-            child: Center(
-              child: Text(
-                'Bem-vindo de volta!',
-                style: TextStyle(color: Colors.grey, fontSize: 12),
+      drawerScrimColor: Colors.transparent,
+      appBar: TwynkAppBar(isMobile: isMobile, drawerOpen: _drawerOpen),
+      onDrawerChanged: (open) => setState(() => _drawerOpen = open),
+      drawer: isMobile
+          ? Drawer(
+              backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+              child: SidebarMenu(
+                compact: false,
+                showDrawerHeader: true,
+                selectedIndex: selectedDrawerIndex,
+                onItemSelected: (index) {
+                  setState(() => selectedDrawerIndex = index);
+                  Navigator.of(context).pop();
+                },
               ),
-            ),
-          )
-        ],
-      ),
+            )
+          : null,
       body: SafeArea(
         child: LayoutBuilder(builder: (context, constraints) {
           final width = constraints.maxWidth;
