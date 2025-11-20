@@ -15,8 +15,8 @@ class Footer extends StatelessWidget {
       selectedItemColor: Colors.lightBlue,
       items: const [
         BottomNavigationBarItem(
-          icon: Icon(Icons.home),
-          label: 'Início',
+          icon: Icon(Icons.people),
+          label: 'Twynks',
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.play_circle_fill),

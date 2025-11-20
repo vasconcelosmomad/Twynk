@@ -20,7 +20,8 @@ ThemeData defaultLightTheme = ThemeData(
   primaryColor: DefaultLight.blue,
   cardColor: DefaultLight.sidebar,
   canvasColor: DefaultLight.editor,
-  textTheme: GoogleFonts.robotoMonoTextTheme(
+  fontFamily: 'Roboto',
+  textTheme: GoogleFonts.robotoTextTheme(
     const TextTheme(
       bodyMedium: TextStyle(color: DefaultLight.text),
       bodyLarge: TextStyle(color: DefaultLight.text),

@@ -3,6 +3,7 @@ import '../portals/app_bar_copy.dart';
 import '../portals/drawer.dart';
 import '../portals/footer.dart';
 import 'shorts.dart';
+import 'photo_edit.dart';
 
 class PainelAssinantePage extends StatefulWidget {
   const PainelAssinantePage({super.key});
@@ -155,7 +156,9 @@ class _PainelAssinantePageState extends State<PainelAssinantePage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _actionItem(Icons.search, 'Buscar perfis'),
-                _actionItem(Icons.camera_alt, 'Editar fotos'),
+                _actionItem(Icons.camera_alt, 'Editar fotos', onTap: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => const PhotoMasterApp(initialView: 'edit-photos')));
+                }),
                 _actionItem(Icons.edit, 'Editar perfil'),
                 _actionItem(Icons.settings, 'Configurar busca'),
               ],
@@ -224,24 +227,27 @@ class _PainelAssinantePageState extends State<PainelAssinantePage> {
     }
   }
 
-  Widget _actionItem(IconData icon, String label) {
+  Widget _actionItem(IconData icon, String label, {VoidCallback? onTap}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: Colors.grey.shade200,
-              borderRadius: BorderRadius.circular(8),
+      child: GestureDetector(
+        onTap: onTap,
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Colors.grey.shade200,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Icon(icon, size: 16, color: Colors.grey.shade600),
             ),
-            child: Icon(icon, size: 16, color: Colors.grey.shade600),
-          ),
-          const SizedBox(width: 12),
-          Flexible(
-            child: Text(label, style: const TextStyle(fontSize: 14), overflow: TextOverflow.ellipsis),
-          ),
-        ],
+            const SizedBox(width: 12),
+            Flexible(
+              child: Text(label, style: const TextStyle(fontSize: 14), overflow: TextOverflow.ellipsis),
+            ),
+          ],
+        ),
       ),
     );
   }

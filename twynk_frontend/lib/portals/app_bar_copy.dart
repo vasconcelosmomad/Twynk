@@ -48,7 +48,7 @@ class _TwynkAppBarState extends State<TwynkAppBar> {
 
   Widget _buildTitle(BuildContext context) {
     if (widget.isMobile) {
-      return Image.asset('assets/icons/logo_02.png', height: 42);
+      return Image.asset('assets/icons/logo_02.png', height: 32);
     }
 
     // DESKTOP
@@ -73,6 +73,9 @@ class _TwynkAppBarState extends State<TwynkAppBar> {
           style: IconButton.styleFrom(
             backgroundColor: Colors.blue.withAlpha(25),
             foregroundColor: Colors.blue,
+            padding: const EdgeInsets.all(6.0),
+            minimumSize: const Size(36, 36),
+            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
           ),
         )
       else
@@ -98,6 +101,9 @@ class _TwynkAppBarState extends State<TwynkAppBar> {
           style: IconButton.styleFrom(
             backgroundColor: Colors.amber.withAlpha(25),
             foregroundColor: Colors.amber,
+            padding: const EdgeInsets.all(6.0),
+            minimumSize: const Size(36, 36),
+            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
           ),
         )
       else

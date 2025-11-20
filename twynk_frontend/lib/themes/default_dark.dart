@@ -20,7 +20,8 @@ ThemeData defaultDarkTheme = ThemeData(
   primaryColor: DefaultDark.blue,
   cardColor: DefaultDark.sidebar,
   canvasColor: DefaultDark.editor,
-  textTheme: GoogleFonts.robotoMonoTextTheme(
+  fontFamily: 'Roboto',
+  textTheme: GoogleFonts.robotoTextTheme(
     const TextTheme(
       bodyMedium: TextStyle(color: DefaultDark.text),
       bodyLarge: TextStyle(color: DefaultDark.text),
