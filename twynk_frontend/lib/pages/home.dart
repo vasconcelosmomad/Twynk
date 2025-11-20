@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:twynk_frontend/pages/shorts.dart';
 import 'package:twynk_frontend/pages/assinante.dart';
+import 'package:twynk_frontend/pages/welcome.dart';
 import 'package:twynk_frontend/portals/footer.dart';
 import 'package:twynk_frontend/portals/app_bar.dart';
 import 'package:twynk_frontend/portals/drawer.dart';
+import 'package:twynk_frontend/services/api_client.dart';
 
 class HomeYouTubeStyleFlutter extends StatefulWidget {
   const HomeYouTubeStyleFlutter({super.key});
@@ -16,12 +19,31 @@ class _HomeYouTubeStyleFlutterState extends State<HomeYouTubeStyleFlutter> {
   bool _drawerOpen = false;
   int _selectedIndex = 0;
 
+  Future<void> _logout() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('auth_token');
+    ApiClient.instance.clearToken();
+    if (!mounted) return;
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(
+        builder: (_) => WelcomePage(
+          themeMode: Theme.of(context).brightness == Brightness.dark ? ThemeMode.dark : ThemeMode.light,
+          onThemeToggle: (_) {},
+        ),
+      ),
+      (route) => false,
+    );
+  }
+
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
     });
 
-    if (index == 1) {
+    if (index == 5) {
+      _logout();
+      return;
+    } else if (index == 1) {
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => ShortsPage()),

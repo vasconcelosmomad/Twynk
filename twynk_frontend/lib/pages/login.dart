@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import 'register.dart';
-import 'home.dart';
+import 'assinante.dart';
 import '../services/auth_service.dart';
 // Cores do gradiente principal usadas em botões
 const Color _primaryCyan = Color(0xFF50C0C8); // #50c0c8
@@ -59,7 +59,7 @@ class _LoginPageState extends State<LoginPage> {
       _showMessage('Login efetuado com sucesso!', 'success');
       if (!mounted) return;
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => const HomeYouTubeStyleFlutter()),
+        MaterialPageRoute(builder: (_) => const PainelAssinantePage()),
       );
     } else {
       final msg = (result['error'] as String?) ?? 'Erro ao autenticar';

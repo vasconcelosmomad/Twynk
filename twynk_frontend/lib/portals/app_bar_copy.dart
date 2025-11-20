@@ -68,7 +68,7 @@ class _TwynkAppBarState extends State<TwynkAppBar> {
       if (widget.isMobile)
         IconButton.filledTonal(
           onPressed: () {},
-          icon: const Icon(Icons.add),
+          icon: const Icon(Icons.add_outlined),
           tooltip: 'Criar',
           style: IconButton.styleFrom(
             backgroundColor: Colors.blue.withAlpha(25),

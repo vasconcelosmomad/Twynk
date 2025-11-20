@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'api_client.dart';
 
 /// Chamadas de API relacionadas à autenticação.
@@ -23,6 +24,8 @@ class AuthService {
         final token = data['token'];
         if (token is String && token.isNotEmpty) {
           ApiClient.instance.setToken(token);
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setString('auth_token', token);
           return {'success': true, 'token': token, 'user': data['user']};
         }
         return {'success': false, 'error': 'Resposta inválida do servidor.'};

@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../portals/app_bar_copy.dart';
 import '../portals/drawer.dart';
 import '../portals/footer.dart';
 import 'shorts.dart';
 import 'photo_edit.dart';
+import 'welcome.dart';
+import '../services/api_client.dart';
 
 class PainelAssinantePage extends StatefulWidget {
   const PainelAssinantePage({super.key});
@@ -30,11 +33,32 @@ class _PainelAssinantePageState extends State<PainelAssinantePage> {
       Navigator.push(context, MaterialPageRoute(builder: (context) => const ShortsPage()));
       return;
     }
+    if (index == 5) {
+      if (isMobile && _drawerOpen) Navigator.of(context).pop();
+      _logout();
+      return;
+    }
     if (index == 3) {
       if (isMobile && _drawerOpen) Navigator.of(context).pop();
       return;
     }
     if (isMobile && _drawerOpen) Navigator.of(context).pop();
+  }
+
+  Future<void> _logout() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('auth_token');
+    ApiClient.instance.clearToken();
+    if (!mounted) return;
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(
+        builder: (_) => WelcomePage(
+          themeMode: Theme.of(context).brightness == Brightness.dark ? ThemeMode.dark : ThemeMode.light,
+          onThemeToggle: (_) {},
+        ),
+      ),
+      (route) => false,
+    );
   }
 
   @override

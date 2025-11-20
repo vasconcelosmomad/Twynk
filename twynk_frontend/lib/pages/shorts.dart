@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:twynk_frontend/portals/app_bar.dart';
 import 'package:twynk_frontend/portals/drawer.dart';
 import 'package:twynk_frontend/portals/footer.dart';
+import 'package:twynk_frontend/pages/welcome.dart';
+import 'package:twynk_frontend/services/api_client.dart';
 import 'package:video_player/video_player.dart';
 
 class ShortsPage extends StatefulWidget {
@@ -91,6 +94,14 @@ class _ShortsPageState extends State<ShortsPage> {
 
     setState(() => _selectedIndex = index);
 
+    if (index == 5) {
+      if (fromDrawer && isMobile && _drawerOpen) {
+        Navigator.of(context).pop();
+      }
+      _logout();
+      return;
+    }
+
     if (index == 0) {
       if (fromDrawer && isMobile && _drawerOpen) {
         Navigator.of(context).pop();
@@ -109,6 +120,22 @@ class _ShortsPageState extends State<ShortsPage> {
     if (fromDrawer && isMobile && _drawerOpen) {
       Navigator.of(context).pop();
     }
+  }
+
+  Future<void> _logout() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('auth_token');
+    ApiClient.instance.clearToken();
+    if (!mounted) return;
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(
+        builder: (_) => WelcomePage(
+          themeMode: Theme.of(context).brightness == Brightness.dark ? ThemeMode.dark : ThemeMode.light,
+          onThemeToggle: (_) {},
+        ),
+      ),
+      (route) => false,
+    );
   }
 
   @override
