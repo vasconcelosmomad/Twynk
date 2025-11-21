@@ -16,20 +16,20 @@ class Footer extends StatelessWidget {
       selectedItemColor: NomirroColors.primary,
       items: const [
         BottomNavigationBarItem(
-          icon: Icon(Icons.people),
-          label: 'Nomirro',
+          icon: Icon(Icons.person_search),
+          label: 'Nearby',
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.play_circle_fill),
-          label: 'Shorts',
+          label: 'Explore',
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.sync_alt),
-          label: 'Interações',
+          icon: Icon(Icons.chat_bubble),
+          label: 'Chats',
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.person),
-          label: 'Você',
+          label: 'Profile',
         ),
       ],
     );

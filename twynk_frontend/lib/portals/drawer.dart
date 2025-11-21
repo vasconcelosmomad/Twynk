@@ -18,11 +18,10 @@ class SidebarMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final items = [
-      {'icon': Icons.people, 'label': 'Nomirro'},
-      {'icon': Icons.person, 'label': 'Você'},
-      {'icon': Icons.play_circle_fill, 'label': 'Shorts'},
-      {'icon': Icons.sync_alt, 'label': 'Interações'},
-     
+      {'icon': Icons.person_search, 'label': 'Nearby'},
+      {'icon': Icons.play_circle_fill, 'label': 'Explore'},
+      {'icon': Icons.chat_bubble, 'label': 'Chats'},
+      {'icon': Icons.person, 'label': 'Profile'},
     ];
 
     return Container(
@@ -74,7 +73,7 @@ class SidebarMenu extends StatelessWidget {
               const Divider(),
               ListTile(
                 leading: const Icon(Icons.workspace_premium_outlined, color: NomirroColors.accentDark),
-                title: compact ? null : const Text('Atualizar plano'),
+                title: compact ? null : const Text('Update plan'),
                 selected: selectedIndex == 4,
                 onTap: () => onItemSelected?.call(4),
                 selectedColor: NomirroColors.primary,
