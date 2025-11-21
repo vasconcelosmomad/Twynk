@@ -65,7 +65,7 @@ class _PhotoMasterAppState extends State<PhotoMasterApp> {
   // Estado da aplicação
   List<Photo> _photos = initialPhotos;
   late String _currentView; // 'dashboard' ou 'edit-photos'
-  int _selectedDrawerIndex = 3;
+  int _selectedDrawerIndex = 4;
   bool _drawerOpen = false;
 
   @override
@@ -130,12 +130,12 @@ class _PhotoMasterAppState extends State<PhotoMasterApp> {
       Navigator.of(context).maybePop();
       return;
     }
-    if (index == 1) {
+    if (index == 2) {
       if (isMobile && _drawerOpen) Navigator.of(context).pop();
       Navigator.push(context, MaterialPageRoute(builder: (context) => const ShortsPage()));
       return;
     }
-    if (index == 3) {
+    if (index == 4) {
       if (isMobile && _drawerOpen) Navigator.of(context).pop();
       return;
     }
@@ -217,9 +217,9 @@ class _PhotoMasterAppState extends State<PhotoMasterApp> {
         ),
         bottomNavigationBar: isMobile
             ? Footer(
-                currentIndex: _selectedDrawerIndex,
-                onTap: _onBottomNavTap,
-              )
+	            currentIndex: _selectedDrawerIndex > 4 ? 0 : _selectedDrawerIndex,
+	            onTap: _onBottomNavTap,
+	          )
             : null,
       ),
     );

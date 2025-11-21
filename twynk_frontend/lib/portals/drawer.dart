@@ -19,9 +19,10 @@ class SidebarMenu extends StatelessWidget {
   Widget build(BuildContext context) {
     final items = [
       {'icon': Icons.person_search, 'label': 'Nearby'},
+      {'icon': Icons.people_alt, 'label': 'Encounters'},
       {'icon': Icons.play_circle_fill, 'label': 'Explore'},
       {'icon': Icons.chat_bubble, 'label': 'Chats'},
-      {'icon': Icons.person, 'label': 'Profile'},
+      {'icon': Icons.notifications, 'label': 'Notification'},
     ];
 
     return Container(
@@ -74,8 +75,8 @@ class SidebarMenu extends StatelessWidget {
               ListTile(
                 leading: const Icon(Icons.workspace_premium_outlined, color: NomirroColors.accentDark),
                 title: compact ? null : const Text('Update plan'),
-                selected: selectedIndex == 4,
-                onTap: () => onItemSelected?.call(4),
+                selected: selectedIndex == 5,
+                onTap: () => onItemSelected?.call(5),
                 selectedColor: NomirroColors.primary,
                 dense: true,
                 visualDensity: VisualDensity.compact,
@@ -83,9 +84,9 @@ class SidebarMenu extends StatelessWidget {
               ),
               ListTile(
                 leading: const Icon(Icons.exit_to_app, color: Colors.red),
-                title: compact ? null : const Text('Sair/Deslogar'),
-                selected: selectedIndex == 5,
-                onTap: () => onItemSelected?.call(5),
+                title: compact ? null : const Text('Log out / Sign out'),
+                selected: selectedIndex == 6,
+                onTap: () => onItemSelected?.call(6),
                 selectedColor: NomirroColors.primary,
                 dense: true,
                 visualDensity: VisualDensity.compact,
@@ -97,7 +98,7 @@ class SidebarMenu extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.all(16.0),
           child: Text(
-            '© ${DateTime.now().year} Nomirro  Todos os direitos reservados',
+            '© ${DateTime.now().year} Nomirro  All rights reserved.',
             style: Theme.of(context).textTheme.bodySmall,
             textAlign: TextAlign.center,
           ),

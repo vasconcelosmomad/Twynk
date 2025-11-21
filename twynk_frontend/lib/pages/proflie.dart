@@ -19,7 +19,7 @@ class PainelAssinantePage extends StatefulWidget {
 
 class _PainelAssinantePageState extends State<PainelAssinantePage> {
   String activeTab = 'recebidas';
-  int selectedDrawerIndex = 3;
+  int selectedDrawerIndex = 4;
   bool _drawerOpen = false;
 
   void _onBottomNavTap(int index) {
@@ -30,17 +30,17 @@ class _PainelAssinantePageState extends State<PainelAssinantePage> {
       Navigator.push(context, MaterialPageRoute(builder: (context) => const HomeYouTubeStyleFlutter()));
       return;
     }
-    if (index == 1) {
+    if (index == 2) {
       if (isMobile && _drawerOpen) Navigator.of(context).pop();
       Navigator.push(context, MaterialPageRoute(builder: (context) => const ShortsPage()));
       return;
     }
-    if (index == 5) {
+    if (index == 6) {
       if (isMobile && _drawerOpen) Navigator.of(context).pop();
       _logout();
       return;
     }
-    if (index == 3) {
+    if (index == 4) {
       if (isMobile && _drawerOpen) Navigator.of(context).pop();
       return;
     }
@@ -148,7 +148,7 @@ class _PainelAssinantePageState extends State<PainelAssinantePage> {
       ),
       bottomNavigationBar: isMobile
           ? Footer(
-              currentIndex: selectedDrawerIndex > 3 ? 0 : selectedDrawerIndex,
+              currentIndex: selectedDrawerIndex > 4 ? 0 : selectedDrawerIndex,
               onTap: _onBottomNavTap,
             )
           : null,

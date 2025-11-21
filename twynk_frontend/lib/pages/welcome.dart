@@ -682,7 +682,7 @@ class _NomirroDrawer extends StatelessWidget {
                                   ),
                                 ),
                                 TextSpan(
-                                  text: 'Todos os direitos reservados',
+                                  text: 'All rights reserved.',
                                   style: TextStyle(
                                     color: isDark ? Colors.white60 : Colors.black54,
                                   ),
@@ -2115,7 +2115,7 @@ class _NomirroFooter extends StatelessWidget {
 
   Widget _copyrightText(BuildContext context) {
     return Text(
-      '© 2025 Twynk App. Todos os direitos reservados.',
+      '© 2025 Nomirro. All rights reserved.',
       textAlign: TextAlign.center,
       style: TextStyle(
         color: isDark ? Colors.white54 : Colors.black54,

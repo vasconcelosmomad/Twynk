@@ -145,7 +145,7 @@ class _SearchFormFlutterState extends State<SearchFormFlutter> {
           decoration: InputDecoration(
             contentPadding:
                 const EdgeInsets.symmetric(vertical: 10, horizontal: 40),
-            hintText: 'Pesquisar',
+            hintText: 'Search',
             hintStyle: TextStyle(color: Colors.grey[600]),
             filled: true,
             fillColor: Theme.of(context).brightness == Brightness.dark
@@ -162,7 +162,7 @@ class _SearchFormFlutterState extends State<SearchFormFlutter> {
           bottom: 0,
           top: 0,
           child: Tooltip(
-            message: 'Pesquisar',
+            message: 'Search',
             child: TextButton(
               style: TextButton.styleFrom(
                 backgroundColor: Theme.of(context).brightness == Brightness.dark

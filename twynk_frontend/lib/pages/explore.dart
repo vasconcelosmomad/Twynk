@@ -18,7 +18,7 @@ class ShortsPage extends StatefulWidget {
 class _ShortsPageState extends State<ShortsPage> {
   final PageController _pageController = PageController();
   int _currentIndex = 0;
-  int _selectedIndex = 1;
+  int _selectedIndex = 2;
   bool _drawerOpen = false;
 
   final List<String> _videoUrls = [
@@ -95,7 +95,7 @@ class _ShortsPageState extends State<ShortsPage> {
 
     setState(() => _selectedIndex = index);
 
-    if (index == 5) {
+    if (index == 6) {
       if (fromDrawer && isMobile && _drawerOpen) {
         Navigator.of(context).pop();
       }
@@ -111,7 +111,7 @@ class _ShortsPageState extends State<ShortsPage> {
       return;
     }
 
-    if (index == 1) {
+    if (index == 2) {
       if (fromDrawer && isMobile && _drawerOpen) {
         Navigator.of(context).pop();
       }
@@ -214,7 +214,7 @@ class _ShortsPageState extends State<ShortsPage> {
       ),
       bottomNavigationBar: isMobile
           ? Footer(
-              currentIndex: _selectedIndex,
+              currentIndex: _selectedIndex > 4 ? 0 : _selectedIndex,
               onTap: (index) => _handleNavigation(index),
             )
           : null,
@@ -223,19 +223,19 @@ class _ShortsPageState extends State<ShortsPage> {
 
   void _onLike(int index) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Gostou do vídeo #\$index')),
+      SnackBar(content: Text('Gostou do vídeo #$index')),
     );
   }
 
   void _onMessage(int index) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Abrir chat com usuário do vídeo #\$index')),
+      SnackBar(content: Text('Abrir chat com usuário do vídeo #$index')),
     );
   }
 
   void _onProfile(int index) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Abrir perfil do usuário do vídeo #\$index')),
+      SnackBar(content: Text('Abrir perfil do usuário do vídeo #$index')),
     );
   }
 }

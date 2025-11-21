@@ -20,6 +20,10 @@ class Footer extends StatelessWidget {
           label: 'Nearby',
         ),
         BottomNavigationBarItem(
+          icon: Icon(Icons.people_alt),
+          label: 'Encounters',
+        ),
+        BottomNavigationBarItem(
           icon: Icon(Icons.play_circle_fill),
           label: 'Explore',
         ),
@@ -28,8 +32,8 @@ class Footer extends StatelessWidget {
           label: 'Chats',
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.person),
-          label: 'Profile',
+          icon: Icon(Icons.notifications),
+          label: 'Notification',
         ),
       ],
     );

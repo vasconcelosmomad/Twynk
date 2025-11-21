@@ -37,15 +37,15 @@ class _HomeYouTubeStyleFlutterState extends State<HomeYouTubeStyleFlutter> {
       _selectedIndex = index;
     });
 
-    if (index == 5) {
+    if (index == 6) {
       _logout();
       return;
-    } else if (index == 1) {
+    } else if (index == 2) {
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => ShortsPage()),
       );
-    } else if (index == 3) {
+    } else if (index == 4) {
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => const PainelAssinantePage()),
@@ -283,7 +283,7 @@ class _HomeYouTubeStyleFlutterState extends State<HomeYouTubeStyleFlutter> {
 
       bottomNavigationBar: isMobile
           ? Footer(
-              currentIndex: _selectedIndex > 3 ? 0 : _selectedIndex,
+              currentIndex: _selectedIndex > 4 ? 0 : _selectedIndex,
               onTap: _onItemTapped,
             )
           : null,
