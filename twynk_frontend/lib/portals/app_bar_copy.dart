@@ -94,35 +94,53 @@ class _NomirroAppBarState extends State<NomirroAppBar> {
           ),
         ),
       const SizedBox(width: 16.0),
-      if (widget.isMobile)
-        IconButton.filledTonal(
-          onPressed: () {},
-          icon: const Icon(Icons.workspace_premium_outlined),
-          tooltip: 'Atualizar',
-          style: IconButton.styleFrom(
-            backgroundColor: NomirroColors.accentDark.withAlpha(25),
-            foregroundColor: NomirroColors.accentDark,
-            padding: const EdgeInsets.all(6.0),
-            minimumSize: const Size(36, 36),
-            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-          ),
-        )
-      else
-        TextButton.icon(
-          onPressed: () {},
-          icon: const Icon(Icons.workspace_premium_outlined),
-          label: const Text('Atualizar'),
-          style: TextButton.styleFrom(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-            foregroundColor: NomirroColors.accentDark,
-            backgroundColor: NomirroColors.accentDark.withAlpha(25),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(30.0),
-            ),
-          ),
-        ),
+      _buildUserMenu(context),
       const SizedBox(width: 16.0),
     ];
+  }
+
+  Widget _buildUserMenu(BuildContext context) {
+    return PopupMenuButton<String>(
+      itemBuilder: (context) => const [
+        PopupMenuItem<String>(
+          value: 'name',
+          child: Row(
+            children: [
+              Icon(Icons.person, size: 18),
+              SizedBox(width: 8),
+              Text('Nome'),
+            ],
+          ),
+        ),
+        PopupMenuItem<String>(
+          value: 'profile',
+          child: Row(
+            children: [
+              Icon(Icons.settings, size: 18),
+              SizedBox(width: 8),
+              Text('Profile'),
+            ],
+          ),
+        ),
+        PopupMenuItem<String>(
+          value: 'update_plan',
+          child: Row(
+            children: [
+              Icon(Icons.workspace_premium_outlined, size: 18),
+              SizedBox(width: 8),
+              Text('Update plan'),
+            ],
+          ),
+        ),
+      ],
+      position: PopupMenuPosition.under,
+      onSelected: (value) {},
+      child: const CircleAvatar(
+        radius: 16,
+        backgroundColor: Colors.grey,
+        child: Icon(Icons.person, size: 18, color: Colors.white),
+      ),
+    );
   }
 }
 
