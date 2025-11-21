@@ -5,6 +5,7 @@ import '../portals/footer.dart';
 import 'shorts.dart';
 import '../themes/default_light.dart';
 import '../themes/default_dark.dart';
+import '../themes/twynk_colors.dart';
 
 // --- MODELO DE DADOS ---
 
@@ -153,7 +154,7 @@ class _PhotoMasterAppState extends State<PhotoMasterApp> {
       home: Scaffold(
         backgroundColor: Colors.white,
         drawerScrimColor: Colors.transparent,
-        appBar: TwynkAppBar(isMobile: isMobile, drawerOpen: _drawerOpen),
+        appBar: NomirroAppBar(isMobile: isMobile, drawerOpen: _drawerOpen),
         onDrawerChanged: (open) => setState(() => _drawerOpen = open),
         drawer: isMobile
             ? Drawer(
@@ -367,7 +368,7 @@ class DashboardPage extends StatelessWidget {
               icon: const Icon(Icons.settings, size: 18),
               label: const Text('Gerenciar Fotos'),
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue[600],
+                backgroundColor: NomirroColors.primary,
                 foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
@@ -395,13 +396,13 @@ class DashboardPage extends StatelessWidget {
               title: "Total de Fotos",
               value: totalPhotos,
               icon: Icons.image,
-              color: Colors.blue.shade500,
+              color: NomirroColors.primary,
             ),
             StatCard(
               title: "Fotos Privadas",
               value: privatePhotos,
               icon: Icons.lock,
-              color: Colors.purple.shade500,
+              color: NomirroColors.accentDark,
             ),
             StatCard(
               title: "Foto de Perfil",
@@ -600,14 +601,14 @@ class EditPhotosPage extends StatelessWidget {
         Container(
           padding: const EdgeInsets.all(16.0),
           decoration: BoxDecoration(
-            color: Colors.blue.shade50,
-            border: Border(left: BorderSide(color: Colors.blue.shade500, width: 4)),
+            color: NomirroColors.accentLight.withAlpha(40),
+            border: Border(left: BorderSide(color: NomirroColors.accentDark, width: 4)),
             borderRadius: const BorderRadius.only(topRight: Radius.circular(8), bottomRight: Radius.circular(8)),
           ),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Icon(Icons.warning_amber_rounded, size: 20, color: Colors.blue.shade500),
+              Icon(Icons.warning_amber_rounded, size: 20, color: NomirroColors.accentDark),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
@@ -617,16 +618,16 @@ class EditPhotosPage extends StatelessWidget {
                       'Dicas Importantes',
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
-                        color: Colors.blue.shade800,
+                        color: NomirroColors.accentDark,
                       ),
                     ),
                     const SizedBox(height: 4),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('• Organize suas fotos aqui. As alterações são salvas automaticamente.', style: TextStyle(fontSize: 13, color: Colors.blue.shade700)),
-                        Text('• Use o ícone de cadeado para tornar uma foto privada (invisível no perfil público).', style: TextStyle(fontSize: 13, color: Colors.blue.shade700)),
-                        Text('• Apenas uma foto pode ser definida como foto de Perfil.', style: TextStyle(fontSize: 13, color: Colors.blue.shade700)),
+                        Text('• Organize suas fotos aqui. As alterações são salvas automaticamente.', style: TextStyle(fontSize: 13, color: NomirroColors.accentDark)),
+                        Text('• Use o ícone de cadeado para tornar uma foto privada (invisível no perfil público).', style: TextStyle(fontSize: 13, color: NomirroColors.accentDark)),
+                        Text('• Apenas uma foto pode ser definida como foto de Perfil.', style: TextStyle(fontSize: 13, color: NomirroColors.accentDark)),
                       ],
                     ),
                   ],
@@ -811,7 +812,7 @@ class PhotoCard extends StatelessWidget {
                             margin: const EdgeInsets.only(right: 4),
                             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                             decoration: BoxDecoration(
-                              color: Colors.purple.shade600,
+                              color: NomirroColors.accentDark,
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: const Row(
@@ -865,7 +866,7 @@ class PhotoCard extends StatelessWidget {
                                 Icon(
                                   photo.isPrivate ? Icons.lock : Icons.lock_open,
                                   size: 16,
-                                  color: photo.isPrivate ? Colors.purple.shade500 : Colors.grey.shade600,
+                                  color: photo.isPrivate ? NomirroColors.accentDark : Colors.grey.shade600,
                                 ),
                                 const SizedBox(width: 8),
                                 Flexible(
@@ -881,7 +882,7 @@ class PhotoCard extends StatelessWidget {
                           Switch(
                             value: photo.isPrivate,
                             onChanged: (value) => togglePrivacy(photo.id),
-                            activeThumbColor: Colors.purple.shade500,
+                            activeThumbColor: NomirroColors.accentDark,
                             inactiveTrackColor: Colors.grey.shade300,
                           ),
                         ],
@@ -895,7 +896,7 @@ class PhotoCard extends StatelessWidget {
                               Icon(
                                 photo.isPrivate ? Icons.lock : Icons.lock_open,
                                 size: 16,
-                                color: photo.isPrivate ? Colors.purple.shade500 : Colors.grey.shade600,
+                                color: photo.isPrivate ? NomirroColors.accentDark : Colors.grey.shade600,
                               ),
                               const SizedBox(width: 8),
                               Flexible(
@@ -913,7 +914,7 @@ class PhotoCard extends StatelessWidget {
                             child: Switch(
                               value: photo.isPrivate,
                               onChanged: (value) => togglePrivacy(photo.id),
-                              activeThumbColor: Colors.purple.shade500,
+                              activeThumbColor: NomirroColors.accentDark,
                               inactiveTrackColor: Colors.grey.shade300,
                             ),
                           ),

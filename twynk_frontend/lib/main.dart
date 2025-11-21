@@ -54,7 +54,7 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     if (!_initialized) {
       return MaterialApp(
-        title: 'Twynk',
+        title: 'Nomirro',
         debugShowCheckedModeBanner: false,
         themeAnimationDuration: Duration.zero,
         themeAnimationCurve: Curves.linear,
@@ -68,7 +68,7 @@ class _MyAppState extends State<MyApp> {
     }
 
     return MaterialApp(
-      title: 'Twynk',
+      title: 'Nomirro',
       debugShowCheckedModeBanner: false,
       themeAnimationDuration: Duration.zero,
       themeAnimationCurve: Curves.linear,

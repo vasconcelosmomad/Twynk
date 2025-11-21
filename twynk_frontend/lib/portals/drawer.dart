@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../themes/twynk_colors.dart';
 
 class SidebarMenu extends StatelessWidget {
   final bool compact;
@@ -64,7 +65,7 @@ class SidebarMenu extends StatelessWidget {
                   title: compact ? null : Text(item['label'] as String),
                   selected: selectedIndex == index,
                   onTap: () => onItemSelected?.call(index),
-                  selectedColor: Colors.lightBlue,
+                  selectedColor: NomirroColors.primary,
                   dense: true,
                   visualDensity: VisualDensity.compact,
                   contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -72,11 +73,11 @@ class SidebarMenu extends StatelessWidget {
               }),
               const Divider(),
               ListTile(
-                leading: const Icon(Icons.workspace_premium_outlined, color: Colors.amber),
+                leading: const Icon(Icons.workspace_premium_outlined, color: NomirroColors.accentDark),
                 title: compact ? null : const Text('Atualizar plano'),
                 selected: selectedIndex == 4,
                 onTap: () => onItemSelected?.call(4),
-                selectedColor: Colors.lightBlue,
+                selectedColor: NomirroColors.primary,
                 dense: true,
                 visualDensity: VisualDensity.compact,
                 contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -86,7 +87,7 @@ class SidebarMenu extends StatelessWidget {
                 title: compact ? null : const Text('Sair/Deslogar'),
                 selected: selectedIndex == 5,
                 onTap: () => onItemSelected?.call(5),
-                selectedColor: Colors.lightBlue,
+                selectedColor: NomirroColors.primary,
                 dense: true,
                 visualDensity: VisualDensity.compact,
                 contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -97,7 +98,7 @@ class SidebarMenu extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.all(16.0),
           child: Text(
-            '© ${DateTime.now().year} Twynk  Todos os direitos reservados',
+            '© ${DateTime.now().year} Nomirro  Todos os direitos reservados',
             style: Theme.of(context).textTheme.bodySmall,
             textAlign: TextAlign.center,
           ),

@@ -1,23 +1,24 @@
 import 'package:flutter/material.dart';
+import '../themes/twynk_colors.dart';
 
-class TwynkAppBar extends StatefulWidget implements PreferredSizeWidget {
+class NomirroAppBar extends StatefulWidget implements PreferredSizeWidget {
   final bool isMobile;
   final bool drawerOpen;
 
-  const TwynkAppBar({
+  const NomirroAppBar({
     super.key,
     required this.isMobile,
     required this.drawerOpen,
   });
 
   @override
-  State<TwynkAppBar> createState() => _TwynkAppBarState();
+  State<NomirroAppBar> createState() => _NomirroAppBarState();
 
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 }
 
-class _TwynkAppBarState extends State<TwynkAppBar> {
+class _NomirroAppBarState extends State<NomirroAppBar> {
   bool _searchActive = false;
 
   @override
@@ -97,8 +98,8 @@ class _TwynkAppBarState extends State<TwynkAppBar> {
           icon: const Icon(Icons.add),
           tooltip: 'Criar',
           style: IconButton.styleFrom(
-            backgroundColor: Colors.blue.withAlpha(25),
-            foregroundColor: Colors.blue,
+            backgroundColor: NomirroColors.primary.withAlpha(25),
+            foregroundColor: NomirroColors.primary,
           ),
         )
       else
@@ -109,7 +110,7 @@ class _TwynkAppBarState extends State<TwynkAppBar> {
           style: TextButton.styleFrom(
             padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
             foregroundColor: Colors.white,
-            backgroundColor: Colors.blue,
+            backgroundColor: NomirroColors.primary,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(30.0),
             ),
@@ -122,8 +123,8 @@ class _TwynkAppBarState extends State<TwynkAppBar> {
           icon: const Icon(Icons.workspace_premium_outlined),
           tooltip: 'Atualizar',
           style: IconButton.styleFrom(
-            backgroundColor: Colors.amber.withAlpha(25),
-            foregroundColor: Colors.amber,
+            backgroundColor: NomirroColors.accentDark.withAlpha(25),
+            foregroundColor: NomirroColors.accentDark,
           ),
         )
       else
@@ -133,8 +134,8 @@ class _TwynkAppBarState extends State<TwynkAppBar> {
           label: const Text('Atualizar'),
           style: TextButton.styleFrom(
             padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-            foregroundColor: Colors.amber,
-            backgroundColor: Colors.amber.withAlpha(25),
+            foregroundColor: NomirroColors.accentDark,
+            backgroundColor: NomirroColors.accentDark.withAlpha(25),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(30.0),
             ),
@@ -167,15 +168,14 @@ class _SearchFormFlutterState extends State<SearchFormFlutter> {
             hintText: 'Pesquisar',
             hintStyle: TextStyle(color: Colors.grey[600]),
             filled: true,
-            fillColor: Colors.white,
+            fillColor: Theme.of(context).brightness == Brightness.dark
+                ? Colors.white12
+                : const Color(0xFFF6EAFE),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(20),
               borderSide: BorderSide.none,
             ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(20),
-              borderSide: const BorderSide(color: Colors.blue, width: 1),
-            ),
+            // No borders on enabled/focused as requested
           ),
         ),
         Positioned(
@@ -186,8 +186,12 @@ class _SearchFormFlutterState extends State<SearchFormFlutter> {
             message: 'Pesquisar',
             child: TextButton(
               style: TextButton.styleFrom(
-                backgroundColor: Colors.lightBlue,
-                foregroundColor: Colors.white,
+                backgroundColor: Theme.of(context).brightness == Brightness.dark
+                    ? Colors.white12
+                    : const Color(0xFFF6EAFE),
+                foregroundColor: Theme.of(context).brightness == Brightness.dark
+                    ? Colors.white
+                    : NomirroColors.accentDark,
                 padding:
                     const EdgeInsets.symmetric(horizontal: 16),
                 shape: RoundedRectangleBorder(

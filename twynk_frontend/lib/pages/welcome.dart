@@ -104,7 +104,7 @@ class FAQSection extends StatelessWidget {
                 center: gradientCenter,
                 radius: radius,
                 colors: isAlt
-                    ? [Colors.white, TwynkColors.lightBackground]
+                    ? [Colors.white, NomirroColors.lightBackground]
                     : [DefaultLight.sidebar, DefaultLight.bg],
                 stops: const [0.05, 1.0],
               ),
@@ -147,7 +147,7 @@ class FAQSection extends StatelessWidget {
               _faqTile(
                 context,
                 'Quanto tempo leva para minhas fotos serem aprovadas?\nPor que não consigo enviar uma foto?',
-                'A aprovação pode levar até algumas horas, dependendo do volume de envios.\nSe estiver enfrentando problemas ao enviar fotos, verifique:\n\nPossíveis causas e soluções:\n- Formato não suportado: use apenas JPEG ou PNG.\n- Permissões de armazenamento (Android):\nVá em Configurações → Aplicativos → [Seu navegador ou app Twynk] → Permissões → Armazenamento → Ativar.\n- Navegador ou app desatualizado:\nAtualize o Twynk ou tente acessar em outro dispositivo.',
+                'A aprovação pode levar até algumas horas, dependendo do volume de envios.\nSe estiver enfrentando problemas ao enviar fotos, verifique:\n\nPossíveis causas e soluções:\n- Formato não suportado: use apenas JPEG ou PNG.\n- Permissões de armazenamento (Android):\nVá em Configurações → Aplicativos → [Seu navegador ou app Nomirro] → Permissões → Armazenamento → Ativar.\n- Navegador ou app desatualizado:\nAtualize o Nomirro ou tente acessar em outro dispositivo.',
                 bodyColor,
               ),
               Divider(height: 1, thickness: 1, color: (isDark ? Colors.white : Colors.black).withAlpha(20)),
@@ -168,21 +168,21 @@ class FAQSection extends StatelessWidget {
               _faqTile(
                 context,
                 'Posso enviar meu e-mail ou número de telefone nas mensagens?',
-                'Você pode, mas o Twynk recomenda que só compartilhe informações pessoais após criar confiança com a outra pessoa.\nSua segurança e privacidade vêm em primeiro lugar.',
+                'Você pode, mas o Nomirro recomenda que só compartilhe informações pessoais após criar confiança com a outra pessoa.\nSua segurança e privacidade vêm em primeiro lugar.',
                 bodyColor,
               ),
               Divider(height: 1, thickness: 1, color: (isDark ? Colors.white : Colors.black).withAlpha(20)),
               _faqTile(
                 context,
-                'O Twynk é gratuito?',
-                'Sim! O Twynk pode ser usado gratuitamente para criar conta, conversar e conhecer novas pessoas.\nAlém disso, já está disponível o Twynk Premium, que oferece recursos extras como mais visibilidade, envio ilimitado de solicitações e destaque no app — mas o uso básico continuará totalmente gratuito.',
+                'O Nomirro é gratuito?',
+                'Sim! O Nomirro pode ser usado gratuitamente para criar conta, conversar e conhecer novas pessoas.\nAlém disso, já está disponível o Nomirro Premium, que oferece recursos extras como mais visibilidade, envio ilimitado de solicitações e destaque no app — mas o uso básico continuará totalmente gratuito.',
                 bodyColor,
               ),
               Divider(height: 1, thickness: 1, color: (isDark ? Colors.white : Colors.black).withAlpha(20)),
               _faqTile(
                 context,
                 'Outra dúvida?',
-                'Entre em contato com o Suporte Twynk pelo e-mail: suporte@twynk.app ou envie uma mensagem pelo menu Ajuda dentro do aplicativo.',
+                'Entre em contato com o Suporte Nomirro pelo e-mail: suporte@twynk.app ou envie uma mensagem pelo menu Ajuda dentro do aplicativo.',
                 bodyColor,
               ),
             ],
@@ -316,28 +316,28 @@ class WelcomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TwynkLandingPage(
+    return NomirroLandingPage(
       themeMode: themeMode,
       onThemeToggle: onThemeToggle,
     );
   }
 }
 
-class TwynkLandingPage extends StatefulWidget {
+class NomirroLandingPage extends StatefulWidget {
   final ThemeMode themeMode;
   final Function(bool isDark) onThemeToggle;
 
-  const TwynkLandingPage({
+  const NomirroLandingPage({
     super.key,
     required this.themeMode,
     required this.onThemeToggle,
   });
 
   @override
-  State<TwynkLandingPage> createState() => _TwynkLandingPageState();
+  State<NomirroLandingPage> createState() => _NomirroLandingPageState();
 }
 
-class _TwynkLandingPageState extends State<TwynkLandingPage> {
+class _NomirroLandingPageState extends State<NomirroLandingPage> {
   final GlobalKey heroKey = GlobalKey();
   final GlobalKey aboutKey = GlobalKey();
   final GlobalKey howItWorksKey = GlobalKey();
@@ -396,7 +396,7 @@ class _TwynkLandingPageState extends State<TwynkLandingPage> {
           surfaceTintColor: Colors.transparent,
           elevation: 0,
           titleTextStyle: TextStyle(color: isDark ? Colors.white : Colors.black, fontSize: 20, fontWeight: FontWeight.bold),
-          iconTheme: const IconThemeData(color: TwynkColors.primary),
+          iconTheme: const IconThemeData(color: NomirroColors.primary),
         ),
       ),
       child: Scaffold(
@@ -404,7 +404,7 @@ class _TwynkLandingPageState extends State<TwynkLandingPage> {
         onDrawerChanged: (open) => setState(() => _drawerOpen = open),
         appBar: PreferredSize(
           preferredSize: const Size.fromHeight(64.0),
-          child: _TwynkAppBar(
+          child: _NomirroAppBar(
             isDesktop: isDesktop,
             isDark: isDark,
             onThemeToggle: widget.onThemeToggle,
@@ -424,7 +424,7 @@ class _TwynkLandingPageState extends State<TwynkLandingPage> {
             final double drawerTopOffset = statusBarTop + appBarHeight - 1.0;
             return Padding(
               padding: EdgeInsets.only(top: drawerTopOffset),
-              child: _TwynkDrawer(
+              child: _NomirroDrawer(
                 scrollToSection: scrollToSection,
                 aboutKey: aboutKey,
                 howItWorksKey: howItWorksKey,
@@ -446,7 +446,7 @@ class _TwynkLandingPageState extends State<TwynkLandingPage> {
               _FeaturesSection(key: featuresKey, isDesktop: isDesktop, isDark: isDark, sectionBg: headerBg, gradientCenter: const Alignment(0.6, -0.6)),
               FAQSection(isDark: isDark, headerBg: headerBg, gradientCenter: const Alignment(-0.6, -0.6)),
               _DownloadSection(key: downloadKey, isDark: isDark, sectionBg: headerBg, gradientCenter: const Alignment(0.6, -0.6)),
-              _TwynkFooter(isDark: isDark, headerBg: headerBg),
+              _NomirroFooter(isDark: isDark, headerBg: headerBg),
             ],
           ),
         ),
@@ -468,7 +468,7 @@ class _TwynkLandingPageState extends State<TwynkLandingPage> {
                 }
               },
               mini: isMobile,
-              backgroundColor: TwynkColors.primary,
+              backgroundColor: NomirroColors.primary,
               foregroundColor: Colors.white,
               child: const Icon(Icons.arrow_upward),
             ),
@@ -483,7 +483,7 @@ class _TwynkLandingPageState extends State<TwynkLandingPage> {
 // AppBar (Cabeçalho) (Mantido como antes)
 // -----------------------------------------------------------------------------
 
-class _TwynkAppBar extends StatelessWidget {
+class _NomirroAppBar extends StatelessWidget {
   final bool isDesktop;
   final bool isDark;
   final Function(bool isDark) onThemeToggle;
@@ -495,7 +495,7 @@ class _TwynkAppBar extends StatelessWidget {
   final bool drawerOpen;
   final Color headerBg;
 
-  const _TwynkAppBar({
+  const _NomirroAppBar({
     required this.isDesktop,
     required this.isDark,
     required this.onThemeToggle,
@@ -511,7 +511,7 @@ class _TwynkAppBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final String appBarHex = '#${headerBg.toARGB32().toRadixString(16).padLeft(8, '0').toUpperCase()}';
-    debugPrint('Twynk Color Debug -> AppBar BG: $appBarHex');
+    debugPrint('Nomirro Color Debug -> AppBar BG: $appBarHex');
     return AppBar(
       backgroundColor: headerBg,
       surfaceTintColor: Colors.transparent,
@@ -536,7 +536,7 @@ class _TwynkAppBar extends StatelessWidget {
                 );
               },
             ),
-      title: const _TwynkLogo(),
+      title: const _NomirroLogo(),
       centerTitle: false,
       titleSpacing: isDesktop ? 96.0 : 24.0,
       actions: <Widget>[
@@ -574,9 +574,9 @@ class _TwynkAppBar extends StatelessWidget {
         child: ElevatedButton(
           onPressed: () => scrollToSection(downloadKey),
           style: ElevatedButton.styleFrom(
-            backgroundColor: TwynkColors.primary,
+            backgroundColor: NomirroColors.primary,
             foregroundColor: Colors.white,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30), side: const BorderSide(color: TwynkColors.primary, width: 1.5)),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30), side: const BorderSide(color: NomirroColors.primary, width: 1.5)),
             elevation: 4,
           ),
           child: const Text('Registar-se', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
@@ -589,7 +589,7 @@ class _TwynkAppBar extends StatelessWidget {
     return IconButton(
       icon: Icon(
         isDark ? Icons.light_mode : Icons.dark_mode,
-        color: isDark ? Colors.white : Colors.blueGrey,
+        color: isDark ? Colors.white : NomirroColors.textDark,
       ),
       onPressed: () => onThemeToggle(!isDark),
       tooltip: isDark ? 'Alternar para Tema Claro' : 'Alternar para Tema Escuro',
@@ -601,7 +601,7 @@ class _TwynkAppBar extends StatelessWidget {
 // Drawer (Menu Mobile) (Mantido como antes)
 // -----------------------------------------------------------------------------
 
-class _TwynkDrawer extends StatelessWidget {
+class _NomirroDrawer extends StatelessWidget {
   final Function(GlobalKey key) scrollToSection;
   final GlobalKey aboutKey;
   final GlobalKey howItWorksKey;
@@ -610,7 +610,7 @@ class _TwynkDrawer extends StatelessWidget {
   final bool isDark;
   final Color headerBg;
 
-  const _TwynkDrawer({
+  const _NomirroDrawer({
     required this.scrollToSection,
     required this.aboutKey,
     required this.howItWorksKey,
@@ -625,7 +625,7 @@ class _TwynkDrawer extends StatelessWidget {
     final Color drawerBg = headerBg;
     final String headerHex = '#${headerBg.toARGB32().toRadixString(16).padLeft(8, '0').toUpperCase()}';
     final String drawerHex = '#${drawerBg.toARGB32().toRadixString(16).padLeft(8, '0').toUpperCase()}';
-    debugPrint('Twynk Color Debug -> Header BG: $headerHex, Drawer BG: $drawerHex');
+    debugPrint('Nomirro Color Debug -> Header BG: $headerHex, Drawer BG: $drawerHex');
     return Drawer(
       backgroundColor: drawerBg,
       elevation: 0,
@@ -676,9 +676,9 @@ class _TwynkDrawer extends StatelessWidget {
                                   ),
                                 ),
                                 const TextSpan(
-                                  text: 'Twynk',
+                                  text: 'Nomirro',
                                   style: TextStyle(
-                                    color: TwynkColors.primary,
+                                    color: NomirroColors.primary,
                                   ),
                                 ),
                                 TextSpan(
@@ -714,14 +714,14 @@ class _TwynkDrawer extends StatelessWidget {
         visualDensity: const VisualDensity(horizontal: 0, vertical: -3),
         leading: Icon(
           icon,
-          color: isPrimary ? TwynkColors.primary : (isDark ? Colors.white70 : Colors.black54),
+          color: isPrimary ? NomirroColors.primary : (isDark ? Colors.white70 : Colors.black54),
         ),
         title: Text(
           title,
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.normal,
-            color: isPrimary ? TwynkColors.primary : (isDark ? Colors.white : Colors.black87),
+            color: isPrimary ? NomirroColors.primary : (isDark ? Colors.white : Colors.black87),
           ),
         ),
         onTap: () {
@@ -746,8 +746,8 @@ class _TwynkDrawer extends StatelessWidget {
 // Logo Widget (Mantido como antes)
 // -----------------------------------------------------------------------------
 
-class _TwynkLogo extends StatelessWidget {
-  const _TwynkLogo();
+class _NomirroLogo extends StatelessWidget {
+  const _NomirroLogo();
 
   @override
   Widget build(BuildContext context) {
@@ -891,7 +891,7 @@ class _HeroSectionState extends State<_HeroSection> with SingleTickerProviderSta
           : CrossAxisAlignment.center,
       children: [
         Text(
-          'Cada Twynk pode mudar seu encontro.',
+          'Cada Nomirro pode mudar seu encontro.',
           textAlign: titleAlign,
           style: TextStyle(
             fontSize: heroTitleSize(context),
@@ -919,7 +919,7 @@ class _HeroSectionState extends State<_HeroSection> with SingleTickerProviderSta
                 child: ElevatedButton(
                   onPressed: () { /* Baixar Agora */ },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: TwynkColors.primary,
+                    backgroundColor: NomirroColors.primary,
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
@@ -941,7 +941,7 @@ class _HeroSectionState extends State<_HeroSection> with SingleTickerProviderSta
               ElevatedButton(
                 onPressed: () { /* Baixar Agora */ },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: TwynkColors.primary,
+                  backgroundColor: NomirroColors.primary,
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 18),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
@@ -1120,7 +1120,7 @@ class _AboutSection extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Text(
-                'Sobre o Twynk',
+                'Sobre o Nomirro',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: sectionTitleSize(context),
@@ -1130,7 +1130,7 @@ class _AboutSection extends StatelessWidget {
               ),
               const SizedBox(height: 12),
               Text(
-                'O Twynk é a nova geração dos apps de relacionamento — onde as conexões acontecem de forma leve, divertida e verdadeira.',
+                'O Nomirro é a nova geração dos apps de relacionamento — onde as conexões acontecem de forma leve, divertida e verdadeira.',
                 textAlign: TextAlign.justify,
                 style: TextStyle(
                   fontSize: 20,
@@ -1139,7 +1139,7 @@ class _AboutSection extends StatelessWidget {
               ),
               const SizedBox(height: 6),
               Text(
-                'Inspirado em encontros reais e histórias autênticas, o Twynk transforma o simples “match” em momentos que brilham ✨',
+                'Inspirado em encontros reais e histórias autênticas, o Nomirro transforma o simples “match” em momentos que brilham ',
                 textAlign: TextAlign.justify,
                 style: TextStyle(
                   fontSize: 18,
@@ -1150,11 +1150,11 @@ class _AboutSection extends StatelessWidget {
 
               Builder(builder: (context) {
                 final children = [
-                  _AboutItem(icon: Icons.favorite_border, title: 'Encontros de verdade, sem complicações', description: 'Conheça pessoas reais, com intenções sinceras.\nNo Twynk, o amor acontece naturalmente — sem pressão, sem julgamentos, do seu jeito.', isDark: isDark),
-                  _AboutItem(icon: Icons.place_outlined, title: 'Encontre alguém perto de você', description: 'Apaixone-se por quem está na sua cidade, no seu bairro ou até do outro lado do mundo.\nCom o Twynk, a distância deixa de ser um obstáculo e vira uma oportunidade de conexão.', isDark: isDark),
+                  _AboutItem(icon: Icons.favorite_border, title: 'Encontros de verdade, sem complicações', description: 'Conheça pessoas reais, com intenções sinceras.\nNo Nomirro, o amor acontece naturalmente — sem pressão, sem julgamentos, do seu jeito.', isDark: isDark),
+                  _AboutItem(icon: Icons.place_outlined, title: 'Encontre alguém perto de você', description: 'Apaixone-se por quem está na sua cidade, no seu bairro ou até do outro lado do mundo.\nCom o Nomirro, a distância deixa de ser um obstáculo e vira uma oportunidade de conexão.', isDark: isDark),
                   _AboutItem(icon: Icons.chat_bubble_outline, title: 'Converse por vídeo ou chat', description: 'Crie laços reais com o nosso chat moderno e seguro — com ou sem câmera.\nVeja, sorria e converse cara a cara com quem faz seu coração vibrar.', isDark: isDark),
-                  _AboutItem(icon: Icons.balance_outlined, title: 'Equilíbrio e diversidade', description: 'O Twynk é um espaço para todos — aberto, inclusivo e cheio de boas energias.\nAqui, cada conexão é única e respeitada.', isDark: isDark),
-                  _AboutItem(icon: Icons.auto_awesome, title: 'Onde as conexões brilham', description: 'Mais do que um app de namoro, o Twynk é um lugar para fazer parte de algo especial.\nHistórias começam com um clique — e continuam com brilho nos olhos.', isDark: isDark),
+                  _AboutItem(icon: Icons.balance_outlined, title: 'Equilíbrio e diversidade', description: 'O Nomirro é um espaço para todos — aberto, inclusivo e cheio de boas energias.\nAqui, cada conexão é única e respeitada.', isDark: isDark),
+                  _AboutItem(icon: Icons.auto_awesome, title: 'Onde as conexões brilham', description: 'Mais do que um app de namoro, o Nomirro é um lugar para fazer parte de algo especial.\nHistórias começam com um clique — e continuam com brilho nos olhos.', isDark: isDark),
                   _AboutItemPremium(isDark: isDark),
                 ];
                 final double w = MediaQuery.of(context).size.width;
@@ -1220,13 +1220,13 @@ class _AboutItemState extends State<_AboutItem> {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: TwynkColors.primary,
+              color: NomirroColors.primary,
               width: _hover ? 2.0 : 1.0,
             ),
             boxShadow: _hover
                 ? [
                     BoxShadow(
-                      color: TwynkColors.primary.withAlpha(38),
+                      color: NomirroColors.primary.withAlpha(38),
                       blurRadius: 18,
                       spreadRadius: 0,
                       offset: const Offset(0, 10),
@@ -1241,12 +1241,12 @@ class _AboutItemState extends State<_AboutItem> {
                 width: 44,
                 height: 44,
                 decoration: BoxDecoration(
-                  color: TwynkColors.primary.withAlpha(25),
+                  color: NomirroColors.accentLight.withAlpha(50),
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: TwynkColors.primary.withAlpha(128), width: 1.5),
+                  border: Border.all(color: NomirroColors.accentDark.withAlpha(128), width: 1.5),
                 ),
                 alignment: Alignment.center,
-                child: Icon(widget.icon, color: TwynkColors.primary, size: 24),
+                child: Icon(widget.icon, color: NomirroColors.accentDark, size: 24),
               ),
               const SizedBox(width: 16),
               Expanded(
@@ -1309,13 +1309,13 @@ class _AboutItemPremiumState extends State<_AboutItemPremium> {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: TwynkColors.primary,
+              color: NomirroColors.primary,
               width: _hover ? 2.0 : 1.0,
             ),
             boxShadow: _hover
                 ? [
                     BoxShadow(
-                      color: TwynkColors.primary.withAlpha(38),
+                      color: NomirroColors.primary.withAlpha(38),
                       blurRadius: 18,
                       spreadRadius: 0,
                       offset: const Offset(0, 10),
@@ -1330,12 +1330,12 @@ class _AboutItemPremiumState extends State<_AboutItemPremium> {
                 width: 44,
                 height: 44,
                 decoration: BoxDecoration(
-                  color: TwynkColors.primary.withAlpha(25),
+                  color: NomirroColors.accentLight.withAlpha(50),
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: TwynkColors.primary.withAlpha(128), width: 1.5),
+                  border: Border.all(color: NomirroColors.accentDark.withAlpha(128), width: 1.5),
                 ),
                 alignment: Alignment.center,
-                child: const Icon(Icons.workspace_premium, color: TwynkColors.primary, size: 24),
+                child: const Icon(Icons.workspace_premium, color: NomirroColors.accentDark, size: 24),
               ),
               const SizedBox(width: 16),
               Expanded(
@@ -1343,7 +1343,7 @@ class _AboutItemPremiumState extends State<_AboutItemPremium> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Twynk Premium',
+                      'Nomirro Premium',
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.w800,
@@ -1515,7 +1515,7 @@ class _HowItWorksSection extends StatelessWidget {
                 center: gradientCenter,
                 radius: radius,
                 colors: isAlt
-                    ? [Colors.white, TwynkColors.lightBackground]
+                    ? [Colors.white, NomirroColors.lightBackground]
                     : [DefaultLight.sidebar, DefaultLight.bg],
                 stops: const [0.05, 1.0],
               ),
@@ -1617,13 +1617,13 @@ class _HowItWorksStepState extends State<_HowItWorksStep> {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: TwynkColors.primary,
+              color: NomirroColors.primary,
               width: _hover ? 2.0 : 1.0,
             ),
             boxShadow: _hover
                 ? [
                     BoxShadow(
-                      color: TwynkColors.primary.withAlpha(38),
+                      color: NomirroColors.primary.withAlpha(38),
                       blurRadius: 18,
                       spreadRadius: 0,
                       offset: const Offset(0, 10),
@@ -1638,12 +1638,12 @@ class _HowItWorksStepState extends State<_HowItWorksStep> {
                 width: 60,
                 height: 60,
                 decoration: BoxDecoration(
-                  color: TwynkColors.primary.withAlpha(25),
+                  color: NomirroColors.primary.withAlpha(25),
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: TwynkColors.primary.withAlpha(128), width: 1.5),
+                  border: Border.all(color: NomirroColors.primary.withAlpha(128), width: 1.5),
                 ),
                 alignment: Alignment.center,
-                child: Icon(widget.icon, color: TwynkColors.primary, size: 32),
+                child: Icon(widget.icon, color: NomirroColors.primary, size: 32),
               ),
               const SizedBox(height: 24),
               Text(
@@ -1700,7 +1700,7 @@ class _FeaturesSection extends StatelessWidget {
                 center: gradientCenter,
                 radius: radius,
                 colors: isAlt
-                    ? [Colors.white, TwynkColors.lightBackground]
+                    ? [Colors.white, NomirroColors.lightBackground]
                     : [DefaultLight.sidebar, DefaultLight.bg],
                 stops: const [0.05, 1.0],
               ),
@@ -1722,7 +1722,7 @@ class _FeaturesSection extends StatelessWidget {
               ),
               const SizedBox(height: 12),
               Text(
-                'O Twynk foi projetado para ser intuitivo, seguro e focado na sua autenticidade.',
+                'O Nomirro foi projetado para ser intuitivo, seguro e focado na sua autenticidade.',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 20,
@@ -1835,13 +1835,13 @@ class _FeatureCardState extends State<_FeatureCard> {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(20),
               border: Border.all(
-                color: TwynkColors.primary,
+                color: NomirroColors.primary,
                 width: _hover ? 2.0 : 1.0,
               ),
               boxShadow: _hover
                   ? [
                       BoxShadow(
-                        color: TwynkColors.primary.withAlpha(isDark ? 51 : 38),
+                        color: NomirroColors.primary.withAlpha(isDark ? 51 : 38),
                         blurRadius: 20,
                         spreadRadius: 0,
                         offset: const Offset(0, 10),
@@ -1853,7 +1853,7 @@ class _FeatureCardState extends State<_FeatureCard> {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(widget.icon, color: TwynkColors.primary, size: 28),
+                Icon(widget.icon, color: NomirroColors.accentDark, size: 28),
                 const SizedBox(height: 8),
                 Text(
                   widget.title,
@@ -1916,7 +1916,7 @@ class _DownloadSection extends StatelessWidget {
             center: gradientCenter,
             radius: radius,
             colors: isAlt
-                ? [Colors.white, TwynkColors.lightBackground]
+                ? [Colors.white, NomirroColors.lightBackground]
                 : [DefaultLight.sidebar, DefaultLight.bg],
             stops: const [0.05, 1.0],
           ),
@@ -1938,7 +1938,7 @@ class _DownloadSection extends StatelessWidget {
               ),
               const SizedBox(height: 12),
               Text(
-                'Milhares de pessoas estão esperando para se conectar. Junte-se à comunidade Twynk hoje!',
+                'Milhares de pessoas estão esperando para se conectar. Junte-se à comunidade Nomirro hoje!',
                 textAlign: TextAlign.justify,
                 style: TextStyle(
                   fontSize: 16,
@@ -1953,7 +1953,7 @@ class _DownloadSection extends StatelessWidget {
                   _StoreButton(
                     assetIconPath: 'assets/icons/app_store.png',
                     text: 'App Store',
-                    backgroundColor: TwynkColors.primary,
+                    backgroundColor: NomirroColors.primary,
                     textColor: Colors.white,
                     onPressed: () { /* Link App Store */ },
                   ),
@@ -1961,7 +1961,7 @@ class _DownloadSection extends StatelessWidget {
                   _StoreButton(
                     assetIconPath: 'assets/icons/play_store.png',
                     text: 'Play store',
-                    backgroundColor: TwynkColors.primary,
+                    backgroundColor: NomirroColors.primary,
                     textColor: Colors.white,
                     onPressed: () { /* Link Google Play */ },
                   ),
@@ -2047,11 +2047,14 @@ class _StoreButton extends StatelessWidget {
 // Rodapé (Footer) 
 // -----------------------------------------------------------------------------
 
-class _TwynkFooter extends StatelessWidget {
+class _NomirroFooter extends StatelessWidget {
   final bool isDark;
   final Color headerBg;
   
-  const _TwynkFooter({required this.isDark, required this.headerBg});
+  const _NomirroFooter({
+    required this.isDark,
+    required this.headerBg,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -2171,7 +2174,7 @@ class _FooterLinkState extends State<_FooterLink> {
           duration: const Duration(milliseconds: 200),
           style: TextStyle(
             color: _isHovered
-                ? TwynkColors.primary
+                ? NomirroColors.primary
                 : (widget.isDark ? Colors.white70 : Colors.black54),
             fontSize: 14,
             fontWeight: FontWeight.normal,

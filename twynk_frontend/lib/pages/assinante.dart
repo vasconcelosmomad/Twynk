@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../themes/twynk_colors.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../portals/app_bar.dart';
 import '../portals/drawer.dart';
@@ -65,7 +66,7 @@ class _PainelAssinantePageState extends State<PainelAssinantePage> {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       drawerScrimColor: Colors.transparent,
-      appBar: TwynkAppBar(isMobile: isMobile, drawerOpen: _drawerOpen),
+      appBar: NomirroAppBar(isMobile: isMobile, drawerOpen: _drawerOpen),
       onDrawerChanged: (open) => setState(() => _drawerOpen = open),
       drawer: isMobile
           ? Drawer(
@@ -213,7 +214,7 @@ class _PainelAssinantePageState extends State<PainelAssinantePage> {
               TextButton(
                 onPressed: () {},
                 style: TextButton.styleFrom(padding: EdgeInsets.zero, minimumSize: const Size(40, 24), tapTargetSize: MaterialTapTargetSize.shrinkWrap),
-                child: const Text('(ver +)', style: TextStyle(color: Colors.blue, fontSize: 12)),
+                child: const Text('(ver +)', style: TextStyle(color: NomirroColors.primary, fontSize: 12)),
               )
             ],
           ),
@@ -311,12 +312,12 @@ class _PainelAssinantePageState extends State<PainelAssinantePage> {
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 14),
           decoration: BoxDecoration(
-            color: selected ? Colors.pink.shade50 : Colors.white,
+            color: selected ? NomirroColors.accentLight.withAlpha(40) : Colors.white,
             border: Border(
-              bottom: BorderSide(color: selected ? Colors.pink : Colors.transparent, width: 2),
+              bottom: BorderSide(color: selected ? NomirroColors.primary : Colors.transparent, width: 2),
             ),
           ),
-          child: Center(child: Text(label, style: TextStyle(color: selected ? Colors.pink : Colors.grey, fontWeight: FontWeight.w600))),
+          child: Center(child: Text(label, style: TextStyle(color: selected ? NomirroColors.primary : Colors.grey, fontWeight: FontWeight.w600))),
         ),
       ),
     );
@@ -331,7 +332,7 @@ class _PainelAssinantePageState extends State<PainelAssinantePage> {
           Container(
             padding: const EdgeInsets.all(10),
             decoration: const BoxDecoration(shape: BoxShape.circle, color: Color(0xFFF1F5F9)),
-            child: Icon(icon, size: 20, color: Colors.pink),
+            child: Icon(icon, size: 20, color: NomirroColors.primary),
           ),
           const SizedBox(width: 12),
           Flexible(
@@ -386,7 +387,7 @@ class _PainelAssinantePageState extends State<PainelAssinantePage> {
         TextButton(
           onPressed: () {},
           style: TextButton.styleFrom(padding: EdgeInsets.zero, minimumSize: const Size(60, 28), tapTargetSize: MaterialTapTargetSize.shrinkWrap),
-          child: const Text('ver mais', style: TextStyle(color: Colors.blue)),
+          child: const Text('ver mais', style: TextStyle(color: NomirroColors.primary)),
         )
       ],
     );

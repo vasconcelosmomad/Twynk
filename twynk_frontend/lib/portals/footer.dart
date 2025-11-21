@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../themes/twynk_colors.dart';
 
 class Footer extends StatelessWidget {
   final int currentIndex;
@@ -12,7 +13,7 @@ class Footer extends StatelessWidget {
       type: BottomNavigationBarType.fixed,
       currentIndex: currentIndex,
       onTap: onTap,
-      selectedItemColor: Colors.lightBlue,
+      selectedItemColor: NomirroColors.primary,
       items: const [
         BottomNavigationBarItem(
           icon: Icon(Icons.people),

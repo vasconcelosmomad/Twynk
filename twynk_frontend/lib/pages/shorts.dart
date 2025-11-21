@@ -6,6 +6,7 @@ import 'package:twynk_frontend/portals/footer.dart';
 import 'package:twynk_frontend/pages/login.dart';
 import 'package:twynk_frontend/services/api_client.dart';
 import 'package:video_player/video_player.dart';
+import 'package:twynk_frontend/themes/twynk_colors.dart';
 
 class ShortsPage extends StatefulWidget {
   const ShortsPage({super.key});
@@ -143,7 +144,7 @@ class _ShortsPageState extends State<ShortsPage> {
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       drawerScrimColor: Colors.transparent,
       onDrawerChanged: (open) => setState(() => _drawerOpen = open),
-      appBar: TwynkAppBar(
+      appBar: NomirroAppBar(
         isMobile: isMobile,
         drawerOpen: _drawerOpen,
       ),
@@ -489,7 +490,11 @@ class _ShortsNavButtonState extends State<_ShortsNavButton> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final color = isDark ? Colors.white : Colors.black;
+    final baseIconColor = isDark ? Colors.white : Colors.black;
+    final iconColor = _isHovering ? NomirroColors.primary : baseIconColor;
+    final bgColor = _isHovering
+        ? NomirroColors.primary.withAlpha(40)
+        : (isDark ? Colors.grey[900] : Colors.grey[200]);
 
     return MouseRegion(
       onEnter: (_) => setState(() => _isHovering = true),
@@ -498,9 +503,7 @@ class _ShortsNavButtonState extends State<_ShortsNavButton> {
         duration: const Duration(milliseconds: 200),
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: _isHovering
-              ? (isDark ? Colors.grey[800] : Colors.grey[300])
-              : (isDark ? Colors.grey[900] : Colors.grey[200]),
+          color: bgColor,
           boxShadow: [
             BoxShadow(
               color: Colors.black.withAlpha((255 * 0.2).round()),
@@ -511,14 +514,14 @@ class _ShortsNavButtonState extends State<_ShortsNavButton> {
           ],
         ),
         child: IconButton(
-          icon: Icon(widget.icon, color: color),
+          icon: Icon(widget.icon, color: iconColor),
           onPressed: widget.onPressed,
         ),
       ),
     );
   }
 }
-class _IconButtonColumn extends StatelessWidget {
+class _IconButtonColumn extends StatefulWidget {
   final IconData icon;
   final String label;
   final VoidCallback onTap;
@@ -528,24 +531,37 @@ class _IconButtonColumn extends StatelessWidget {
     required this.label,
     required this.onTap,
   });
+  @override
+  State<_IconButtonColumn> createState() => _IconButtonColumnState();
+}
+
+class _IconButtonColumnState extends State<_IconButtonColumn> {
+  bool _isHovering = false;
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Column(
-        children: [
-          Container(
-            decoration: BoxDecoration(
-              color: Colors.black45,
-              borderRadius: BorderRadius.circular(10),
+    final bgColor = _isHovering ? NomirroColors.primary : Colors.black45;
+    return MouseRegion(
+      onEnter: (_) => setState(() => _isHovering = true),
+      onExit: (_) => setState(() => _isHovering = false),
+      child: GestureDetector(
+        onTap: widget.onTap,
+        child: Column(
+          children: [
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 150),
+              decoration: BoxDecoration(
+                color: bgColor,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              padding: const EdgeInsets.all(8),
+              child: Icon(widget.icon, size: 28, color: Colors.white),
             ),
-            padding: const EdgeInsets.all(8),
-            child: Icon(icon, size: 28, color: Colors.white),
-          ),
-          const SizedBox(height: 6),
-          Text(label, style: const TextStyle(color: Colors.white, fontSize: 12)),
-        ],
+            const SizedBox(height: 6),
+            const Text(' ', style: TextStyle(fontSize: 0)),
+            Text(widget.label, style: const TextStyle(color: Colors.white, fontSize: 12)),
+          ],
+        ),
       ),
     );
   }

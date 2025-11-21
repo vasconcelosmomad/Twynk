@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../themes/twynk_colors.dart';
 import 'package:flutter/gestures.dart';
 
 class RegisterPage extends StatefulWidget {
@@ -143,7 +144,7 @@ class _RegisterPageState extends State<RegisterPage> {
     } else if (type == 'success') {
       backgroundColor = Colors.green.shade700;
     } else if (type == 'info') {
-      backgroundColor = Colors.blue.shade600;
+      backgroundColor = NomirroColors.primary;
     }
 
     ScaffoldMessenger.of(context).showSnackBar(
@@ -253,13 +254,13 @@ class _RegisterPageState extends State<RegisterPage> {
 
   Widget _gradientButton({required Widget child, required VoidCallback onPressed}) {
     final theme = Theme.of(context);
-    final primary = theme.colorScheme.primary;
+    final primary = NomirroColors.primary;
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
         gradient: LinearGradient(
-          colors: [primary, primary.withValues(alpha: 0.85)],
+          colors: [NomirroColors.accentGreen, primary],
           begin: Alignment.centerLeft,
           end: Alignment.centerRight,
         ),
@@ -293,8 +294,8 @@ class _RegisterPageState extends State<RegisterPage> {
         padding: const EdgeInsets.symmetric(vertical: 14),
         minimumSize: const Size.fromHeight(56),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        backgroundColor: Colors.lightBlue,
-        side: const BorderSide(color: Colors.lightBlueAccent),
+        backgroundColor: NomirroColors.primary,
+        side: const BorderSide(color: NomirroColors.accentLight),
       ),
       child: Text(
         text,
@@ -589,7 +590,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                       text: 'Login!',
                                       style: const TextStyle(
                                         fontWeight: FontWeight.w600,
-                                        color: Colors.lightBlue,
+                                        color: NomirroColors.primary,
                                       ),
                                       recognizer: TapGestureRecognizer()
                                         ..onTap = () {

@@ -3,10 +3,10 @@ import 'package:flutter/gestures.dart';
 import 'register.dart';
 import 'assinante.dart';
 import '../services/auth_service.dart';
+import '../themes/twynk_colors.dart';
 // Cores do gradiente principal usadas em botões
-const Color _primaryOrange = Color(0xFFFF7854); // #FF7854
-const Color _secondaryPink = Color(0xFFFD267D); // #FD267D
-const Color _accentBlue = Color(0xFF0EA5E9); // Sky-500
+const Color _secondaryPink = NomirroColors.primary; // #DA70D6
+const Color _accentBlue = NomirroColors.accentDark; // #A040A0
 
 // ----------------------------------------------------
 // 2. Componente de Página de Login (Theme-Aware e Responsivo)

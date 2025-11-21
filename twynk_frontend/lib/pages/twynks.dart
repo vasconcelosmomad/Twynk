@@ -4,6 +4,7 @@ import 'package:twynk_frontend/pages/shorts.dart';
 import 'package:twynk_frontend/pages/assinante.dart';
 import 'package:twynk_frontend/pages/login.dart';
 import 'package:twynk_frontend/portals/footer.dart';
+import 'package:twynk_frontend/themes/twynk_colors.dart';
 import 'package:twynk_frontend/portals/app_bar.dart';
 import 'package:twynk_frontend/portals/drawer.dart';
 import 'package:twynk_frontend/services/api_client.dart';
@@ -64,7 +65,7 @@ class _HomeYouTubeStyleFlutterState extends State<HomeYouTubeStyleFlutter> {
       drawerScrimColor: Colors.transparent,
       onDrawerChanged: (open) => setState(() => _drawerOpen = open),
 
-      appBar: TwynkAppBar(
+      appBar: NomirroAppBar(
         isMobile: isMobile,
         drawerOpen: _drawerOpen,
       ),
@@ -152,16 +153,14 @@ class _HomeYouTubeStyleFlutterState extends State<HomeYouTubeStyleFlutter> {
                                           ),
                                         ),
                                         Container(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 8, vertical: 4),
+                                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                                           decoration: BoxDecoration(
                                             color: Colors.lightGreen,
                                             borderRadius: BorderRadius.circular(12),
                                           ),
                                           child: const Text(
                                             'Online',
-                                            style: TextStyle(
-                                                color: Colors.white, fontSize: 12),
+                                            style: TextStyle(color: Colors.white, fontSize: 12),
                                           ),
                                         ),
                                       ],
