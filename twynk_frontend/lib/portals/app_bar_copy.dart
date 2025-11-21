@@ -166,16 +166,23 @@ class _SearchFormFlutterState extends State<SearchFormFlutter> {
             child: TextButton(
               style: TextButton.styleFrom(
                 backgroundColor: Theme.of(context).brightness == Brightness.dark
-                    ? Colors.white12
-                    : const Color(0xFFF6EAFE),
+                    ? Colors.white24
+                    : NomirroColors.primary.withOpacity(0.18),
                 foregroundColor: Theme.of(context).brightness == Brightness.dark
                     ? Colors.white
                     : NomirroColors.accentDark,
                 padding:
                     const EdgeInsets.symmetric(horizontal: 16),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
+                shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.only(
+                    topRight: Radius.circular(20),
+                    bottomRight: Radius.circular(20),
+                    topLeft: Radius.circular(0),
+                    bottomLeft: Radius.circular(0),
+                  ),
                 ),
+              ).copyWith(
+                overlayColor: MaterialStateProperty.all(Colors.transparent),
               ),
               onPressed: () {
                 // Ação do botão

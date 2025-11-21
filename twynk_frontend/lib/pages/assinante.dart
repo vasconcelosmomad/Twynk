@@ -462,9 +462,6 @@ class _PainelAssinantePageState extends State<PainelAssinantePage> {
       color: Colors.white,
       borderRadius: BorderRadius.circular(12),
       border: Border.all(color: Colors.grey.shade300),
-      boxShadow: const [
-        BoxShadow(color: Colors.black12, blurRadius: 4, offset: Offset(0, 1)),
-      ],
     );
   }
 }

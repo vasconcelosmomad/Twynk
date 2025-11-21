@@ -264,13 +264,6 @@ class _RegisterPageState extends State<RegisterPage> {
           begin: Alignment.centerLeft,
           end: Alignment.centerRight,
         ),
-        boxShadow: [
-          BoxShadow(
-            color: primary.withValues(alpha: 0.3),
-            blurRadius: 10,
-            offset: const Offset(0, 5),
-          ),
-        ],
       ),
       child: ElevatedButton(
         onPressed: onPressed,
@@ -347,20 +340,7 @@ class _RegisterPageState extends State<RegisterPage> {
     const double mobileBreakpoint = 600.0;
     final bool isMobile = screenWidth < mobileBreakpoint;
 
-    final List<BoxShadow> boxShadows = screenWidth < mobileBreakpoint
-        ? []
-        : [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: isDark ? 0.4 : 0.1),
-              blurRadius: 25,
-              offset: const Offset(0, 20),
-            ),
-            BoxShadow(
-              color: Colors.black.withValues(alpha: isDark ? 0.25 : 0.06),
-              blurRadius: 10,
-              offset: const Offset(0, 8),
-            ),
-          ];
+    final List<BoxShadow> boxShadows = const [];
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
@@ -384,6 +364,7 @@ class _RegisterPageState extends State<RegisterPage> {
               decoration: BoxDecoration(
                 color: theme.scaffoldBackgroundColor,
                 borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: Colors.grey.shade300),
                 boxShadow: boxShadows,
               ),
               child: Column(
