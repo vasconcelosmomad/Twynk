@@ -16,7 +16,7 @@ class Footer extends StatelessWidget {
       items: const [
         BottomNavigationBarItem(
           icon: Icon(Icons.people),
-          label: 'Twynks',
+          label: 'Nomirro',
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.play_circle_fill),

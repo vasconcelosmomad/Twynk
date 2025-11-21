@@ -3,7 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:twynk_frontend/portals/app_bar.dart';
 import 'package:twynk_frontend/portals/drawer.dart';
 import 'package:twynk_frontend/portals/footer.dart';
-import 'package:twynk_frontend/pages/welcome.dart';
+import 'package:twynk_frontend/pages/login.dart';
 import 'package:twynk_frontend/services/api_client.dart';
 import 'package:video_player/video_player.dart';
 
@@ -129,10 +129,7 @@ class _ShortsPageState extends State<ShortsPage> {
     if (!mounted) return;
     Navigator.of(context).pushAndRemoveUntil(
       MaterialPageRoute(
-        builder: (_) => WelcomePage(
-          themeMode: Theme.of(context).brightness == Brightness.dark ? ThemeMode.dark : ThemeMode.light,
-          onThemeToggle: (_) {},
-        ),
+        builder: (_) => const LoginPage(),
       ),
       (route) => false,
     );

@@ -4,8 +4,9 @@ import 'register.dart';
 import 'assinante.dart';
 import '../services/auth_service.dart';
 // Cores do gradiente principal usadas em botões
-const Color _primaryCyan = Color(0xFF50C0C8); // #50c0c8
-const Color _secondaryBlue = Color(0xFF6BC9FF); // #6bc9ff
+const Color _primaryOrange = Color(0xFFFF7854); // #FF7854
+const Color _secondaryPink = Color(0xFFFD267D); // #FD267D
+const Color _accentBlue = Color(0xFF0EA5E9); // Sky-500
 
 // ----------------------------------------------------
 // 2. Componente de Página de Login (Theme-Aware e Responsivo)
@@ -148,7 +149,7 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          'Encontre o seu par perfeito.',
+                          'Encontre sua conexão única.',
                           style: TextStyle(
                             // Usa onSurface.withOpacity para se adaptar ao tema
                             color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
@@ -171,14 +172,14 @@ class _LoginPageState extends State<LoginPage> {
                         vertical: 14,
                       ),
                       labelText: 'E-mail',
-                      prefixIcon: const Icon(Icons.email_outlined),
+                      prefixIcon: const Icon(Icons.email_outlined, color: _secondaryPink),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                         borderSide: BorderSide(
-                          color: theme.colorScheme.primary,
+                          color: _secondaryPink,
                           width: 1.5,
                         ),
                       ),
@@ -203,14 +204,14 @@ class _LoginPageState extends State<LoginPage> {
                         vertical: 14,
                       ),
                       labelText: 'Senha',
-                      prefixIcon: const Icon(Icons.lock_outline),
+                      prefixIcon: const Icon(Icons.lock_outline, color: _secondaryPink),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                         borderSide: BorderSide(
-                          color: theme.colorScheme.primary,
+                          color: _secondaryPink,
                           width: 1.5,
                         ),
                       ),
@@ -242,7 +243,7 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   const SizedBox(height: 8),
 
-                  // Botão Principal de Login (estilo azul claro do Google)
+                  // Botão Principal de Login (gradiente laranja → rosa → azul)
                   OutlinedButton(
                     onPressed: () async { await _handleLogin(); },
                     style: OutlinedButton.styleFrom(
@@ -251,11 +252,11 @@ class _LoginPageState extends State<LoginPage> {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      backgroundColor: Colors.lightBlue,
-                      side: const BorderSide(color: Colors.lightBlueAccent),
+                      backgroundColor: _secondaryPink,
+                      side: BorderSide.none,
                     ),
                     child: const Text(
-                      'Entrar no Twynk',
+                      'Entrar no Nomirro',
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 16,
@@ -267,46 +268,28 @@ class _LoginPageState extends State<LoginPage> {
                   const SizedBox(height: 40), 
 
                   // Opção de Login Social (Google) com fundo gradiente
-                  Container(
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(12),
-                      gradient: const LinearGradient(
-                        colors: [_primaryCyan, _secondaryBlue],
-                        begin: Alignment.centerLeft,
-                        end: Alignment.centerRight,
+                  ElevatedButton.icon(
+                    onPressed: () => _handleSocialLogin('Google'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: _accentBlue,
+                      shadowColor: Colors.black26,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      minimumSize: const Size.fromHeight(56),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
                       ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: _primaryCyan.withValues(alpha: 0.3),
-                          blurRadius: 10,
-                          offset: const Offset(0, 5),
-                        ),
-                      ],
+                      elevation: 6,
                     ),
-                    child: ElevatedButton.icon(
-                      onPressed: () => _handleSocialLogin('Google'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.transparent,
-                        shadowColor: Colors.transparent,
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        minimumSize: const Size.fromHeight(56),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        elevation: 0,
-                      ),
-                      icon: Image.asset(
-                        'assets/icons/google_32.png',
-                        fit: BoxFit.contain,
-                      ),
-                      label: const Text(
-                        'Continuar com Google',
-                        style: TextStyle(
-                          color: Colors.white, // Texto branco
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                        ),
+                    icon: Image.asset(
+                      'assets/icons/google_32.png',
+                      fit: BoxFit.contain,
+                    ),
+                    label: const Text(
+                      'Continuar com Google',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
                   ),
@@ -316,14 +299,14 @@ class _LoginPageState extends State<LoginPage> {
                   Center(
                     child: RichText(
                       text: TextSpan(
-                        text: 'Novo no Twynk? ',
+                        text: 'Novo no Nomirro? ',
                         style: TextStyle(color: theme.colorScheme.onSurface.withValues(alpha: 0.7), fontSize: 14),
                         children: [
                           TextSpan(
                             text: 'Crie uma conta',
                             style: TextStyle(
                               fontWeight: FontWeight.w600,
-                              color: Colors.lightBlue, // Usa a cor primária do tema
+                              color: _secondaryPink, // Usa a cor primária do tema
                             ),
                             recognizer: TapGestureRecognizer()
                               ..onTap = () {

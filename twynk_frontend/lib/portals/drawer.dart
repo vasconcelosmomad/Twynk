@@ -17,10 +17,11 @@ class SidebarMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final items = [
-      {'icon': Icons.people, 'label': 'Twynks'},
+      {'icon': Icons.people, 'label': 'Nomirro'},
+      {'icon': Icons.person, 'label': 'Você'},
       {'icon': Icons.play_circle_fill, 'label': 'Shorts'},
       {'icon': Icons.sync_alt, 'label': 'Interações'},
-      {'icon': Icons.person, 'label': 'Você'},
+     
     ];
 
     return Container(

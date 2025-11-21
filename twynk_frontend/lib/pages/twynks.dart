@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:twynk_frontend/pages/shorts.dart';
 import 'package:twynk_frontend/pages/assinante.dart';
-import 'package:twynk_frontend/pages/welcome.dart';
+import 'package:twynk_frontend/pages/login.dart';
 import 'package:twynk_frontend/portals/footer.dart';
 import 'package:twynk_frontend/portals/app_bar.dart';
 import 'package:twynk_frontend/portals/drawer.dart';
@@ -26,10 +26,7 @@ class _HomeYouTubeStyleFlutterState extends State<HomeYouTubeStyleFlutter> {
     if (!mounted) return;
     Navigator.of(context).pushAndRemoveUntil(
       MaterialPageRoute(
-        builder: (_) => WelcomePage(
-          themeMode: Theme.of(context).brightness == Brightness.dark ? ThemeMode.dark : ThemeMode.light,
-          onThemeToggle: (_) {},
-        ),
+        builder: (_) => const LoginPage(),
       ),
       (route) => false,
     );
@@ -288,7 +285,7 @@ class _HomeYouTubeStyleFlutterState extends State<HomeYouTubeStyleFlutter> {
 
       bottomNavigationBar: isMobile
           ? Footer(
-              currentIndex: _selectedIndex,
+              currentIndex: _selectedIndex > 3 ? 0 : _selectedIndex,
               onTap: _onItemTapped,
             )
           : null,

@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../portals/app_bar_copy.dart';
+import '../portals/app_bar.dart';
 import '../portals/drawer.dart';
 import '../portals/footer.dart';
 import 'shorts.dart';
 import 'photo_edit.dart';
-import 'welcome.dart';
+import 'login.dart';
+import 'twynks.dart';
 import '../services/api_client.dart';
 
 class PainelAssinantePage extends StatefulWidget {
@@ -25,7 +26,7 @@ class _PainelAssinantePageState extends State<PainelAssinantePage> {
     setState(() => selectedDrawerIndex = index);
     if (index == 0) {
       if (isMobile && _drawerOpen) Navigator.of(context).pop();
-      Navigator.of(context).maybePop();
+      Navigator.push(context, MaterialPageRoute(builder: (context) => const HomeYouTubeStyleFlutter()));
       return;
     }
     if (index == 1) {
@@ -52,10 +53,7 @@ class _PainelAssinantePageState extends State<PainelAssinantePage> {
     if (!mounted) return;
     Navigator.of(context).pushAndRemoveUntil(
       MaterialPageRoute(
-        builder: (_) => WelcomePage(
-          themeMode: Theme.of(context).brightness == Brightness.dark ? ThemeMode.dark : ThemeMode.light,
-          onThemeToggle: (_) {},
-        ),
+        builder: (_) => const LoginPage(),
       ),
       (route) => false,
     );
@@ -65,7 +63,7 @@ class _PainelAssinantePageState extends State<PainelAssinantePage> {
   Widget build(BuildContext context) {
     final isMobile = MediaQuery.of(context).size.width < 1024;
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       drawerScrimColor: Colors.transparent,
       appBar: TwynkAppBar(isMobile: isMobile, drawerOpen: _drawerOpen),
       onDrawerChanged: (open) => setState(() => _drawerOpen = open),
@@ -76,10 +74,7 @@ class _PainelAssinantePageState extends State<PainelAssinantePage> {
                 compact: false,
                 showDrawerHeader: true,
                 selectedIndex: selectedDrawerIndex,
-                onItemSelected: (index) {
-                  setState(() => selectedDrawerIndex = index);
-                  Navigator.of(context).pop();
-                },
+                onItemSelected: (index) => _onBottomNavTap(index),
               ),
             )
           : null,
@@ -152,7 +147,7 @@ class _PainelAssinantePageState extends State<PainelAssinantePage> {
       ),
       bottomNavigationBar: isMobile
           ? Footer(
-              currentIndex: selectedDrawerIndex,
+              currentIndex: selectedDrawerIndex > 3 ? 0 : selectedDrawerIndex,
               onTap: _onBottomNavTap,
             )
           : null,
