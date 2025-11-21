@@ -4,10 +4,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../portals/app_bar.dart';
 import '../portals/drawer.dart';
 import '../portals/footer.dart';
-import 'shorts.dart';
+import 'explore.dart';
 import 'photo_edit.dart';
 import 'login.dart';
-import 'twynks.dart';
+import 'noerby.dart';
 import '../services/api_client.dart';
 
 class PainelAssinantePage extends StatefulWidget {

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../portals/app_bar_copy.dart';
 import '../portals/drawer.dart';
 import '../portals/footer.dart';
-import 'shorts.dart';
+import 'explore.dart';
 import '../themes/default_light.dart';
 import '../themes/default_dark.dart';
 import '../themes/twynk_colors.dart';

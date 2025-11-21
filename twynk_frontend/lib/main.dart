@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'pages/welcome.dart';
-import 'pages/assinante.dart';
+import 'pages/proflie.dart';
 import 'themes/default_light.dart';
 import 'themes/default_dark.dart';
 import 'services/api_client.dart';

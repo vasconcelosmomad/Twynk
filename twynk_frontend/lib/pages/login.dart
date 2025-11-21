@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import 'register.dart';
-import 'assinante.dart';
+import 'proflie.dart';
 import '../services/auth_service.dart';
 import '../themes/twynk_colors.dart';
 // Cores do gradiente principal usadas em botões

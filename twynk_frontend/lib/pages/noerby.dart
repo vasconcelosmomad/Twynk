@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:twynk_frontend/pages/shorts.dart';
-import 'package:twynk_frontend/pages/assinante.dart';
+import 'package:twynk_frontend/pages/explore.dart';
+import 'package:twynk_frontend/pages/proflie.dart';
 import 'package:twynk_frontend/pages/login.dart';
 import 'package:twynk_frontend/portals/footer.dart';
-import 'package:twynk_frontend/themes/twynk_colors.dart';
 import 'package:twynk_frontend/portals/app_bar.dart';
 import 'package:twynk_frontend/portals/drawer.dart';
 import 'package:twynk_frontend/services/api_client.dart';

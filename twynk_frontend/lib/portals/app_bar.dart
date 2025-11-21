@@ -188,7 +188,7 @@ class _SearchFormFlutterState extends State<SearchFormFlutter> {
               style: TextButton.styleFrom(
                 backgroundColor: Theme.of(context).brightness == Brightness.dark
                     ? Colors.white24
-                    : NomirroColors.primary.withOpacity(0.18),
+                    : NomirroColors.primary.withValues(alpha: 0.18),
                 foregroundColor: Theme.of(context).brightness == Brightness.dark
                     ? Colors.white
                     : NomirroColors.accentDark,
@@ -203,7 +203,7 @@ class _SearchFormFlutterState extends State<SearchFormFlutter> {
                   ),
                 ),
               ).copyWith(
-                overlayColor: MaterialStateProperty.all(Colors.transparent),
+                overlayColor: WidgetStateProperty.all(Colors.transparent),
               ),
               onPressed: () {
                 // Ação do botão

@@ -253,7 +253,6 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   Widget _gradientButton({required Widget child, required VoidCallback onPressed}) {
-    final theme = Theme.of(context);
     final primary = NomirroColors.primary;
     return Container(
       width: double.infinity,
@@ -327,7 +326,6 @@ class _RegisterPageState extends State<RegisterPage> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
     final screenWidth = MediaQuery.of(context).size.width;
 
     final double cardMaxWidth = screenWidth < 600
