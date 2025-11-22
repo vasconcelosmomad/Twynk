@@ -3,9 +3,10 @@ import '../portals/app_bar_copy.dart';
 import '../portals/drawer.dart';
 import '../portals/footer.dart';
 import 'explore.dart';
+import 'chat.dart';
 import '../themes/default_light.dart';
 import '../themes/default_dark.dart';
-import '../themes/twynk_colors.dart';
+import '../themes/nomirro_colors.dart';
 
 // --- MODELO DE DADOS ---
 
@@ -133,6 +134,11 @@ class _PhotoMasterAppState extends State<PhotoMasterApp> {
     if (index == 2) {
       if (isMobile && _drawerOpen) Navigator.of(context).pop();
       Navigator.push(context, MaterialPageRoute(builder: (context) => const ShortsPage()));
+      return;
+    }
+    if (index == 3) {
+      if (isMobile && _drawerOpen) Navigator.of(context).pop();
+      Navigator.push(context, MaterialPageRoute(builder: (context) => const ChatPage()));
       return;
     }
     if (index == 4) {

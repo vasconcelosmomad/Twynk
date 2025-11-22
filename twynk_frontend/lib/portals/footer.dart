@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../themes/twynk_colors.dart';
+import '../themes/nomirro_colors.dart';
 
 class Footer extends StatelessWidget {
   final int currentIndex;

@@ -3,7 +3,7 @@ import 'package:flutter/gestures.dart';
 import 'register.dart';
 import 'proflie.dart';
 import '../services/auth_service.dart';
-import '../themes/twynk_colors.dart';
+import '../themes/nomirro_colors.dart';
 // Cores do gradiente principal usadas em botões
 const Color _secondaryPink = NomirroColors.primary; // #DA70D6
 const Color _accentBlue = NomirroColors.accentDark; // #A040A0

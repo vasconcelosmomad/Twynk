@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
-import '../themes/twynk_colors.dart';
+import '../themes/nomirro_colors.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../portals/app_bar.dart';
 import '../portals/drawer.dart';
 import '../portals/footer.dart';
 import 'explore.dart';
 import 'photo_edit.dart';
+import 'chat.dart';
 import 'login.dart';
 import 'noerby.dart';
 import '../services/api_client.dart';
@@ -33,6 +34,11 @@ class _PainelAssinantePageState extends State<PainelAssinantePage> {
     if (index == 2) {
       if (isMobile && _drawerOpen) Navigator.of(context).pop();
       Navigator.push(context, MaterialPageRoute(builder: (context) => const ShortsPage()));
+      return;
+    }
+    if (index == 3) {
+      if (isMobile && _drawerOpen) Navigator.of(context).pop();
+      Navigator.push(context, MaterialPageRoute(builder: (context) => const ChatPage()));
       return;
     }
     if (index == 6) {

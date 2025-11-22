@@ -4,9 +4,10 @@ import 'package:twynk_frontend/portals/app_bar.dart';
 import 'package:twynk_frontend/portals/drawer.dart';
 import 'package:twynk_frontend/portals/footer.dart';
 import 'package:twynk_frontend/pages/login.dart';
+import 'package:twynk_frontend/pages/chat.dart';
 import 'package:twynk_frontend/services/api_client.dart';
 import 'package:video_player/video_player.dart';
-import 'package:twynk_frontend/themes/twynk_colors.dart';
+import 'package:twynk_frontend/themes/nomirro_colors.dart';
 
 class ShortsPage extends StatefulWidget {
   const ShortsPage({super.key});
@@ -115,6 +116,17 @@ class _ShortsPageState extends State<ShortsPage> {
       if (fromDrawer && isMobile && _drawerOpen) {
         Navigator.of(context).pop();
       }
+      return;
+    }
+
+    if (index == 3) {
+      if (fromDrawer && isMobile && _drawerOpen) {
+        Navigator.of(context).pop();
+      }
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const ChatPage()),
+      );
       return;
     }
 

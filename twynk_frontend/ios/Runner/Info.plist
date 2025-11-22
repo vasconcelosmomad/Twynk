@@ -45,5 +45,11 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>Permitir que o Twynk tire fotos para envio no chat.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Permitir que o Twynk acesse suas fotos para envio no chat.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Permitir que o Twynk salve fotos no rolo de camera.</string>
 </dict>
 </plist>

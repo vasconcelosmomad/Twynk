@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'twynk_colors.dart';
+import 'nomirro_colors.dart';
 
 class DefaultDark {
   static const Color bg = Color(0xFF1E1E1E);

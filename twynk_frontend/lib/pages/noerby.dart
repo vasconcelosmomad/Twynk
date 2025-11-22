@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:twynk_frontend/pages/explore.dart';
 import 'package:twynk_frontend/pages/proflie.dart';
+import 'package:twynk_frontend/pages/chat.dart';
 import 'package:twynk_frontend/pages/login.dart';
 import 'package:twynk_frontend/portals/footer.dart';
 import 'package:twynk_frontend/portals/app_bar.dart';
@@ -44,6 +45,11 @@ class _HomeYouTubeStyleFlutterState extends State<HomeYouTubeStyleFlutter> {
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => ShortsPage()),
+      );
+    } else if (index == 3) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const ChatPage()),
       );
     } else if (index == 4) {
       Navigator.push(

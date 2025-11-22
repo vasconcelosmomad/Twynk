@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../themes/twynk_colors.dart';
+import '../themes/nomirro_colors.dart';
 
 class NomirroAppBar extends StatefulWidget implements PreferredSizeWidget {
   final bool isMobile;

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../themes/twynk_colors.dart';
+import '../themes/nomirro_colors.dart';
 
 class NomirroAppBar extends StatefulWidget implements PreferredSizeWidget {
   final bool isMobile;
@@ -126,7 +126,7 @@ class _NomirroAppBarState extends State<NomirroAppBar> {
           value: 'update_plan',
           child: Row(
             children: [
-              Icon(Icons.workspace_premium_outlined, size: 18),
+              Icon(Icons.workspace_premium_outlined, size: 18, color: NomirroColors.accentDark),
               SizedBox(width: 8),
               Text('Update plan'),
             ],

@@ -14,7 +14,7 @@ class NomirroColors {
   static const Color neutralLight = Color(0xFFEDEDED);
 }
 
-class TwynkColors {
+class NomirroThemeColors {
   static const Color primary = NomirroColors.primary;
   static const Color lightBackground = NomirroColors.lightBackground;
   static const Color darkBackground = NomirroColors.darkBackground;

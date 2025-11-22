@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../themes/twynk_colors.dart';
+import '../themes/nomirro_colors.dart';
 
 class SidebarMenu extends StatelessWidget {
   final bool compact;
