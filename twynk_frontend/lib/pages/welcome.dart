@@ -1,9 +1,11 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:twynk_frontend/l10n/app_localizations.dart';
 import 'login.dart';
 import '../themes/default_dark.dart';
 import '../themes/default_light.dart';
 import '../themes/nomirro_colors.dart';
+import '../services/language_controller.dart';
 
 // -----------------------------------------------------------------------------
 // Cores e Temas (compartilhadas em themes/twynk_colors.dart)
@@ -83,31 +85,15 @@ class FAQSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
     // Decide gradient variant based on whether this section is using alt BG or header BG
     final Color sectionBg = headerBg;
-    final bool isAlt = sectionBg == Theme.of(context).cardColor;
     final Color titleColor = isDark ? Colors.white : Colors.black87;
     final Color bodyColor = isDark ? Colors.white70 : Colors.black54;
-    final double w = MediaQuery.of(context).size.width;
-    final double radius = (w <= 600) ? 1.0 : 1.25;
 
     return Container(
       decoration: BoxDecoration(
-        gradient: isDark
-            ? RadialGradient(
-                center: gradientCenter,
-                radius: radius,
-                colors: [DefaultDark.sidebar, DefaultDark.bg],
-                stops: const [0.05, 1.0],
-              )
-            : RadialGradient(
-                center: gradientCenter,
-                radius: radius,
-                colors: isAlt
-                    ? [Colors.white, NomirroColors.lightBackground]
-                    : [DefaultLight.sidebar, DefaultLight.bg],
-                stops: const [0.05, 1.0],
-              ),
+        color: sectionBg,
       ),
       padding: const EdgeInsets.symmetric(vertical: 96.0, horizontal: 24.0),
       child: Center(
@@ -118,7 +104,7 @@ class FAQSection extends StatelessWidget {
             children: [
               Center(
                 child: Text(
-                  'Perguntas Frequentes',
+                  loc.faqTitle,
                   textAlign: TextAlign.center,
                   softWrap: true,
                   style: TextStyle(
@@ -132,57 +118,57 @@ class FAQSection extends StatelessWidget {
 
               _faqTile(
                 context,
-                'Por que não recebi o e-mail com meu ID e senha?',
-                'Se você não receber o e-mail de registro em até 10 minutos, verifique sua pasta de spam ou lixo eletrônico, pois alguns provedores podem marcar nossas mensagens incorretamente.\nSe ainda assim não encontrar, tente usar outro endereço de e-mail (por exemplo: Gmail, Yahoo, Outlook, etc.).',
+                loc.faqQ1Title,
+                loc.faqQ1Body,
                 bodyColor,
               ),
               Divider(height: 1, thickness: 1, color: (isDark ? Colors.white : Colors.black).withAlpha(20)),
               _faqTile(
                 context,
-                'Esqueci minha senha. Como posso redefini-la?',
-                'Acesse: https://twynk.app/password\nDigite o e-mail usado no cadastro e clique em “Redefinir minha senha”.\nVocê receberá um link para criar uma nova senha.',
+                loc.faqQ2Title,
+                loc.faqQ2Body,
                 bodyColor,
               ),
               Divider(height: 1, thickness: 1, color: (isDark ? Colors.white : Colors.black).withAlpha(20)),
               _faqTile(
                 context,
-                'Quanto tempo leva para minhas fotos serem aprovadas?\nPor que não consigo enviar uma foto?',
-                'A aprovação pode levar até algumas horas, dependendo do volume de envios.\nSe estiver enfrentando problemas ao enviar fotos, verifique:\n\nPossíveis causas e soluções:\n- Formato não suportado: use apenas JPEG ou PNG.\n- Permissões de armazenamento (Android):\nVá em Configurações → Aplicativos → [Seu navegador ou app Nomirro] → Permissões → Armazenamento → Ativar.\n- Navegador ou app desatualizado:\nAtualize o Nomirro ou tente acessar em outro dispositivo.',
+                loc.faqQ3Title,
+                loc.faqQ3Body,
                 bodyColor,
               ),
               Divider(height: 1, thickness: 1, color: (isDark ? Colors.white : Colors.black).withAlpha(20)),
               _faqTile(
                 context,
-                'Como ativar ou desativar as notificações por e-mail?',
-                'Acesse seu perfil → Configurações → Notificações → escolha suas preferências para receber (ou não) e-mails sobre novas mensagens, curtidas e conexões.',
+                loc.faqQ4Title,
+                loc.faqQ4Body,
                 bodyColor,
               ),
               Divider(height: 1, thickness: 1, color: (isDark ? Colors.white : Colors.black).withAlpha(20)),
               _faqTile(
                 context,
-                'Como posso excluir meu perfil?\nExcluí minha conta acidentalmente. Posso reativá-la?',
-                'Para excluir seu perfil, vá até Configurações → Conta → Excluir perfil e siga as instruções.\nSe você excluiu acidentalmente, entre em contato com o suporte antes de 7 dias pelo e-mail: suporte@twynk.app — após esse prazo, a conta é removida permanentemente.',
+                loc.faqQ5Title,
+                loc.faqQ5Body,
                 bodyColor,
               ),
               Divider(height: 1, thickness: 1, color: (isDark ? Colors.white : Colors.black).withAlpha(20)),
               _faqTile(
                 context,
-                'Posso enviar meu e-mail ou número de telefone nas mensagens?',
-                'Você pode, mas o Nomirro recomenda que só compartilhe informações pessoais após criar confiança com a outra pessoa.\nSua segurança e privacidade vêm em primeiro lugar.',
+                loc.faqQ6Title,
+                loc.faqQ6Body,
                 bodyColor,
               ),
               Divider(height: 1, thickness: 1, color: (isDark ? Colors.white : Colors.black).withAlpha(20)),
               _faqTile(
                 context,
-                'O Nomirro é gratuito?',
-                'Sim! O Nomirro pode ser usado gratuitamente para criar conta, conversar e conhecer novas pessoas.\nAlém disso, já está disponível o Nomirro Premium, que oferece recursos extras como mais visibilidade, envio ilimitado de solicitações e destaque no app — mas o uso básico continuará totalmente gratuito.',
+                loc.faqQ7Title,
+                loc.faqQ7Body,
                 bodyColor,
               ),
               Divider(height: 1, thickness: 1, color: (isDark ? Colors.white : Colors.black).withAlpha(20)),
               _faqTile(
                 context,
-                'Outra dúvida?',
-                'Entre em contato com o Suporte Nomirro pelo e-mail: suporte@twynk.app ou envie uma mensagem pelo menu Ajuda dentro do aplicativo.',
+                loc.faqQ8Title,
+                loc.faqQ8Body,
                 bodyColor,
               ),
             ],
@@ -538,9 +524,10 @@ class _NomirroAppBar extends StatelessWidget {
             ),
       title: const _NomirroLogo(),
       centerTitle: false,
-      titleSpacing: isDesktop ? 96.0 : 24.0,
+      titleSpacing: isDesktop ? 96.0 : 4.0,
       actions: <Widget>[
         if (isDesktop) ..._buildDesktopNav(context),
+        _buildLanguageButton(context),
         _buildThemeToggleButton(context),
         if (isDesktop) const SizedBox(width: 96) else const SizedBox(width: 16),
       ],
@@ -548,18 +535,37 @@ class _NomirroAppBar extends StatelessWidget {
   }
 
   List<Widget> _buildDesktopNav(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
     return [
       TextButton(
         onPressed: () => scrollToSection(aboutKey),
-        child: Text('Sobre', style: TextStyle(fontWeight: FontWeight.normal, color: Theme.of(context).textTheme.bodyLarge?.color)),
+        child: Text(
+          loc.navAbout,
+          style: TextStyle(
+            fontWeight: FontWeight.normal,
+            color: Theme.of(context).textTheme.bodyLarge?.color,
+          ),
+        ),
       ),
       TextButton(
         onPressed: () => scrollToSection(howItWorksKey),
-        child: Text('Como Funciona', style: TextStyle(fontWeight: FontWeight.normal, color: Theme.of(context).textTheme.bodyLarge?.color)),
+        child: Text(
+          loc.navHowItWorks,
+          style: TextStyle(
+            fontWeight: FontWeight.normal,
+            color: Theme.of(context).textTheme.bodyLarge?.color,
+          ),
+        ),
       ),
       TextButton(
         onPressed: () => scrollToSection(featuresKey),
-        child: Text('Recursos', style: TextStyle(fontWeight: FontWeight.normal, color: Theme.of(context).textTheme.bodyLarge?.color)),
+        child: Text(
+          loc.navFeatures,
+          style: TextStyle(
+            fontWeight: FontWeight.normal,
+            color: Theme.of(context).textTheme.bodyLarge?.color,
+          ),
+        ),
       ),
       TextButton(
         onPressed: () {
@@ -567,7 +573,13 @@ class _NomirroAppBar extends StatelessWidget {
             MaterialPageRoute(builder: (_) => const LoginPage()),
           );
         },
-        child: Text('Login', style: TextStyle(fontWeight: FontWeight.normal, color: Theme.of(context).textTheme.bodyLarge?.color)),
+        child: Text(
+          loc.navLogin,
+          style: TextStyle(
+            fontWeight: FontWeight.normal,
+            color: Theme.of(context).textTheme.bodyLarge?.color,
+          ),
+        ),
       ),
       Padding(
         padding: const EdgeInsets.symmetric(horizontal: 48.0),
@@ -579,10 +591,36 @@ class _NomirroAppBar extends StatelessWidget {
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30), side: const BorderSide(color: NomirroColors.primary, width: 1.5)),
             elevation: 4,
           ),
-          child: const Text('Registar-se', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+          child: Text(
+            loc.navSignUp,
+            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+          ),
         ),
       ),
     ];
+  }
+
+  Widget _buildLanguageButton(BuildContext context) {
+    return PopupMenuButton<String>(
+      tooltip: 'Idioma / Language',
+      icon: const Icon(Icons.language),
+      position: PopupMenuPosition.under,
+      offset: const Offset(0, 4),
+      onSelected: (value) {
+        final lang = value == 'en' ? AppLanguage.en : AppLanguage.pt;
+        LanguageController.instance.setLanguage(lang);
+      },
+      itemBuilder: (context) => const [
+        PopupMenuItem<String>(
+          value: 'pt',
+          child: Text('Português'),
+        ),
+        PopupMenuItem<String>(
+          value: 'en',
+          child: Text('English'),
+        ),
+      ],
+    );
   }
 
   Widget _buildThemeToggleButton(BuildContext context) {
@@ -622,6 +660,7 @@ class _NomirroDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
     final Color drawerBg = headerBg;
     final String headerHex = '#${headerBg.toARGB32().toRadixString(16).padLeft(8, '0').toUpperCase()}';
     final String drawerHex = '#${drawerBg.toARGB32().toRadixString(16).padLeft(8, '0').toUpperCase()}';
@@ -651,11 +690,11 @@ class _NomirroDrawer extends StatelessWidget {
                     child: ListView(
                       padding: EdgeInsets.zero,
                       children: <Widget>[
-                        _buildDrawerItem(context, 'Sobre', aboutKey, icon: Icons.info_outline),
-                        _buildDrawerItem(context, 'Como Funciona', howItWorksKey, icon: Icons.help_outline),
-                        _buildDrawerItem(context, 'Recursos', featuresKey, icon: Icons.favorite_border),
-                        _buildDrawerItem(context, 'Login', null, icon: Icons.login),
-                        _buildDrawerItem(context, 'Registar-se', downloadKey, icon: Icons.app_registration, isPrimary: true),
+                        _buildDrawerItem(context, loc.navAbout, aboutKey, icon: Icons.info_outline),
+                        _buildDrawerItem(context, loc.navHowItWorks, howItWorksKey, icon: Icons.help_outline),
+                        _buildDrawerItem(context, loc.navFeatures, featuresKey, icon: Icons.favorite_border),
+                        _buildDrawerItem(context, loc.navLogin, null, icon: Icons.login),
+                        _buildDrawerItem(context, loc.navSignUp, downloadKey, icon: Icons.app_registration, isPrimary: true),
                       ],
                     ),
                   ),
@@ -666,31 +705,14 @@ class _NomirroDrawer extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Text.rich(
-                            TextSpan(
-                              children: [
-                                TextSpan(
-                                  text: '© 2025 ',
-                                  style: TextStyle(
-                                    color: isDark ? Colors.white60 : Colors.black54,
-                                  ),
-                                ),
-                                const TextSpan(
-                                  text: 'Nomirro',
-                                  style: TextStyle(
-                                    color: NomirroColors.primary,
-                                  ),
-                                ),
-                                TextSpan(
-                                  text: 'All rights reserved.',
-                                  style: TextStyle(
-                                    color: isDark ? Colors.white60 : Colors.black54,
-                                  ),
-                                ),
-                              ],
-                              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.normal),
-                            ),
+                          Text(
+                            loc.footerCopyright,
                             textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.normal,
+                              color: isDark ? Colors.white60 : Colors.black54,
+                            ),
                           ),
                         ],
                       ),
@@ -751,9 +773,12 @@ class _NomirroLogo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children:  [Image.asset('assets/icons/logo_02.png', height: 42)],
+    return SizedBox(
+      height: 42,
+      child: FittedBox(
+        fit: BoxFit.contain,
+        child: Image.asset('assets/icons/logo_02.png'),
+      ),
     );
   }
 }
@@ -820,23 +845,10 @@ class _HeroSectionState extends State<_HeroSection> with SingleTickerProviderSta
     final double screenWidth = MediaQuery.of(context).size.width;
     final bool isDesktop = screenWidth > 768;
     final bool isTablet = screenWidth > 600 && screenWidth <= 768;
-    final double radius = (screenWidth <= 600) ? 1.0 : 1.25;
 
     return Container(
       decoration: BoxDecoration(
-        gradient: widget.isDark
-            ? RadialGradient(
-                center: Alignment(-0.6, -0.6),
-                radius: radius,
-                colors: [DefaultDark.sidebar, DefaultDark.bg],
-                stops: const [0.05, 1.0],
-              )
-            : RadialGradient(
-                center: Alignment(-0.6, -0.6),
-                radius: radius,
-                colors: [DefaultLight.sidebar, DefaultLight.bg],
-                stops: const [0.05, 1.0],
-              ),
+        color: widget.headerBg,
       ), 
       padding: EdgeInsets.symmetric(
         vertical: isDesktop ? 96.0 : 60.0,
@@ -884,6 +896,10 @@ class _HeroSectionState extends State<_HeroSection> with SingleTickerProviderSta
     final double w = MediaQuery.of(context).size.width;
     final bool isMobile = w <= 600;
     final TextAlign titleAlign = isMobile ? TextAlign.justify : textAlign;
+    final loc = AppLocalizations.of(context)!;
+    final String titleText = loc.heroTitle;
+    final String subtitleText = loc.heroSubtitle;
+    final String ctaText = loc.heroCta;
 
     return Column(
       crossAxisAlignment: textAlign == TextAlign.left
@@ -891,7 +907,7 @@ class _HeroSectionState extends State<_HeroSection> with SingleTickerProviderSta
           : CrossAxisAlignment.center,
       children: [
         Text(
-          'Cada Nomirro pode mudar seu encontro.',
+          titleText,
           textAlign: titleAlign,
           style: TextStyle(
             fontSize: heroTitleSize(context),
@@ -902,7 +918,7 @@ class _HeroSectionState extends State<_HeroSection> with SingleTickerProviderSta
         ),
         const SizedBox(height: 20),
         Text(
-          'Descubra encontros reais, divirta-se e conecte-se com pessoas que brilham como você. O seu próximo crush está aqui.',
+          subtitleText,
           textAlign: titleAlign,
           style: TextStyle(
             fontSize: w > 600 ? 22 : 16,
@@ -925,7 +941,9 @@ class _HeroSectionState extends State<_HeroSection> with SingleTickerProviderSta
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
                     elevation: 8,
                   ),
-                  child: const Text('Baixar app', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                  child: Text(ctaText,
+                      style: const TextStyle(
+                          fontSize: 16, fontWeight: FontWeight.bold)),
                 ),
               ),
             ],
@@ -947,7 +965,13 @@ class _HeroSectionState extends State<_HeroSection> with SingleTickerProviderSta
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
                   elevation: 10,
                 ),
-                child: const Text('Baixar app', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                child: Text(
+                  ctaText,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ),
             ],
           ),
@@ -1093,24 +1117,10 @@ class _AboutSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final double w = MediaQuery.of(context).size.width;
-    final double radius = (w <= 600) ? 1.0 : 1.25;
-
+    final loc = AppLocalizations.of(context)!;
     return Container(
       decoration: BoxDecoration(
-        gradient: isDark
-            ? RadialGradient(
-                center: gradientCenter,
-                radius: radius,
-                colors: [DefaultDark.sidebar, DefaultDark.bg],
-                stops: const [0.05, 1.0],
-              )
-            : RadialGradient(
-                center: gradientCenter,
-                radius: radius,
-                colors: [DefaultLight.sidebar, DefaultLight.bg],
-                stops: const [0.05, 1.0],
-              ),
+        color: headerBg,
       ),
       padding: const EdgeInsets.symmetric(vertical: 96.0, horizontal: 24.0),
       child: Center(
@@ -1120,7 +1130,7 @@ class _AboutSection extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Text(
-                'Sobre o Nomirro',
+                loc.aboutTitle,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: sectionTitleSize(context),
@@ -1130,7 +1140,7 @@ class _AboutSection extends StatelessWidget {
               ),
               const SizedBox(height: 12),
               Text(
-                'O Nomirro é a nova geração dos apps de relacionamento — onde as conexões acontecem de forma leve, divertida e verdadeira.',
+                loc.aboutParagraph1,
                 textAlign: TextAlign.justify,
                 style: TextStyle(
                   fontSize: 20,
@@ -1139,7 +1149,7 @@ class _AboutSection extends StatelessWidget {
               ),
               const SizedBox(height: 6),
               Text(
-                'Inspirado em encontros reais e histórias autênticas, o Nomirro transforma o simples “match” em momentos que brilham ',
+                loc.aboutParagraph2,
                 textAlign: TextAlign.justify,
                 style: TextStyle(
                   fontSize: 18,
@@ -1150,11 +1160,11 @@ class _AboutSection extends StatelessWidget {
 
               Builder(builder: (context) {
                 final children = [
-                  _AboutItem(icon: Icons.favorite_border, title: 'Encontros de verdade, sem complicações', description: 'Conheça pessoas reais, com intenções sinceras.\nNo Nomirro, o amor acontece naturalmente — sem pressão, sem julgamentos, do seu jeito.', isDark: isDark),
-                  _AboutItem(icon: Icons.place_outlined, title: 'Encontre alguém perto de você', description: 'Apaixone-se por quem está na sua cidade, no seu bairro ou até do outro lado do mundo.\nCom o Nomirro, a distância deixa de ser um obstáculo e vira uma oportunidade de conexão.', isDark: isDark),
-                  _AboutItem(icon: Icons.chat_bubble_outline, title: 'Converse por vídeo ou chat', description: 'Crie laços reais com o nosso chat moderno e seguro — com ou sem câmera.\nVeja, sorria e converse cara a cara com quem faz seu coração vibrar.', isDark: isDark),
-                  _AboutItem(icon: Icons.balance_outlined, title: 'Equilíbrio e diversidade', description: 'O Nomirro é um espaço para todos — aberto, inclusivo e cheio de boas energias.\nAqui, cada conexão é única e respeitada.', isDark: isDark),
-                  _AboutItem(icon: Icons.auto_awesome, title: 'Onde as conexões brilham', description: 'Mais do que um app de namoro, o Nomirro é um lugar para fazer parte de algo especial.\nHistórias começam com um clique — e continuam com brilho nos olhos.', isDark: isDark),
+                  _AboutItem(icon: Icons.favorite_border, title: loc.aboutItem1Title, description: loc.aboutItem1Body, isDark: isDark),
+                  _AboutItem(icon: Icons.place_outlined, title: loc.aboutItem2Title, description: loc.aboutItem2Body, isDark: isDark),
+                  _AboutItem(icon: Icons.chat_bubble_outline, title: loc.aboutItem3Title, description: loc.aboutItem3Body, isDark: isDark),
+                  _AboutItem(icon: Icons.balance_outlined, title: loc.aboutItem4Title, description: loc.aboutItem4Body, isDark: isDark),
+                  _AboutItem(icon: Icons.auto_awesome, title: loc.aboutItem5Title, description: loc.aboutItem5Body, isDark: isDark),
                   _AboutItemPremium(isDark: isDark),
                 ];
                 final double w = MediaQuery.of(context).size.width;
@@ -1295,6 +1305,7 @@ class _AboutItemPremiumState extends State<_AboutItemPremium> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
     return MouseRegion(
       onEnter: (_) => setState(() => _hover = true),
       onExit: (_) => setState(() => _hover = false),
@@ -1343,7 +1354,7 @@ class _AboutItemPremiumState extends State<_AboutItemPremium> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Nomirro Premium',
+                      loc.aboutPremiumTitle,
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.w800,
@@ -1352,7 +1363,7 @@ class _AboutItemPremiumState extends State<_AboutItemPremium> {
                     ),
                     const SizedBox(height: 6),
                     Text(
-                      'Mensagens ilimitadas, ver quem curtiu você e destaque nas buscas. Planos Diário, Semanal e Mensal.',
+                      loc.aboutPremiumBody,
                       style: TextStyle(
                         fontSize: 16,
                         height: 1.4,
@@ -1499,26 +1510,30 @@ class _HowItWorksSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final double w = MediaQuery.of(context).size.width;
-    final double radius = (w <= 600) ? 1.0 : 1.25;
-    final bool isAlt = sectionBg == Theme.of(context).cardColor;
+    final loc = AppLocalizations.of(context)!;
+    final steps = [
+      _HowItWorksStep(
+        number: '01',
+        title: loc.howStep1Title,
+        description: loc.howStep1Body,
+        icon: Icons.person_add_alt_1,
+      ),
+      _HowItWorksStep(
+        number: '02',
+        title: loc.howStep2Title,
+        description: loc.howStep2Body,
+        icon: Icons.swipe,
+      ),
+      _HowItWorksStep(
+        number: '03',
+        title: loc.howStep3Title,
+        description: loc.howStep3Body,
+        icon: Icons.chat_bubble_outline,
+      ),
+    ];
     return Container(
       decoration: BoxDecoration(
-        gradient: isDark
-            ? RadialGradient(
-                center: gradientCenter,
-                radius: radius,
-                colors: [DefaultDark.sidebar, DefaultDark.bg],
-                stops: const [0.05, 1.0],
-              )
-            : RadialGradient(
-                center: gradientCenter,
-                radius: radius,
-                colors: isAlt
-                    ? [Colors.white, NomirroColors.lightBackground]
-                    : [DefaultLight.sidebar, DefaultLight.bg],
-                stops: const [0.05, 1.0],
-              ),
+        color: sectionBg,
       ),
       padding: const EdgeInsets.symmetric(vertical: 96.0, horizontal: 24.0),
       child: Center(
@@ -1527,7 +1542,7 @@ class _HowItWorksSection extends StatelessWidget {
           child: Column(
             children: [
               Text(
-                'Como Funciona',
+                loc.howTitle,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: sectionTitleSize(context),
@@ -1537,7 +1552,7 @@ class _HowItWorksSection extends StatelessWidget {
               ),
               const SizedBox(height: 12),
               Text(
-                'Começar é fácil. Em apenas três passos, você estará pronto para encontrar sua conexão.',
+                loc.howSubtitle,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 20,
@@ -1552,22 +1567,22 @@ class _HowItWorksSection extends StatelessWidget {
                     return Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: const [
-                        Expanded(child: _HowItWorksStep(number: '01', title: 'Crie seu Perfil', description: 'Mostre sua personalidade. Adicione suas melhores fotos e conte um pouco sobre você.', icon: Icons.person_add_alt_1)),
-                        SizedBox(width: 40),
-                        Expanded(child: _HowItWorksStep(number: '02', title: 'Deslize e Combine', description: 'Explore perfis e encontre pessoas interessantes. Um deslize para a direita pode ser o início de algo novo.', icon: Icons.swipe)),
-                        SizedBox(width: 40),
-                        Expanded(child: _HowItWorksStep(number: '03', title: 'Inicie a Conversa', description: 'Deu match? Não espere! Envie uma mensagem e comece a construir uma conexão real.', icon: Icons.chat_bubble_outline)),
+                      children: [
+                        Expanded(child: steps[0]),
+                        const SizedBox(width: 40),
+                        Expanded(child: steps[1]),
+                        const SizedBox(width: 40),
+                        Expanded(child: steps[2]),
                       ],
                     );
                   } else {
                     return Column(
-                      children: const [
-                        _HowItWorksStep(number: '01', title: 'Crie seu Perfil', description: 'Mostre sua personalidade. Adicione suas melhores fotos e conte um pouco sobre você.', icon: Icons.person_add_alt_1),
-                        SizedBox(height: 48),
-                        _HowItWorksStep(number: '02', title: 'Deslize e Combine', description: 'Explore perfis e encontre pessoas interessantes. Um deslize para a direita pode ser o início de algo novo.', icon: Icons.swipe),
-                        SizedBox(height: 48),
-                        _HowItWorksStep(number: '03', title: 'Inicie a Conversa', description: 'Deu match? Não espere! Envie uma mensagem e comece a construir uma conexão real.', icon: Icons.chat_bubble_outline),
+                      children: [
+                        steps[0],
+                        const SizedBox(height: 48),
+                        steps[1],
+                        const SizedBox(height: 48),
+                        steps[2],
                       ],
                     );
                   }
@@ -1684,26 +1699,10 @@ class _FeaturesSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final double w = MediaQuery.of(context).size.width;
-    final double radius = (w <= 600) ? 1.0 : 1.25;
-    final bool isAlt = sectionBg == Theme.of(context).cardColor;
+    final loc = AppLocalizations.of(context)!;
     return Container(
       decoration: BoxDecoration(
-        gradient: isDark
-            ? RadialGradient(
-                center: gradientCenter,
-                radius: radius,
-                colors: [DefaultDark.sidebar, DefaultDark.bg],
-                stops: const [0.05, 1.0],
-              )
-            : RadialGradient(
-                center: gradientCenter,
-                radius: radius,
-                colors: isAlt
-                    ? [Colors.white, NomirroColors.lightBackground]
-                    : [DefaultLight.sidebar, DefaultLight.bg],
-                stops: const [0.05, 1.0],
-              ),
+        color: sectionBg,
       ),
       padding: const EdgeInsets.symmetric(vertical: 96.0, horizontal: 24.0),
       child: Center(
@@ -1712,7 +1711,7 @@ class _FeaturesSection extends StatelessWidget {
           child: Column(
             children: [
               Text(
-                'Conexões que Acontecem',
+                loc.featuresTitle,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: sectionTitleSize(context),
@@ -1722,7 +1721,7 @@ class _FeaturesSection extends StatelessWidget {
               ),
               const SizedBox(height: 12),
               Text(
-                'O Nomirro foi projetado para ser intuitivo, seguro e focado na sua autenticidade.',
+                loc.featuresSubtitle,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 20,
@@ -1759,22 +1758,22 @@ class _FeaturesSection extends StatelessWidget {
                         case 0:
                           return _FeatureCard(
                             icon: Icons.flash_on,
-                            title: 'Chat Instantâneo',
-                            description: 'Não espere. Converse em tempo real e comece a faísca com mensagens de texto, áudio e vídeo.',
+                            title: loc.feature1Title,
+                            description: loc.feature1Body,
                             height: cardHeight,
                           );
                         case 1:
                           return _FeatureCard(
                             icon: Icons.verified_user,
-                            title: 'Perfis Autênticos',
-                            description: 'Verificação de fotos e filtros de interesse detalhados para garantir que você encontre o que procura.',
+                            title: loc.feature2Title,
+                            description: loc.feature2Body,
                             height: cardHeight,
                           );
                         default:
                           return _FeatureCard(
                             icon: Icons.security,
-                            title: 'Segurança Primeiro',
-                            description: 'Ferramentas avançadas de denúncia e moderação 24/7 para manter sua experiência segura e divertida.',
+                            title: loc.feature3Title,
+                            description: loc.feature3Body,
                             height: cardHeight,
                           );
                       }
@@ -1900,26 +1899,10 @@ class _DownloadSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final double w = MediaQuery.of(context).size.width;
-    final double radius = (w <= 600) ? 1.0 : 1.25;
-    final bool isAlt = sectionBg == Theme.of(context).cardColor;
+    final loc = AppLocalizations.of(context)!;
     return Container(
       decoration: BoxDecoration(
-        gradient: isDark
-            ? RadialGradient(
-              center: gradientCenter,
-              radius: radius,
-              colors: [DefaultDark.sidebar, DefaultDark.bg],
-              stops: const [0.05, 1.0],
-            )
-          : RadialGradient(
-            center: gradientCenter,
-            radius: radius,
-            colors: isAlt
-                ? [Colors.white, NomirroColors.lightBackground]
-                : [DefaultLight.sidebar, DefaultLight.bg],
-            stops: const [0.05, 1.0],
-          ),
+        color: sectionBg,
       ),
       padding: const EdgeInsets.symmetric(vertical: 96.0, horizontal: 24.0),
       child: Center(
@@ -1928,7 +1911,7 @@ class _DownloadSection extends StatelessWidget {
           child: Column(
             children: [
               Text(
-                'Pronto para Brilhar?',
+                loc.ctaTitle,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: sectionTitleSize(context),
@@ -1938,7 +1921,7 @@ class _DownloadSection extends StatelessWidget {
               ),
               const SizedBox(height: 12),
               Text(
-                'Milhares de pessoas estão esperando para se conectar. Junte-se à comunidade Nomirro hoje!',
+                loc.ctaSubtitle,
                 textAlign: TextAlign.justify,
                 style: TextStyle(
                   fontSize: 16,
@@ -1952,7 +1935,7 @@ class _DownloadSection extends StatelessWidget {
                 final buttons = <Widget>[
                   _StoreButton(
                     assetIconPath: 'assets/icons/app_store.png',
-                    text: 'App Store',
+                    text: loc.ctaAppStore,
                     backgroundColor: NomirroColors.primary,
                     textColor: Colors.white,
                     onPressed: () { /* Link App Store */ },
@@ -1960,7 +1943,7 @@ class _DownloadSection extends StatelessWidget {
                   const SizedBox(width: 12),
                   _StoreButton(
                     assetIconPath: 'assets/icons/play_store.png',
-                    text: 'Play store',
+                    text: loc.ctaPlayStore,
                     backgroundColor: NomirroColors.primary,
                     textColor: Colors.white,
                     onPressed: () { /* Link Google Play */ },
@@ -2114,8 +2097,9 @@ class _NomirroFooter extends StatelessWidget {
   }
 
   Widget _copyrightText(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
     return Text(
-      '© 2025 Nomirro. All rights reserved.',
+      loc.footerCopyright,
       textAlign: TextAlign.center,
       style: TextStyle(
         color: isDark ? Colors.white54 : Colors.black54,
@@ -2125,18 +2109,19 @@ class _NomirroFooter extends StatelessWidget {
   }
 
   Widget _linkRow(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
     return Wrap(
       spacing: 24,
       runSpacing: 8,
       alignment: WrapAlignment.center,
       children: [
         _FooterLink(
-          label: 'Termos de Uso',
+          label: loc.footerTerms,
           onPressed: () { /* Link Termos de Uso */ },
           isDark: isDark,
         ),
         _FooterLink(
-          label: 'Política de Privacidade',
+          label: loc.footerPrivacy,
           onPressed: () { /* Link Política de Privacidade */ },
           isDark: isDark,
         ),

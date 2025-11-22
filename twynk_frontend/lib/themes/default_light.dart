@@ -37,7 +37,7 @@ ThemeData defaultLightTheme = ThemeData(
   iconTheme: const IconThemeData(color: DefaultLight.blue),
   inputDecorationTheme: InputDecorationTheme(
     filled: true,
-    fillColor: DefaultLight.sidebar.withAlpha(230),
+    fillColor: DefaultLight.sidebar.withValues(alpha: 0.9),
     hintStyle: const TextStyle(color: DefaultLight.comment),
     border: OutlineInputBorder(
       borderSide: const BorderSide(color: DefaultLight.blue),

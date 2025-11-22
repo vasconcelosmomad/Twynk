@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../themes/nomirro_colors.dart';
+import '../services/language_controller.dart';
 
 class NomirroAppBar extends StatefulWidget implements PreferredSizeWidget {
   final bool isMobile;
@@ -44,6 +45,10 @@ class _NomirroAppBarState extends State<NomirroAppBar> {
       title: _buildTitle(context),
       actions: _buildActions(context),
     );
+  }
+
+  void _toggleLanguage(BuildContext context) {
+    LanguageController.instance.toggle();
   }
 
   Widget _buildTitle(BuildContext context) {
@@ -116,6 +121,14 @@ class _NomirroAppBarState extends State<NomirroAppBar> {
             ),
           ),
         ),
+      const SizedBox(width: 8.0),
+      IconButton(
+        tooltip: LanguageController.instance.current == AppLanguage.en
+            ? 'Mudar para Português'
+            : 'Switch to English',
+        icon: const Icon(Icons.language),
+        onPressed: () => _toggleLanguage(context),
+      ),
       const SizedBox(width: 16.0),
       _buildUserMenu(context),
       const SizedBox(width: 16.0),

@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:twynk_frontend/l10n/app_localizations.dart';
 import 'pages/welcome.dart';
 import 'pages/proflie.dart';
 import 'themes/default_light.dart';
 import 'themes/default_dark.dart';
 import 'services/api_client.dart';
+import 'services/language_controller.dart';
 
 void main() {
   runApp(const MyApp());
@@ -52,35 +54,49 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    if (!_initialized) {
-      return MaterialApp(
-        title: 'Nomirro',
-        debugShowCheckedModeBanner: false,
-        themeAnimationDuration: Duration.zero,
-        themeAnimationCurve: Curves.linear,
-        theme: defaultLightTheme,
-        darkTheme: defaultDarkTheme,
-        themeMode: _themeMode,
-        home: const Scaffold(
-          body: Center(child: CircularProgressIndicator()),
-        ),
-      );
-    }
+    return ValueListenableBuilder<AppLanguage>(
+      valueListenable: LanguageController.instance.language,
+      builder: (context, lang, _) {
+        final locale =
+            lang == AppLanguage.en ? const Locale('en') : const Locale('pt');
 
-    return MaterialApp(
-      title: 'Nomirro',
-      debugShowCheckedModeBanner: false,
-      themeAnimationDuration: Duration.zero,
-      themeAnimationCurve: Curves.linear,
-      theme: defaultLightTheme,
-      darkTheme: defaultDarkTheme,
-      themeMode: _themeMode,
-      home: _loggedIn
-          ? const PainelAssinantePage()
-          : WelcomePage(
-              themeMode: _themeMode,
-              onThemeToggle: _toggleTheme,
+        if (!_initialized) {
+          return MaterialApp(
+            title: 'Nomirro',
+            debugShowCheckedModeBanner: false,
+            themeAnimationDuration: Duration.zero,
+            themeAnimationCurve: Curves.linear,
+            theme: defaultLightTheme,
+            darkTheme: defaultDarkTheme,
+            themeMode: _themeMode,
+            locale: locale,
+            supportedLocales: AppLocalizations.supportedLocales,
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            home: const Scaffold(
+              body: Center(child: CircularProgressIndicator()),
             ),
+          );
+        }
+
+        return MaterialApp(
+          title: 'Nomirro',
+          debugShowCheckedModeBanner: false,
+          themeAnimationDuration: Duration.zero,
+          themeAnimationCurve: Curves.linear,
+          theme: defaultLightTheme,
+          darkTheme: defaultDarkTheme,
+          themeMode: _themeMode,
+          locale: locale,
+          supportedLocales: AppLocalizations.supportedLocales,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          home: _loggedIn
+              ? const PainelAssinantePage()
+              : WelcomePage(
+                  themeMode: _themeMode,
+                  onThemeToggle: _toggleTheme,
+                ),
+        );
+      },
     );
   }
 }
