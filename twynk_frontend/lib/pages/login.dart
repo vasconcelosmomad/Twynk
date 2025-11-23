@@ -4,9 +4,9 @@ import 'register.dart';
 import 'proflie.dart';
 import '../services/auth_service.dart';
 import '../themes/nomirro_colors.dart';
-// Cores do gradiente principal usadas em botões
-const Color _secondaryPink = NomirroColors.primary; // #DA70D6
-const Color _accentBlue = NomirroColors.accentDark; // #A040A0
+// Cores principais usadas em botões
+const Color _secondaryPink = NomirroColors.primary; // #4B0082
+const Color _accentBlue = NomirroColors.darkLilac; // #9966CC
 
 // ----------------------------------------------------
 // 2. Componente de Página de Login (Theme-Aware e Responsivo)

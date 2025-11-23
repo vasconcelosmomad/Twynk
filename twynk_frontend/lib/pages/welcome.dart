@@ -89,7 +89,7 @@ class FAQSection extends StatelessWidget {
     // Decide gradient variant based on whether this section is using alt BG or header BG
     final Color sectionBg = headerBg;
     final Color titleColor = isDark ? Colors.white : Colors.black87;
-    final Color bodyColor = isDark ? Colors.white70 : Colors.black54;
+    final Color bodyColor = isDark ? Colors.white70 : NomirroColors.textSecondary;
 
     return Container(
       decoration: BoxDecoration(
@@ -457,6 +457,7 @@ class _NomirroLandingPageState extends State<NomirroLandingPage> {
               mini: isMobile,
               backgroundColor: Theme.of(context).colorScheme.primary,
               foregroundColor: Theme.of(context).colorScheme.onPrimary,
+              shape: const CircleBorder(),
               child: const Icon(Icons.arrow_upward),
             ),
           ),
@@ -606,9 +607,10 @@ class _NomirroAppBar extends StatelessWidget {
   }
 
   Widget _buildLanguageButton(BuildContext context) {
+    final ColorScheme colorScheme = Theme.of(context).colorScheme;
     return PopupMenuButton<String>(
       tooltip: 'Idioma / Language',
-      icon: const Icon(Icons.language),
+      icon: Icon(Icons.language, color: colorScheme.secondary),
       position: PopupMenuPosition.under,
       offset: const Offset(0, 4),
       onSelected: (value) {
@@ -716,7 +718,7 @@ class _NomirroDrawer extends StatelessWidget {
                             style: TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.normal,
-                              color: isDark ? Colors.white60 : Colors.black54,
+                              color: isDark ? Colors.white60 : NomirroColors.textSecondary,
                             ),
                           ),
                         ],
@@ -742,7 +744,7 @@ class _NomirroDrawer extends StatelessWidget {
         visualDensity: const VisualDensity(horizontal: 0, vertical: -3),
         leading: Icon(
           icon,
-          color: isPrimary ? colorScheme.primary : (isDark ? Colors.white70 : Colors.black54),
+          color: isPrimary ? colorScheme.primary : (isDark ? Colors.white70 : NomirroColors.textSecondary),
         ),
         title: Text(
           title,
@@ -929,7 +931,7 @@ class _HeroSectionState extends State<_HeroSection> with SingleTickerProviderSta
           textAlign: titleAlign,
           style: TextStyle(
             fontSize: w > 600 ? 22 : 16,
-            color: widget.isDark ? Colors.white70 : Colors.black54,
+            color: widget.isDark ? Colors.white70 : NomirroColors.textSecondary,
           ),
         ),
         const SizedBox(height: 40),
@@ -1151,7 +1153,7 @@ class _AboutSection extends StatelessWidget {
                 textAlign: TextAlign.justify,
                 style: TextStyle(
                   fontSize: 20,
-                  color: isDark ? Colors.white70 : Colors.black54,
+                  color: isDark ? Colors.white70 : NomirroColors.textSecondary,
                 ),
               ),
               const SizedBox(height: 6),
@@ -1221,6 +1223,7 @@ class _AboutItemState extends State<_AboutItem> {
 
   @override
   Widget build(BuildContext context) {
+    final ColorScheme colorScheme = Theme.of(context).colorScheme;
     return MouseRegion(
       onEnter: (_) => setState(() => _hover = true),
       onExit: (_) => setState(() => _hover = false),
@@ -1233,7 +1236,7 @@ class _AboutItemState extends State<_AboutItem> {
           curve: Curves.easeOut,
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(20),
             border: Border.all(
               color: Theme.of(context).colorScheme.primary,
               width: _hover ? 2.0 : 1.0,
@@ -1241,7 +1244,7 @@ class _AboutItemState extends State<_AboutItem> {
             boxShadow: _hover
                 ? [
                     BoxShadow(
-                      color: Theme.of(context).colorScheme.primary.withAlpha(38),
+                      color: colorScheme.secondary.withAlpha(38),
                       blurRadius: 18,
                       spreadRadius: 0,
                       offset: const Offset(0, 10),
@@ -1249,43 +1252,43 @@ class _AboutItemState extends State<_AboutItem> {
                   ]
                 : [],
           ),
-          child: Row(
+          child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
                 width: 44,
                 height: 44,
                 decoration: BoxDecoration(
+                  shape: BoxShape.circle,
                   color: NomirroColors.accentLight.withAlpha(50),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: NomirroColors.accentDark.withAlpha(128), width: 1.5),
+                  border: Border.all(
+                    color: NomirroColors.accentDark.withAlpha(128),
+                    width: 1.5,
+                  ),
                 ),
                 alignment: Alignment.center,
-                child: Icon(widget.icon, color: Theme.of(context).colorScheme.secondary, size: 24),
+                child: Icon(
+                  widget.icon,
+                  color: Theme.of(context).colorScheme.secondary,
+                  size: 24,
+                ),
               ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      widget.title,
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w800,
-                        color: widget.isDark ? Colors.white : Colors.black87,
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    Text(
-                      widget.description,
-                      style: TextStyle(
-                        fontSize: 16,
-                        height: 1.4,
-                        color: widget.isDark ? Colors.white70 : Colors.black54,
-                      ),
-                    ),
-                  ],
+              const SizedBox(height: 12),
+              Text(
+                widget.title,
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w800,
+                  color: widget.isDark ? Colors.white : Colors.black87,
+                ),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                widget.description,
+                style: TextStyle(
+                  fontSize: 16,
+                  height: 1.4,
+                  color: widget.isDark ? Colors.white70 : NomirroColors.textSecondary,
                 ),
               ),
             ],
@@ -1339,43 +1342,43 @@ class _AboutItemPremiumState extends State<_AboutItemPremium> {
                   ]
                 : [],
           ),
-          child: Row(
+          child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
                 width: 44,
                 height: 44,
                 decoration: BoxDecoration(
+                  shape: BoxShape.circle,
                   color: NomirroColors.accentLight.withAlpha(50),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: NomirroColors.accentDark.withAlpha(128), width: 1.5),
+                  border: Border.all(
+                    color: NomirroColors.accentDark.withAlpha(128),
+                    width: 1.5,
+                  ),
                 ),
                 alignment: Alignment.center,
-                child: const Icon(Icons.workspace_premium, color: NomirroColors.accentDark, size: 24),
+                child: Icon(
+                  Icons.workspace_premium,
+                  color: Theme.of(context).colorScheme.secondary,
+                  size: 24,
+                ),
               ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      loc.aboutPremiumTitle,
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w800,
-                        color: widget.isDark ? Colors.white : Colors.black87,
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    Text(
-                      loc.aboutPremiumBody,
-                      style: TextStyle(
-                        fontSize: 16,
-                        height: 1.4,
-                        color: widget.isDark ? Colors.white70 : Colors.black54,
-                      ),
-                    ),
-                  ],
+              const SizedBox(height: 12),
+              Text(
+                loc.aboutPremiumTitle,
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w800,
+                  color: widget.isDark ? Colors.white : Colors.black87,
+                ),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                loc.aboutPremiumBody,
+                style: TextStyle(
+                  fontSize: 16,
+                  height: 1.4,
+                  color: widget.isDark ? Colors.white70 : NomirroColors.textSecondary,
                 ),
               ),
             ],
@@ -1623,6 +1626,7 @@ class _HowItWorksStepState extends State<_HowItWorksStep> {
 
   @override
   Widget build(BuildContext context) {
+    final ColorScheme colorScheme = Theme.of(context).colorScheme;
     return MouseRegion(
       onEnter: (_) => setState(() => _hover = true),
       onExit: (_) => setState(() => _hover = false),
@@ -1655,15 +1659,22 @@ class _HowItWorksStepState extends State<_HowItWorksStep> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                width: 60,
-                height: 60,
+                width: 44,
+                height: 44,
                 decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.primary.withAlpha(25),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Theme.of(context).colorScheme.primary.withAlpha(128), width: 1.5),
+                  shape: BoxShape.circle,
+                  color: Theme.of(context).colorScheme.primary.withAlpha(25),
+                  border: Border.all(
+                    color: Theme.of(context).colorScheme.primary.withAlpha(128),
+                    width: 1.5,
+                  ),
                 ),
                 alignment: Alignment.center,
-                child: Icon(widget.icon, color: Theme.of(context).colorScheme.primary, size: 32),
+                child: Icon(
+                  widget.icon,
+                  color: colorScheme.secondary,
+                  size: 24,
+                ),
               ),
               const SizedBox(height: 24),
               Text(
@@ -1730,7 +1741,7 @@ class _FeaturesSection extends StatelessWidget {
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 20,
-                  color: isDark ? Colors.white70 : Colors.black54,
+                  color: isDark ? Colors.white70 : NomirroColors.textSecondary,
                 ),
               ),
               const SizedBox(height: 80),
@@ -1857,7 +1868,27 @@ class _FeatureCardState extends State<_FeatureCard> {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(widget.icon, color: Theme.of(context).colorScheme.secondary, size: 28),
+                Container(
+                  width: 44,
+                  height: 44,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Theme.of(context).colorScheme.secondary.withAlpha(25),
+                    border: Border.all(
+                      color: Theme.of(context)
+                          .colorScheme
+                          .secondary
+                          .withAlpha(128),
+                      width: 1.5,
+                    ),
+                  ),
+                  alignment: Alignment.center,
+                  child: Icon(
+                    widget.icon,
+                    color: Theme.of(context).colorScheme.secondary,
+                    size: 24,
+                  ),
+                ),
                 const SizedBox(height: 8),
                 Text(
                   widget.title,
@@ -1878,7 +1909,7 @@ class _FeatureCardState extends State<_FeatureCard> {
                     style: TextStyle(
                       fontSize: 14,
                       height: 1.4,
-                      color: isDark ? Colors.white70 : Colors.black54,
+                      color: isDark ? Colors.white70 : NomirroColors.textSecondary,
                     ),
                   ),
                 )
@@ -1931,7 +1962,7 @@ class _DownloadSection extends StatelessWidget {
                 textAlign: TextAlign.justify,
                 style: TextStyle(
                   fontSize: 16,
-                  color: isDark ? Colors.white70 : Colors.black54,
+                  color: isDark ? Colors.white70 : NomirroColors.textSecondary,
                 ),
               ),
               const SizedBox(height: 48),
@@ -2108,7 +2139,7 @@ class _NomirroFooter extends StatelessWidget {
       loc.footerCopyright,
       textAlign: TextAlign.center,
       style: TextStyle(
-        color: isDark ? Colors.white54 : Colors.black54,
+        color: isDark ? Colors.white54 : NomirroColors.textSecondary,
         fontSize: 14,
       ),
     );
@@ -2166,7 +2197,7 @@ class _FooterLinkState extends State<_FooterLink> {
           style: TextStyle(
             color: _isHovered
                 ? Theme.of(context).colorScheme.primary
-                : (widget.isDark ? Colors.white70 : Colors.black54),
+                : (widget.isDark ? Colors.white70 : NomirroColors.textSecondary),
             fontSize: 14,
             fontWeight: FontWeight.normal,
           ),

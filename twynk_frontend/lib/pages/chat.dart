@@ -353,6 +353,10 @@ class _ChatPageState extends State<ChatPage> {
   @override
   Widget build(BuildContext context) {
     final isMobile = MediaQuery.of(context).size.width < 1024;
+    final theme = Theme.of(context);
+    final bool isDark = theme.brightness == Brightness.dark;
+    final Color secondaryTextColor =
+        isDark ? Colors.white70 : NomirroColors.textSecondary;
 
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
@@ -393,8 +397,14 @@ class _ChatPageState extends State<ChatPage> {
 
                   final containerDecoration = BoxDecoration(
                     color: Theme.of(context).scaffoldBackgroundColor,
-                    borderRadius: isDesktop ? BorderRadius.circular(12) : BorderRadius.zero,
-                    border: isDesktop ? Border.all(color: Colors.grey.shade300) : null,
+                    borderRadius: isDesktop
+                        ? BorderRadius.circular(12)
+                        : BorderRadius.zero,
+                    border: isDesktop
+                        ? Border.all(
+                            color:
+                                Theme.of(context).dividerColor.withAlpha(70))
+                        : null,
                   );
 
                   final chatList = Column(
@@ -406,7 +416,7 @@ class _ChatPageState extends State<ChatPage> {
                           decoration: InputDecoration(
                             contentPadding: const EdgeInsets.symmetric(vertical: 2, horizontal: 40),
                             hintText: 'Buscar chats...',
-                            hintStyle: TextStyle(color: Colors.grey[600]),
+                            hintStyle: TextStyle(color: secondaryTextColor),
                             filled: true,
                             fillColor: Theme.of(context).brightness == Brightness.dark
                                 ? Colors.white12
@@ -566,7 +576,8 @@ class _ChatPageState extends State<ChatPage> {
                                   hintText: selectedUser != null
                                       ? 'Digite sua mensagem para ${selectedUser!['name']}...'
                                       : 'Digite sua mensagem...',
-                                  hintStyle: TextStyle(color: Colors.grey[600]),
+                                  hintStyle:
+                                      TextStyle(color: secondaryTextColor),
                                   filled: true,
                                   fillColor: Theme.of(context).brightness == Brightness.dark
                                       ? Colors.white12

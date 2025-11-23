@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class NomirroColors {
-  static const Color primary = Color(0xFFDA70D6); // User-specified purple
+  static const Color primary = Color(0xFF4B0082); // Purple for primary buttons
   static const Color lightBackground = Color(0xFFF7EAFE); // Light lilac super clear
   static const Color darkBackground = Color(0xFF1E1A22); // Dark purple almost black
   static const Color darkSecondary = Color(0xFF1E293B); // Dark section secondary
@@ -9,8 +9,11 @@ class NomirroColors {
   static const Color accentDark = Color(0xFFA040A0);
   static const Color accentLight = Color(0xFFF28DF2);
   static const Color accentGreen = Color(0xFF34D399);
-  static const Color cta = Color(0xFFFF4D8D); // Strong pink for CTA
+  static const Color darkLilac = Color(0xFF9966CC); // Dark lilac for buttons/cards
+  static const Color lilac = Color(0xFFC8A0E6); // Light lilac for cards/surfaces
+  static const Color cta = Color(0xFFFF4F8B); // Strong pink for CTA
   static const Color textDark = Color(0xFF1A1A1A);
+  static const Color textSecondary = Color(0xFF6B6B6B);
   static const Color textLight = Color(0xFFFFFFFF);
   static const Color neutralLight = Color(0xFFEDEDED);
 }

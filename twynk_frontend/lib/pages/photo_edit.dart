@@ -158,7 +158,7 @@ class _PhotoMasterAppState extends State<PhotoMasterApp> {
       theme: defaultLightTheme,
       darkTheme: defaultDarkTheme,
       home: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         drawerScrimColor: Colors.transparent,
         appBar: NomirroAppBar(isMobile: isMobile, drawerOpen: _drawerOpen),
         onDrawerChanged: (open) => setState(() => _drawerOpen = open),
@@ -252,6 +252,12 @@ class StatCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
+    final ThemeData theme = Theme.of(context);
+    final bool isDark = theme.brightness == Brightness.dark;
+    final Color labelColor =
+        isDark ? Colors.white70 : NomirroColors.textSecondary;
+    final Color valueColor =
+        isDark ? Colors.white : NomirroColors.textDark;
     final bool compact = width <= 640;
     final double cardPadding = compact ? 14.0 : 24.0;
     final double iconPad = compact ? 8.0 : 12.0;
@@ -261,7 +267,7 @@ class StatCard extends StatelessWidget {
     return Container(
       padding: EdgeInsets.all(cardPadding),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: theme.cardColor,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
@@ -271,7 +277,7 @@ class StatCard extends StatelessWidget {
             offset: const Offset(0, 3),
           ),
         ],
-        border: Border.all(color: Colors.grey.shade100),
+        border: Border.all(color: theme.dividerColor.withAlpha(25)),
       ),
       child: Row(
         children: [
@@ -292,7 +298,7 @@ class StatCard extends StatelessWidget {
                 title,
                 style: TextStyle(
                   fontSize: titleFontSize,
-                  color: Colors.grey.shade500,
+                  color: labelColor,
                   fontWeight: FontWeight.w500,
                   height: 1.0,
                 ),
@@ -304,7 +310,7 @@ class StatCard extends StatelessWidget {
                 style: TextStyle(
                   fontSize: valueFontSize,
                   fontWeight: FontWeight.bold,
-                  color: Colors.grey.shade800,
+                  color: valueColor,
                   height: 1.0,
                 ),
                 maxLines: 1,
@@ -334,6 +340,12 @@ class DashboardPage extends StatelessWidget {
     final privatePhotos = photos.where((p) => p.isPrivate).length;
     final profilePhoto = photos.any((p) => p.isProfile);
     final screenWidth = MediaQuery.of(context).size.width;
+    final ThemeData theme = Theme.of(context);
+    final bool isDark = theme.brightness == Brightness.dark;
+    final Color secondaryTextColor =
+        isDark ? Colors.white70 : NomirroColors.textSecondary;
+    final Color primaryTextColor =
+        isDark ? Colors.white : NomirroColors.textDark;
     final double cardAspect = screenWidth > 1024
         ? 3.0
         : screenWidth > 640
@@ -365,7 +377,7 @@ class DashboardPage extends StatelessWidget {
                 const SizedBox(height: 4),
                 Text(
                   'Bem-vindo ao seu gerenciador de galeria.',
-                  style: TextStyle(color: Colors.grey.shade500),
+                  style: TextStyle(color: secondaryTextColor),
                 ),
               ],
             ),
@@ -424,7 +436,7 @@ class DashboardPage extends StatelessWidget {
         Container(
           padding: const EdgeInsets.all(24.0),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: theme.cardColor,
             borderRadius: BorderRadius.circular(12),
             boxShadow: [
               BoxShadow(
@@ -434,7 +446,7 @@ class DashboardPage extends StatelessWidget {
                 offset: const Offset(0, 3),
               ),
             ],
-            border: Border.all(color: Colors.grey.shade100),
+            border: Border.all(color: theme.dividerColor.withAlpha(25)),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -444,7 +456,7 @@ class DashboardPage extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w600,
-                  color: Colors.grey.shade800,
+                  color: primaryTextColor,
                 ),
               ),
               const SizedBox(height: 16),
@@ -513,11 +525,14 @@ class DashboardPage extends StatelessWidget {
                       decoration: BoxDecoration(
                         color: Colors.grey.shade50,
                         borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: Colors.grey.shade200, style: BorderStyle.solid, width: 2),
+                        border: Border.all(
+                            color: theme.dividerColor.withAlpha(40),
+                            style: BorderStyle.solid,
+                            width: 2),
                       ),
                       child: Text(
                         'Nenhuma foto adicionada ainda.',
-                        style: TextStyle(color: Colors.grey.shade400),
+                        style: TextStyle(color: secondaryTextColor),
                       ),
                     ),
             ],
@@ -549,6 +564,12 @@ class EditPhotosPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ThemeData theme = Theme.of(context);
+    final bool isDark = theme.brightness == Brightness.dark;
+    final Color secondaryTextColor =
+        isDark ? Colors.white70 : NomirroColors.textSecondary;
+    final Color primaryTextColor =
+        isDark ? Colors.white : NomirroColors.textDark;
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -573,7 +594,7 @@ class EditPhotosPage extends StatelessWidget {
                     onPressed: () => navigateTo('dashboard'),
                     icon: const Icon(Icons.arrow_back, size: 24),
                     padding: EdgeInsets.zero,
-                    color: Colors.grey.shade600,
+                    color: secondaryTextColor,
                     splashRadius: 24,
                   ),
                   const Text(
@@ -650,7 +671,7 @@ class EditPhotosPage extends StatelessWidget {
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.w600,
-            color: Colors.grey.shade700,
+            color: primaryTextColor,
           ),
         ),
         const SizedBox(height: 16),
@@ -681,7 +702,10 @@ class EditPhotosPage extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: Colors.grey.shade50,
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.grey.shade300, style: BorderStyle.solid, width: 2),
+                    border: Border.all(
+                        color: theme.dividerColor.withAlpha(40),
+                        style: BorderStyle.solid,
+                        width: 2),
                   ),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -741,9 +765,13 @@ class PhotoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ThemeData theme = Theme.of(context);
+    final bool isDark = theme.brightness == Brightness.dark;
+    final Color secondaryTextColor =
+        isDark ? Colors.white70 : NomirroColors.textSecondary;
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: theme.cardColor,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
@@ -754,7 +782,7 @@ class PhotoCard extends StatelessWidget {
           ),
         ],
         border: Border.all(
-          color: photo.isProfile ? Colors.green.shade500 : Colors.grey.shade200,
+          color: photo.isProfile ? Colors.green.shade500 : theme.dividerColor,
           width: photo.isProfile ? 2 : 1,
         ),
       ),
@@ -872,7 +900,9 @@ class PhotoCard extends StatelessWidget {
                                 Icon(
                                   photo.isPrivate ? Icons.lock : Icons.lock_open,
                                   size: 16,
-                                  color: photo.isPrivate ? NomirroColors.accentDark : Colors.grey.shade600,
+                                  color: photo.isPrivate
+                                      ? NomirroColors.accentDark
+                                      : secondaryTextColor,
                                 ),
                                 const SizedBox(width: 8),
                                 Flexible(
@@ -889,7 +919,8 @@ class PhotoCard extends StatelessWidget {
                             value: photo.isPrivate,
                             onChanged: (value) => togglePrivacy(photo.id),
                             activeThumbColor: NomirroColors.accentDark,
-                            inactiveTrackColor: Colors.grey.shade300,
+                            inactiveTrackColor:
+                                theme.dividerColor.withAlpha(80),
                           ),
                         ],
                       )
@@ -902,7 +933,9 @@ class PhotoCard extends StatelessWidget {
                               Icon(
                                 photo.isPrivate ? Icons.lock : Icons.lock_open,
                                 size: 16,
-                                color: photo.isPrivate ? NomirroColors.accentDark : Colors.grey.shade600,
+                                color: photo.isPrivate
+                                    ? NomirroColors.accentDark
+                                    : secondaryTextColor,
                               ),
                               const SizedBox(width: 8),
                               Flexible(
@@ -921,7 +954,8 @@ class PhotoCard extends StatelessWidget {
                               value: photo.isPrivate,
                               onChanged: (value) => togglePrivacy(photo.id),
                               activeThumbColor: NomirroColors.accentDark,
-                              inactiveTrackColor: Colors.grey.shade300,
+                              inactiveTrackColor:
+                                  theme.dividerColor.withAlpha(80),
                             ),
                           ),
                         ],
@@ -938,9 +972,13 @@ class PhotoCard extends StatelessWidget {
                               label: Text(photo.isProfile ? 'Atual' : 'Definir Perfil'),
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: photo.isProfile ? Colors.green.shade50 : Colors.white,
-                                foregroundColor: photo.isProfile ? Colors.green.shade700 : Colors.grey.shade600,
+                                foregroundColor: photo.isProfile
+                                    ? Colors.green.shade700
+                                    : secondaryTextColor,
                                 side: BorderSide(
-                                  color: photo.isProfile ? Colors.green.shade200 : Colors.grey.shade200,
+                                  color: photo.isProfile
+                                      ? Colors.green.shade200
+                                      : theme.dividerColor.withAlpha(60),
                                 ),
                                 padding: const EdgeInsets.symmetric(vertical: 10),
                                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
@@ -976,9 +1014,13 @@ class PhotoCard extends StatelessWidget {
                             label: Text(photo.isProfile ? 'Atual' : 'Definir Perfil'),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: photo.isProfile ? Colors.green.shade50 : Colors.white,
-                              foregroundColor: photo.isProfile ? Colors.green.shade700 : Colors.grey.shade600,
+                              foregroundColor: photo.isProfile
+                                  ? Colors.green.shade700
+                                  : secondaryTextColor,
                               side: BorderSide(
-                                color: photo.isProfile ? Colors.green.shade200 : Colors.grey.shade200,
+                                color: photo.isProfile
+                                    ? Colors.green.shade200
+                                    : theme.dividerColor.withAlpha(60),
                               ),
                               padding: const EdgeInsets.symmetric(vertical: 10),
                               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),

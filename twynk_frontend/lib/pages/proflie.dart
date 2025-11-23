@@ -204,7 +204,7 @@ class _PainelAssinantePageState extends State<PainelAssinantePage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Olá Vasconcelos!', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          Text('Olá Vasconcelos!', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Theme.of(context).textTheme.bodyLarge?.color)),
           const SizedBox(height: 8),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -215,12 +215,12 @@ class _PainelAssinantePageState extends State<PainelAssinantePage> {
                   color: Colors.orange.shade100,
                   borderRadius: BorderRadius.circular(20),
                 ),
-                child: const Text('Dica:', style: TextStyle(color: Colors.orange, fontWeight: FontWeight.bold, fontSize: 12)),
+                child: Text('Dica:', style: TextStyle(color: Colors.orange, fontWeight: FontWeight.bold, fontSize: 12)),
               ),
               TextButton(
                 onPressed: () {},
                 style: TextButton.styleFrom(padding: EdgeInsets.zero, minimumSize: const Size(40, 24), tapTargetSize: MaterialTapTargetSize.shrinkWrap),
-                child: const Text('(ver +)', style: TextStyle(color: NomirroColors.primary, fontSize: 12)),
+                child: Text('(ver +)', style: TextStyle(color: NomirroColors.primary, fontSize: 12)),
               )
             ],
           ),
@@ -254,6 +254,10 @@ class _PainelAssinantePageState extends State<PainelAssinantePage> {
   }
 
   Widget _actionItem(IconData icon, String label, {VoidCallback? onTap}) {
+    final theme = Theme.of(context);
+    final bool isDark = theme.brightness == Brightness.dark;
+    final Color secondaryTextColor =
+        isDark ? Colors.white70 : NomirroColors.textSecondary;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6),
       child: GestureDetector(
@@ -266,7 +270,7 @@ class _PainelAssinantePageState extends State<PainelAssinantePage> {
                 color: Colors.grey.shade200,
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: Icon(icon, size: 16, color: Colors.grey.shade600),
+              child: Icon(icon, size: 16, color: secondaryTextColor),
             ),
             const SizedBox(width: 12),
             Flexible(
@@ -323,7 +327,13 @@ class _PainelAssinantePageState extends State<PainelAssinantePage> {
               bottom: BorderSide(color: selected ? NomirroColors.primary : Colors.transparent, width: 2),
             ),
           ),
-          child: Center(child: Text(label, style: TextStyle(color: selected ? NomirroColors.primary : Colors.grey, fontWeight: FontWeight.w600))),
+          child: Center(
+              child: Text(label,
+                  style: TextStyle(
+                      color: selected
+                          ? NomirroColors.primary
+                          : NomirroColors.textSecondary,
+                      fontWeight: FontWeight.w600))),
         ),
       ),
     );
@@ -347,7 +357,9 @@ class _PainelAssinantePageState extends State<PainelAssinantePage> {
               children: [
                 Text(value, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
                 const SizedBox(height: 4),
-                Text(label, style: const TextStyle(fontSize: 12, color: Colors.grey)),
+                Text(label,
+                    style: const TextStyle(
+                        fontSize: 12, color: NomirroColors.textSecondary)),
               ],
             ),
           )
@@ -428,6 +440,10 @@ class _PainelAssinantePageState extends State<PainelAssinantePage> {
   }
 
   Widget _visitorCard(String name, int age, String distance, String image) {
+    final theme = Theme.of(context);
+    final bool isDark = theme.brightness == Brightness.dark;
+    final Color secondaryTextColor =
+        isDark ? Colors.white70 : NomirroColors.textSecondary;
     return InkWell(
       onTap: () {},
       child: Container(
@@ -444,7 +460,8 @@ class _PainelAssinantePageState extends State<PainelAssinantePage> {
                 children: [
                   Text(name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14), overflow: TextOverflow.ellipsis),
                   const SizedBox(height: 4),
-                  Text('$age anos', style: TextStyle(color: Colors.grey.shade700, fontSize: 13)),
+                  Text('$age anos',
+                      style: TextStyle(color: secondaryTextColor, fontSize: 13)),
                 ],
               ),
             ),
@@ -452,9 +469,10 @@ class _PainelAssinantePageState extends State<PainelAssinantePage> {
             Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Icon(Icons.location_pin, size: 18, color: Colors.grey),
+                Icon(Icons.location_pin, size: 18, color: secondaryTextColor),
                 const SizedBox(height: 4),
-                Text(distance, style: TextStyle(fontSize: 11, color: Colors.grey.shade600)),
+                Text(distance,
+                    style: TextStyle(fontSize: 11, color: secondaryTextColor)),
               ],
             )
           ],
@@ -464,10 +482,16 @@ class _PainelAssinantePageState extends State<PainelAssinantePage> {
   }
 
   BoxDecoration _boxDecoration() {
+    final theme = Theme.of(context);
+    final bool isDark = theme.brightness == Brightness.dark;
+    final Color surface = theme.cardColor;
+    final Color borderColor = theme.dividerColor;
     return BoxDecoration(
-      color: Colors.white,
+      color: surface,
       borderRadius: BorderRadius.circular(12),
-      border: Border.all(color: Colors.grey.shade300),
+      border: Border.all(
+        color: borderColor.withAlpha(isDark ? 90 : 70),
+      ),
     );
   }
 }

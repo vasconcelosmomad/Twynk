@@ -9,11 +9,20 @@ class Footer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final bool isDark = theme.brightness == Brightness.dark;
+    final Color selectedColor =
+        isDark ? NomirroColors.lilac : NomirroColors.primary;
+    final Color unselectedColor =
+        isDark ? Colors.white70 : NomirroColors.textSecondary;
+
     return BottomNavigationBar(
       type: BottomNavigationBarType.fixed,
       currentIndex: currentIndex,
       onTap: onTap,
-      selectedItemColor: NomirroColors.primary,
+      backgroundColor: theme.scaffoldBackgroundColor,
+      selectedItemColor: selectedColor,
+      unselectedItemColor: unselectedColor,
       items: const [
         BottomNavigationBarItem(
           icon: Icon(Icons.person_search),

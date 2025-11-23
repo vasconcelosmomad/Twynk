@@ -25,6 +25,16 @@ class SidebarMenu extends StatelessWidget {
       {'icon': Icons.notifications, 'label': 'Notification'},
     ];
 
+    final theme = Theme.of(context);
+    final bool isDark = theme.brightness == Brightness.dark;
+    final Color unselectedTextColor =
+        isDark ? Colors.white70 : NomirroColors.textSecondary;
+    final Color selectedTextColor =
+        isDark ? NomirroColors.lilac : NomirroColors.primary;
+    final Color selectedTileColor = isDark
+        ? NomirroColors.primary.withValues(alpha: 0.16)
+        : NomirroColors.primary.withValues(alpha: 0.06);
+
     return Container(
       color: Theme.of(context).scaffoldBackgroundColor,
       child: Column(
@@ -59,38 +69,80 @@ class SidebarMenu extends StatelessWidget {
               ...items.asMap().entries.map((entry) {
                 final index = entry.key;
                 final item = entry.value;
+                final bool isSelected = selectedIndex == index;
+                final Color textColor =
+                    isSelected ? selectedTextColor : unselectedTextColor;
 
                 return ListTile(
-                  leading: Icon(item['icon'] as IconData),
-                  title: compact ? null : Text(item['label'] as String),
-                  selected: selectedIndex == index,
+                  leading: Icon(
+                    item['icon'] as IconData,
+                    color: textColor,
+                  ),
+                  title: compact
+                      ? null
+                      : Text(
+                          item['label'] as String,
+                          style: TextStyle(color: textColor),
+                        ),
+                  selected: isSelected,
                   onTap: () => onItemSelected?.call(index),
-                  selectedColor: NomirroColors.primary,
+                  selectedTileColor: selectedTileColor,
                   dense: true,
                   visualDensity: VisualDensity.compact,
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 16.0),
                 );
               }),
               const Divider(),
               ListTile(
-                leading: const Icon(Icons.workspace_premium_outlined, color: NomirroColors.accentDark),
-                title: compact ? null : const Text('Update plan'),
+                leading: Icon(
+                  Icons.workspace_premium_outlined,
+                  color: selectedIndex == 5
+                      ? selectedTextColor
+                      : NomirroColors.accentDark,
+                ),
+                title: compact
+                    ? null
+                    : Text(
+                        'Update plan',
+                        style: TextStyle(
+                          color: selectedIndex == 5
+                              ? selectedTextColor
+                              : unselectedTextColor,
+                        ),
+                      ),
                 selected: selectedIndex == 5,
                 onTap: () => onItemSelected?.call(5),
-                selectedColor: NomirroColors.primary,
+                selectedTileColor: selectedTileColor,
                 dense: true,
                 visualDensity: VisualDensity.compact,
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
+                contentPadding:
+                    const EdgeInsets.symmetric(horizontal: 16.0),
               ),
               ListTile(
-                leading: const Icon(Icons.exit_to_app, color: Colors.red),
-                title: compact ? null : const Text('Log out / Sign out'),
+                leading: Icon(
+                  Icons.exit_to_app,
+                  color: selectedIndex == 6
+                      ? Colors.red.shade300
+                      : Colors.red,
+                ),
+                title: compact
+                    ? null
+                    : Text(
+                        'Log out / Sign out',
+                        style: TextStyle(
+                          color: selectedIndex == 6
+                              ? selectedTextColor
+                              : unselectedTextColor,
+                        ),
+                      ),
                 selected: selectedIndex == 6,
                 onTap: () => onItemSelected?.call(6),
-                selectedColor: NomirroColors.primary,
+                selectedTileColor: selectedTileColor,
                 dense: true,
                 visualDensity: VisualDensity.compact,
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
+                contentPadding:
+                    const EdgeInsets.symmetric(horizontal: 16.0),
               ),
             ],
           ),

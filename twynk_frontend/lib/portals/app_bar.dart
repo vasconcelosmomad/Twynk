@@ -81,6 +81,7 @@ class _NomirroAppBarState extends State<NomirroAppBar> {
   }
 
   List<Widget> _buildActions(BuildContext context) {
+    final ColorScheme colorScheme = Theme.of(context).colorScheme;
     if (widget.isMobile && _searchActive) {
       return [
         IconButton(
@@ -126,7 +127,7 @@ class _NomirroAppBarState extends State<NomirroAppBar> {
         tooltip: LanguageController.instance.current == AppLanguage.en
             ? 'Mudar para Português'
             : 'Switch to English',
-        icon: const Icon(Icons.language),
+        icon: Icon(Icons.language, color: colorScheme.secondary),
         onPressed: () => _toggleLanguage(context),
       ),
       const SizedBox(width: 16.0),
