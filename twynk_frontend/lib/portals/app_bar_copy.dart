@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../themes/nomirro_colors.dart';
 
 class NomirroAppBar extends StatefulWidget implements PreferredSizeWidget {
   final bool isMobile;
@@ -64,6 +63,7 @@ class _NomirroAppBarState extends State<NomirroAppBar> {
   }
 
   List<Widget> _buildActions(BuildContext context) {
+    final ColorScheme colorScheme = Theme.of(context).colorScheme;
     return [
       const SizedBox(width: 16.0),
       if (widget.isMobile)
@@ -72,8 +72,8 @@ class _NomirroAppBarState extends State<NomirroAppBar> {
           icon: const Icon(Icons.add_outlined),
           tooltip: 'Criar',
           style: IconButton.styleFrom(
-            backgroundColor: NomirroColors.primary.withAlpha(25),
-            foregroundColor: NomirroColors.primary,
+            backgroundColor: colorScheme.primary.withValues(alpha: 0.12),
+            foregroundColor: colorScheme.primary,
             padding: const EdgeInsets.all(6.0),
             minimumSize: const Size(36, 36),
             tapTargetSize: MaterialTapTargetSize.shrinkWrap,
@@ -86,8 +86,8 @@ class _NomirroAppBarState extends State<NomirroAppBar> {
           label: const Text('Criar'),
           style: TextButton.styleFrom(
             padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-            foregroundColor: Colors.white,
-            backgroundColor: NomirroColors.primary,
+            foregroundColor: colorScheme.onPrimary,
+            backgroundColor: colorScheme.primary,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(30.0),
             ),
@@ -100,8 +100,9 @@ class _NomirroAppBarState extends State<NomirroAppBar> {
   }
 
   Widget _buildUserMenu(BuildContext context) {
+    final ColorScheme colorScheme = Theme.of(context).colorScheme;
     return PopupMenuButton<String>(
-      itemBuilder: (context) => const [
+      itemBuilder: (context) => [
         PopupMenuItem<String>(
           value: 'name',
           child: Row(
@@ -126,7 +127,7 @@ class _NomirroAppBarState extends State<NomirroAppBar> {
           value: 'update_plan',
           child: Row(
             children: [
-              Icon(Icons.workspace_premium_outlined, size: 18, color: NomirroColors.accentDark),
+              Icon(Icons.workspace_premium_outlined, size: 18, color: colorScheme.secondary),
               SizedBox(width: 8),
               Text('Update plan'),
             ],
@@ -156,6 +157,8 @@ class _SearchFormFlutterState extends State<SearchFormFlutter> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
     return Stack(
       children: [
         TextField(
@@ -166,7 +169,7 @@ class _SearchFormFlutterState extends State<SearchFormFlutter> {
             hintText: 'Search',
             hintStyle: TextStyle(color: Colors.grey[600]),
             filled: true,
-            fillColor: Theme.of(context).brightness == Brightness.dark
+            fillColor: theme.brightness == Brightness.dark
                 ? Colors.white12
                 : const Color(0xFFF6EAFE),
             border: OutlineInputBorder(
@@ -183,12 +186,12 @@ class _SearchFormFlutterState extends State<SearchFormFlutter> {
             message: 'Search',
             child: TextButton(
               style: TextButton.styleFrom(
-                backgroundColor: Theme.of(context).brightness == Brightness.dark
+                backgroundColor: theme.brightness == Brightness.dark
                     ? Colors.white24
-                    : NomirroColors.primary.withValues(alpha: 0.18),
-                foregroundColor: Theme.of(context).brightness == Brightness.dark
+                    : colorScheme.primary.withValues(alpha: 0.18),
+                foregroundColor: theme.brightness == Brightness.dark
                     ? Colors.white
-                    : NomirroColors.accentDark,
+                    : colorScheme.secondary,
                 padding:
                     const EdgeInsets.symmetric(horizontal: 16),
                 shape: const RoundedRectangleBorder(

@@ -8,7 +8,6 @@ import '../portals/drawer.dart';
 import '../portals/footer.dart';
 import '../services/api_client.dart';
 import 'login.dart';
-import '../themes/nomirro_colors.dart';
 
 class ChatPage extends StatefulWidget {
   const ChatPage({super.key});
@@ -164,7 +163,10 @@ class _ChatPageState extends State<ChatPage> {
                 },
               ),
               ListTile(
-                leading: const Icon(Icons.photo_camera, color: NomirroColors.primary),
+                leading: Icon(
+                  Icons.photo_camera,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
                 title: const Text('Tirar foto'),
                 onTap: () async {
                   Navigator.of(context).pop();
@@ -220,13 +222,23 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   Widget _chatListItem(Map<String, String> user, bool isSelected, BoxConstraints constraints) {
+    final colorScheme = Theme.of(context).colorScheme;
     return InkWell(
       onTap: () => _selectUser(user, constraints),
       child: Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: isSelected ? NomirroColors.primary.withValues(alpha: 0.08) : null,
-          border: isSelected ? const Border(left: BorderSide(color: NomirroColors.primary, width: 4)) : null,
+          color: isSelected
+              ? colorScheme.primary.withValues(alpha: 0.08)
+              : null,
+          border: isSelected
+              ? Border(
+                  left: BorderSide(
+                    color: colorScheme.primary,
+                    width: 4,
+                  ),
+                )
+              : null,
         ),
         child: Row(
           children: [
@@ -270,7 +282,8 @@ class _ChatPageState extends State<ChatPage> {
 
   Widget _messageBubble(Map<String, dynamic> message) {
     final mine = message['isMine'] as bool;
-    final bg = mine ? NomirroColors.primary : Colors.grey.shade100;
+    final colorScheme = Theme.of(context).colorScheme;
+    final bg = mine ? colorScheme.primary : Colors.grey.shade100;
     final String? content = message['content'] as String?;
     final Uint8List? imageBytes = message['imageBytes'] as Uint8List?;
     final width = MediaQuery.of(context).size.width;
@@ -355,8 +368,10 @@ class _ChatPageState extends State<ChatPage> {
     final isMobile = MediaQuery.of(context).size.width < 1024;
     final theme = Theme.of(context);
     final bool isDark = theme.brightness == Brightness.dark;
-    final Color secondaryTextColor =
-        isDark ? Colors.white70 : NomirroColors.textSecondary;
+    final Color secondaryTextColor = isDark
+        ? Colors.white70
+        : theme.textTheme.bodyMedium?.color?.withValues(alpha: 0.7) ??
+            Colors.black54;
 
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
@@ -430,7 +445,7 @@ class _ChatPageState extends State<ChatPage> {
                               size: 20,
                               color: Theme.of(context).brightness == Brightness.dark
                                   ? Colors.white
-                                  : NomirroColors.accentDark,
+                                  : theme.colorScheme.secondary,
                             ),
                           ),
                         ),
@@ -492,9 +507,9 @@ class _ChatPageState extends State<ChatPage> {
                               style: IconButton.styleFrom(
                                 shape: const CircleBorder(),
                                 padding: const EdgeInsets.all(6),
-                                backgroundColor:
-                                    NomirroColors.primary.withValues(alpha: 0.16),
-                                foregroundColor: NomirroColors.accentDark,
+                                backgroundColor: theme.colorScheme.primary
+                                    .withValues(alpha: 0.16),
+                                foregroundColor: theme.colorScheme.secondary,
                               ),
                             ),
                             const SizedBox(width: 4),
@@ -630,8 +645,8 @@ class _ChatPageState extends State<ChatPage> {
                                                   : Icons.send,
                                               size: 22,
                                               color: _textController.text.trim().isEmpty
-                                                  ? NomirroColors.accentDark
-                                                  : NomirroColors.primary,
+                                                  ? theme.colorScheme.secondary
+                                                  : theme.colorScheme.primary,
                                             ),
                                           ),
                                         ),

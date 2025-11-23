@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../themes/nomirro_colors.dart';
 import 'package:flutter/gestures.dart';
 
 class RegisterPage extends StatefulWidget {
@@ -144,7 +143,7 @@ class _RegisterPageState extends State<RegisterPage> {
     } else if (type == 'success') {
       backgroundColor = Colors.green.shade700;
     } else if (type == 'info') {
-      backgroundColor = NomirroColors.primary;
+      backgroundColor = theme.colorScheme.primary;
     }
 
     ScaffoldMessenger.of(context).showSnackBar(
@@ -253,13 +252,16 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   Widget _gradientButton({required Widget child, required VoidCallback onPressed}) {
-    final primary = NomirroColors.primary;
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final primary = colorScheme.primary;
+    final accent = colorScheme.secondary;
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
         gradient: LinearGradient(
-          colors: [NomirroColors.accentGreen, primary],
+          colors: [accent, primary],
           begin: Alignment.centerLeft,
           end: Alignment.centerRight,
         ),
@@ -280,14 +282,17 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   Widget _solidBlueButton({required String text, required VoidCallback onPressed}) {
+    final colorScheme = Theme.of(context).colorScheme;
     return OutlinedButton(
       onPressed: onPressed,
       style: OutlinedButton.styleFrom(
         padding: const EdgeInsets.symmetric(vertical: 14),
         minimumSize: const Size.fromHeight(56),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        backgroundColor: NomirroColors.primary,
-        side: const BorderSide(color: NomirroColors.accentLight),
+        backgroundColor: colorScheme.primary,
+        side: BorderSide(
+          color: colorScheme.primary.withValues(alpha: 0.4),
+        ),
       ),
       child: Text(
         text,
@@ -569,7 +574,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                       text: 'Login!',
                                       style: const TextStyle(
                                         fontWeight: FontWeight.w600,
-                                        color: NomirroColors.primary,
+                                        color: Colors.blue,
                                       ),
                                       recognizer: TapGestureRecognizer()
                                         ..onTap = () {

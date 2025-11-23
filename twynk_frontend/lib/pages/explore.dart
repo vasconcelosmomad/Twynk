@@ -7,7 +7,6 @@ import 'package:twynk_frontend/pages/login.dart';
 import 'package:twynk_frontend/pages/chat.dart';
 import 'package:twynk_frontend/services/api_client.dart';
 import 'package:video_player/video_player.dart';
-import 'package:twynk_frontend/themes/nomirro_colors.dart';
 
 class ShortsPage extends StatefulWidget {
   const ShortsPage({super.key});
@@ -501,11 +500,13 @@ class _ShortsNavButtonState extends State<_ShortsNavButton> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final colorScheme = theme.colorScheme;
     final baseIconColor = isDark ? Colors.white : Colors.black;
-    final iconColor = _isHovering ? NomirroColors.primary : baseIconColor;
+    final iconColor = _isHovering ? colorScheme.primary : baseIconColor;
     final bgColor = _isHovering
-        ? NomirroColors.primary.withAlpha(40)
+        ? colorScheme.primary.withValues(alpha: 0.16)
         : (isDark ? Colors.grey[900] : Colors.grey[200]);
 
     return MouseRegion(
@@ -552,7 +553,8 @@ class _IconButtonColumnState extends State<_IconButtonColumn> {
 
   @override
   Widget build(BuildContext context) {
-    final bgColor = _isHovering ? NomirroColors.primary : Colors.black45;
+    final colorScheme = Theme.of(context).colorScheme;
+    final bgColor = _isHovering ? colorScheme.primary : Colors.black45;
     return MouseRegion(
       onEnter: (_) => setState(() => _isHovering = true),
       onExit: (_) => setState(() => _isHovering = false),

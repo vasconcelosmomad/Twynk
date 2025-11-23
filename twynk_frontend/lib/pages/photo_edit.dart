@@ -4,9 +4,7 @@ import '../portals/drawer.dart';
 import '../portals/footer.dart';
 import 'explore.dart';
 import 'chat.dart';
-import '../themes/default_light.dart';
-import '../themes/default_dark.dart';
-import '../themes/nomirro_colors.dart';
+import '../themes/app_theme.dart';
 
 // --- MODELO DE DADOS ---
 
@@ -155,8 +153,8 @@ class _PhotoMasterAppState extends State<PhotoMasterApp> {
     return MaterialApp(
       title: 'PhotoMaster App',
       debugShowCheckedModeBanner: false,
-      theme: defaultLightTheme,
-      darkTheme: defaultDarkTheme,
+      theme: AppTheme.light,
+      darkTheme: AppTheme.dark,
       home: Scaffold(
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         drawerScrimColor: Colors.transparent,
@@ -254,10 +252,13 @@ class StatCard extends StatelessWidget {
     final width = MediaQuery.of(context).size.width;
     final ThemeData theme = Theme.of(context);
     final bool isDark = theme.brightness == Brightness.dark;
-    final Color labelColor =
-        isDark ? Colors.white70 : NomirroColors.textSecondary;
-    final Color valueColor =
-        isDark ? Colors.white : NomirroColors.textDark;
+    final Color labelColor = isDark
+        ? Colors.white70
+        : theme.textTheme.bodyMedium?.color?.withValues(alpha: 0.7) ??
+            Colors.black54;
+    final Color valueColor = isDark
+        ? Colors.white
+        : theme.textTheme.bodyLarge?.color ?? Colors.black87;
     final bool compact = width <= 640;
     final double cardPadding = compact ? 14.0 : 24.0;
     final double iconPad = compact ? 8.0 : 12.0;
@@ -342,10 +343,13 @@ class DashboardPage extends StatelessWidget {
     final screenWidth = MediaQuery.of(context).size.width;
     final ThemeData theme = Theme.of(context);
     final bool isDark = theme.brightness == Brightness.dark;
-    final Color secondaryTextColor =
-        isDark ? Colors.white70 : NomirroColors.textSecondary;
-    final Color primaryTextColor =
-        isDark ? Colors.white : NomirroColors.textDark;
+    final Color secondaryTextColor = isDark
+        ? Colors.white70
+        : theme.textTheme.bodyMedium?.color?.withValues(alpha: 0.7) ??
+            Colors.black54;
+    final Color primaryTextColor = isDark
+        ? Colors.white
+        : theme.textTheme.bodyLarge?.color ?? Colors.black87;
     final double cardAspect = screenWidth > 1024
         ? 3.0
         : screenWidth > 640
@@ -386,7 +390,7 @@ class DashboardPage extends StatelessWidget {
               icon: const Icon(Icons.settings, size: 18),
               label: const Text('Gerenciar Fotos'),
               style: ElevatedButton.styleFrom(
-                backgroundColor: NomirroColors.primary,
+                backgroundColor: theme.colorScheme.primary,
                 foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
@@ -414,13 +418,13 @@ class DashboardPage extends StatelessWidget {
               title: "Total de Fotos",
               value: totalPhotos,
               icon: Icons.image,
-              color: NomirroColors.primary,
+              color: theme.colorScheme.primary,
             ),
             StatCard(
               title: "Fotos Privadas",
               value: privatePhotos,
               icon: Icons.lock,
-              color: NomirroColors.accentDark,
+              color: theme.colorScheme.secondary,
             ),
             StatCard(
               title: "Foto de Perfil",
@@ -566,10 +570,13 @@ class EditPhotosPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
     final bool isDark = theme.brightness == Brightness.dark;
-    final Color secondaryTextColor =
-        isDark ? Colors.white70 : NomirroColors.textSecondary;
-    final Color primaryTextColor =
-        isDark ? Colors.white : NomirroColors.textDark;
+    final Color secondaryTextColor = isDark
+        ? Colors.white70
+        : theme.textTheme.bodyMedium?.color?.withValues(alpha: 0.7) ??
+            Colors.black54;
+    final Color primaryTextColor = isDark
+        ? Colors.white
+        : theme.textTheme.bodyLarge?.color ?? Colors.black87;
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -628,14 +635,26 @@ class EditPhotosPage extends StatelessWidget {
         Container(
           padding: const EdgeInsets.all(16.0),
           decoration: BoxDecoration(
-            color: NomirroColors.accentLight.withAlpha(40),
-            border: Border(left: BorderSide(color: NomirroColors.accentDark, width: 4)),
-            borderRadius: const BorderRadius.only(topRight: Radius.circular(8), bottomRight: Radius.circular(8)),
+            color: theme.colorScheme.secondary.withValues(alpha: 0.12),
+            border: Border(
+              left: BorderSide(
+                color: theme.colorScheme.secondary,
+                width: 4,
+              ),
+            ),
+            borderRadius: const BorderRadius.only(
+              topRight: Radius.circular(8),
+              bottomRight: Radius.circular(8),
+            ),
           ),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Icon(Icons.warning_amber_rounded, size: 20, color: NomirroColors.accentDark),
+              Icon(
+                Icons.warning_amber_rounded,
+                size: 20,
+                color: theme.colorScheme.secondary,
+              ),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
@@ -645,16 +664,34 @@ class EditPhotosPage extends StatelessWidget {
                       'Dicas Importantes',
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
-                        color: NomirroColors.accentDark,
+                        color: theme.colorScheme.secondary,
                       ),
                     ),
                     const SizedBox(height: 4),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('• Organize suas fotos aqui. As alterações são salvas automaticamente.', style: TextStyle(fontSize: 13, color: NomirroColors.accentDark)),
-                        Text('• Use o ícone de cadeado para tornar uma foto privada (invisível no perfil público).', style: TextStyle(fontSize: 13, color: NomirroColors.accentDark)),
-                        Text('• Apenas uma foto pode ser definida como foto de Perfil.', style: TextStyle(fontSize: 13, color: NomirroColors.accentDark)),
+                        Text(
+                          '• Organize suas fotos aqui. As alterações são salvas automaticamente.',
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: theme.colorScheme.secondary,
+                          ),
+                        ),
+                        Text(
+                          '• Use o ícone de cadeado para tornar uma foto privada (invisível no perfil público).',
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: theme.colorScheme.secondary,
+                          ),
+                        ),
+                        Text(
+                          '• Apenas uma foto pode ser definida como foto de Perfil.',
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: theme.colorScheme.secondary,
+                          ),
+                        ),
                       ],
                     ),
                   ],
@@ -767,8 +804,11 @@ class PhotoCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
     final bool isDark = theme.brightness == Brightness.dark;
-    final Color secondaryTextColor =
-        isDark ? Colors.white70 : NomirroColors.textSecondary;
+    final Color secondaryTextColor = isDark
+        ? Colors.white70
+        : theme.textTheme.bodyMedium?.color?.withValues(alpha: 0.7) ??
+            Colors.black54;
+    final Color accentColor = theme.colorScheme.secondary;
     return Container(
       decoration: BoxDecoration(
         color: theme.cardColor,
@@ -846,7 +886,7 @@ class PhotoCard extends StatelessWidget {
                             margin: const EdgeInsets.only(right: 4),
                             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                             decoration: BoxDecoration(
-                              color: NomirroColors.accentDark,
+                              color: accentColor,
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: const Row(
@@ -901,7 +941,7 @@ class PhotoCard extends StatelessWidget {
                                   photo.isPrivate ? Icons.lock : Icons.lock_open,
                                   size: 16,
                                   color: photo.isPrivate
-                                      ? NomirroColors.accentDark
+                                      ? theme.colorScheme.secondary
                                       : secondaryTextColor,
                                 ),
                                 const SizedBox(width: 8),
@@ -918,7 +958,7 @@ class PhotoCard extends StatelessWidget {
                           Switch(
                             value: photo.isPrivate,
                             onChanged: (value) => togglePrivacy(photo.id),
-                            activeThumbColor: NomirroColors.accentDark,
+                            activeThumbColor: accentColor,
                             inactiveTrackColor:
                                 theme.dividerColor.withAlpha(80),
                           ),
@@ -934,7 +974,7 @@ class PhotoCard extends StatelessWidget {
                                 photo.isPrivate ? Icons.lock : Icons.lock_open,
                                 size: 16,
                                 color: photo.isPrivate
-                                    ? NomirroColors.accentDark
+                                    ? accentColor
                                     : secondaryTextColor,
                               ),
                               const SizedBox(width: 8),
@@ -953,7 +993,7 @@ class PhotoCard extends StatelessWidget {
                             child: Switch(
                               value: photo.isPrivate,
                               onChanged: (value) => togglePrivacy(photo.id),
-                              activeThumbColor: NomirroColors.accentDark,
+                              activeThumbColor: accentColor,
                               inactiveTrackColor:
                                   theme.dividerColor.withAlpha(80),
                             ),

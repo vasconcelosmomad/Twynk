@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../themes/nomirro_colors.dart';
 
 class Footer extends StatelessWidget {
   final int currentIndex;
@@ -10,11 +9,13 @@ class Footer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
     final bool isDark = theme.brightness == Brightness.dark;
     final Color selectedColor =
-        isDark ? NomirroColors.lilac : NomirroColors.primary;
-    final Color unselectedColor =
-        isDark ? Colors.white70 : NomirroColors.textSecondary;
+        isDark ? colorScheme.secondary : colorScheme.primary;
+    final Color unselectedColor = isDark
+        ? Colors.white70
+        : colorScheme.onSurface.withValues(alpha: 0.7);
 
     return BottomNavigationBar(
       type: BottomNavigationBarType.fixed,

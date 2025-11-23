@@ -3,10 +3,6 @@ import 'package:flutter/gestures.dart';
 import 'register.dart';
 import 'proflie.dart';
 import '../services/auth_service.dart';
-import '../themes/nomirro_colors.dart';
-// Cores principais usadas em botões
-const Color _secondaryPink = NomirroColors.primary; // #4B0082
-const Color _accentBlue = NomirroColors.darkLilac; // #9966CC
 
 // ----------------------------------------------------
 // 2. Componente de Página de Login (Theme-Aware e Responsivo)
@@ -113,6 +109,9 @@ class _LoginPageState extends State<LoginPage> {
         ? theme.scaffoldBackgroundColor
         : theme.scaffoldBackgroundColor;
 
+    final Color primaryColor = theme.colorScheme.primary;
+    final Color accentColor = theme.colorScheme.secondary;
+
     return Scaffold(
       backgroundColor: scaffoldBackground,
       body: Center(
@@ -172,14 +171,14 @@ class _LoginPageState extends State<LoginPage> {
                         vertical: 14,
                       ),
                       labelText: 'E-mail',
-                      prefixIcon: const Icon(Icons.email_outlined, color: _secondaryPink),
+                      prefixIcon: Icon(Icons.email_outlined, color: primaryColor),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                         borderSide: BorderSide(
-                          color: _secondaryPink,
+                          color: primaryColor,
                           width: 1.5,
                         ),
                       ),
@@ -204,14 +203,14 @@ class _LoginPageState extends State<LoginPage> {
                         vertical: 14,
                       ),
                       labelText: 'Senha',
-                      prefixIcon: const Icon(Icons.lock_outline, color: _secondaryPink),
+                      prefixIcon: Icon(Icons.lock_outline, color: primaryColor),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                         borderSide: BorderSide(
-                          color: _secondaryPink,
+                          color: primaryColor,
                           width: 1.5,
                         ),
                       ),
@@ -252,7 +251,7 @@ class _LoginPageState extends State<LoginPage> {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      backgroundColor: _secondaryPink,
+                      backgroundColor: primaryColor,
                       side: BorderSide.none,
                     ),
                     child: const Text(
@@ -271,7 +270,7 @@ class _LoginPageState extends State<LoginPage> {
                   ElevatedButton.icon(
                     onPressed: () => _handleSocialLogin('Google'),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: _accentBlue,
+                      backgroundColor: accentColor,
                       shadowColor: Colors.black26,
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       minimumSize: const Size.fromHeight(56),
@@ -306,7 +305,7 @@ class _LoginPageState extends State<LoginPage> {
                             text: 'Crie uma conta',
                             style: TextStyle(
                               fontWeight: FontWeight.w600,
-                              color: _secondaryPink, // Usa a cor primária do tema
+                              color: primaryColor,
                             ),
                             recognizer: TapGestureRecognizer()
                               ..onTap = () {

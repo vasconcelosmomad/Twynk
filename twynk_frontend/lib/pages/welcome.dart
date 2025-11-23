@@ -2,9 +2,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:twynk_frontend/l10n/app_localizations.dart';
 import 'login.dart';
-import '../themes/default_dark.dart';
-import '../themes/default_light.dart';
-import '../themes/nomirro_colors.dart';
 import '../services/language_controller.dart';
 
 // -----------------------------------------------------------------------------
@@ -86,10 +83,14 @@ class FAQSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final loc = AppLocalizations.of(context)!;
+    final ThemeData theme = Theme.of(context);
     // Decide gradient variant based on whether this section is using alt BG or header BG
     final Color sectionBg = headerBg;
     final Color titleColor = isDark ? Colors.white : Colors.black87;
-    final Color bodyColor = isDark ? Colors.white70 : NomirroColors.textSecondary;
+    final Color bodyColor = isDark
+        ? Colors.white70
+        : theme.textTheme.bodyMedium?.color?.withValues(alpha: 0.7) ??
+            Colors.black54;
 
     return Container(
       decoration: BoxDecoration(
@@ -718,7 +719,14 @@ class _NomirroDrawer extends StatelessWidget {
                             style: TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.normal,
-                              color: isDark ? Colors.white60 : NomirroColors.textSecondary,
+                              color: isDark
+                                  ? Colors.white60
+                                  : Theme.of(context)
+                                          .textTheme
+                                          .bodyMedium
+                                          ?.color
+                                          ?.withValues(alpha: 0.7) ??
+                                      Colors.black54,
                             ),
                           ),
                         ],
@@ -735,7 +743,8 @@ class _NomirroDrawer extends StatelessWidget {
   }
 
   Widget _buildDrawerItem(BuildContext context, String title, GlobalKey? key, {bool isPrimary = false, required IconData icon}) {
-    final ColorScheme colorScheme = Theme.of(context).colorScheme;
+    final ThemeData theme = Theme.of(context);
+    final ColorScheme colorScheme = theme.colorScheme;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 1.0),
       child: ListTile(
@@ -744,7 +753,13 @@ class _NomirroDrawer extends StatelessWidget {
         visualDensity: const VisualDensity(horizontal: 0, vertical: -3),
         leading: Icon(
           icon,
-          color: isPrimary ? colorScheme.primary : (isDark ? Colors.white70 : NomirroColors.textSecondary),
+          color: isPrimary
+              ? colorScheme.primary
+              : (isDark
+                  ? Colors.white70
+                  : theme.textTheme.bodyMedium?.color
+                          ?.withValues(alpha: 0.7) ??
+                      Colors.black54),
         ),
         title: Text(
           title,
@@ -931,7 +946,14 @@ class _HeroSectionState extends State<_HeroSection> with SingleTickerProviderSta
           textAlign: titleAlign,
           style: TextStyle(
             fontSize: w > 600 ? 22 : 16,
-            color: widget.isDark ? Colors.white70 : NomirroColors.textSecondary,
+            color: widget.isDark
+                ? Colors.white70
+                : Theme.of(context)
+                        .textTheme
+                        .bodyMedium
+                        ?.color
+                        ?.withValues(alpha: 0.7) ??
+                    Colors.black54,
           ),
         ),
         const SizedBox(height: 40),
@@ -1093,7 +1115,7 @@ class _HeroSectionState extends State<_HeroSection> with SingleTickerProviderSta
                     fit: BoxFit.cover,
                     errorBuilder: (context, error, stackTrace) {
                       return Container(
-                        color: widget.isDark ? DefaultDark.sidebar : DefaultLight.bg,
+                        color: widget.headerBg,
                         child: Center(
                           child: Icon(
                             Icons.image_not_supported,
@@ -1153,7 +1175,14 @@ class _AboutSection extends StatelessWidget {
                 textAlign: TextAlign.justify,
                 style: TextStyle(
                   fontSize: 20,
-                  color: isDark ? Colors.white70 : NomirroColors.textSecondary,
+                  color: isDark
+                      ? Colors.white70
+                      : Theme.of(context)
+                              .textTheme
+                              .bodyMedium
+                              ?.color
+                              ?.withValues(alpha: 0.7) ??
+                          Colors.black54,
                 ),
               ),
               const SizedBox(height: 6),
@@ -1223,7 +1252,8 @@ class _AboutItemState extends State<_AboutItem> {
 
   @override
   Widget build(BuildContext context) {
-    final ColorScheme colorScheme = Theme.of(context).colorScheme;
+    final ThemeData theme = Theme.of(context);
+    final ColorScheme colorScheme = theme.colorScheme;
     return MouseRegion(
       onEnter: (_) => setState(() => _hover = true),
       onExit: (_) => setState(() => _hover = false),
@@ -1260,9 +1290,9 @@ class _AboutItemState extends State<_AboutItem> {
                 height: 44,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: NomirroColors.accentLight.withAlpha(50),
+                  color: colorScheme.secondary.withValues(alpha: 0.08),
                   border: Border.all(
-                    color: NomirroColors.accentDark.withAlpha(128),
+                    color: colorScheme.secondary.withValues(alpha: 0.5),
                     width: 1.5,
                   ),
                 ),
@@ -1288,7 +1318,14 @@ class _AboutItemState extends State<_AboutItem> {
                 style: TextStyle(
                   fontSize: 16,
                   height: 1.4,
-                  color: widget.isDark ? Colors.white70 : NomirroColors.textSecondary,
+                  color: widget.isDark
+                      ? Colors.white70
+                      : Theme.of(context)
+                              .textTheme
+                              .bodyMedium
+                              ?.color
+                              ?.withValues(alpha: 0.7) ??
+                          Colors.black54,
                 ),
               ),
             ],
@@ -1314,6 +1351,8 @@ class _AboutItemPremiumState extends State<_AboutItemPremium> {
   @override
   Widget build(BuildContext context) {
     final loc = AppLocalizations.of(context)!;
+    final ThemeData theme = Theme.of(context);
+    final ColorScheme colorScheme = theme.colorScheme;
     return MouseRegion(
       onEnter: (_) => setState(() => _hover = true),
       onExit: (_) => setState(() => _hover = false),
@@ -1334,7 +1373,7 @@ class _AboutItemPremiumState extends State<_AboutItemPremium> {
             boxShadow: _hover
                 ? [
                     BoxShadow(
-                      color: Theme.of(context).colorScheme.primary.withAlpha(38),
+                      color: colorScheme.primary.withAlpha(38),
                       blurRadius: 18,
                       spreadRadius: 0,
                       offset: const Offset(0, 10),
@@ -1350,16 +1389,16 @@ class _AboutItemPremiumState extends State<_AboutItemPremium> {
                 height: 44,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: NomirroColors.accentLight.withAlpha(50),
+                  color: colorScheme.secondary.withValues(alpha: 0.08),
                   border: Border.all(
-                    color: NomirroColors.accentDark.withAlpha(128),
+                    color: colorScheme.secondary.withValues(alpha: 0.5),
                     width: 1.5,
                   ),
                 ),
                 alignment: Alignment.center,
                 child: Icon(
                   Icons.workspace_premium,
-                  color: Theme.of(context).colorScheme.secondary,
+                  color: colorScheme.secondary,
                   size: 24,
                 ),
               ),
@@ -1378,7 +1417,14 @@ class _AboutItemPremiumState extends State<_AboutItemPremium> {
                 style: TextStyle(
                   fontSize: 16,
                   height: 1.4,
-                  color: widget.isDark ? Colors.white70 : NomirroColors.textSecondary,
+                  color: widget.isDark
+                      ? Colors.white70
+                      : Theme.of(context)
+                              .textTheme
+                              .bodyMedium
+                              ?.color
+                              ?.withValues(alpha: 0.7) ??
+                          Colors.black54,
                 ),
               ),
             ],
@@ -1741,7 +1787,14 @@ class _FeaturesSection extends StatelessWidget {
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 20,
-                  color: isDark ? Colors.white70 : NomirroColors.textSecondary,
+                  color: isDark
+                      ? Colors.white70
+                      : Theme.of(context)
+                              .textTheme
+                              .bodyMedium
+                              ?.color
+                              ?.withValues(alpha: 0.7) ??
+                          Colors.black54,
                 ),
               ),
               const SizedBox(height: 80),
@@ -1909,7 +1962,14 @@ class _FeatureCardState extends State<_FeatureCard> {
                     style: TextStyle(
                       fontSize: 14,
                       height: 1.4,
-                      color: isDark ? Colors.white70 : NomirroColors.textSecondary,
+                      color: isDark
+                          ? Colors.white70
+                          : Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium
+                                  ?.color
+                                  ?.withValues(alpha: 0.7) ??
+                              Colors.black54,
                     ),
                   ),
                 )
@@ -1962,7 +2022,14 @@ class _DownloadSection extends StatelessWidget {
                 textAlign: TextAlign.justify,
                 style: TextStyle(
                   fontSize: 16,
-                  color: isDark ? Colors.white70 : NomirroColors.textSecondary,
+                  color: isDark
+                      ? Colors.white70
+                      : Theme.of(context)
+                              .textTheme
+                              .bodyMedium
+                              ?.color
+                              ?.withValues(alpha: 0.7) ??
+                          Colors.black54,
                 ),
               ),
               const SizedBox(height: 48),
@@ -2139,7 +2206,14 @@ class _NomirroFooter extends StatelessWidget {
       loc.footerCopyright,
       textAlign: TextAlign.center,
       style: TextStyle(
-        color: isDark ? Colors.white54 : NomirroColors.textSecondary,
+        color: isDark
+            ? Colors.white54
+            : Theme.of(context)
+                    .textTheme
+                    .bodyMedium
+                    ?.color
+                    ?.withValues(alpha: 0.7) ??
+                Colors.black54,
         fontSize: 14,
       ),
     );
@@ -2197,7 +2271,14 @@ class _FooterLinkState extends State<_FooterLink> {
           style: TextStyle(
             color: _isHovered
                 ? Theme.of(context).colorScheme.primary
-                : (widget.isDark ? Colors.white70 : NomirroColors.textSecondary),
+                : (widget.isDark
+                    ? Colors.white70
+                    : Theme.of(context)
+                            .textTheme
+                            .bodyMedium
+                            ?.color
+                            ?.withValues(alpha: 0.7) ??
+                        Colors.black54),
             fontSize: 14,
             fontWeight: FontWeight.normal,
           ),

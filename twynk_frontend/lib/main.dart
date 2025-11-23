@@ -3,8 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:twynk_frontend/l10n/app_localizations.dart';
 import 'pages/welcome.dart';
 import 'pages/proflie.dart';
-import 'themes/default_light.dart';
-import 'themes/default_dark.dart';
+import 'themes/app_theme.dart';
 import 'services/api_client.dart';
 import 'services/language_controller.dart';
 
@@ -66,8 +65,8 @@ class _MyAppState extends State<MyApp> {
             debugShowCheckedModeBanner: false,
             themeAnimationDuration: Duration.zero,
             themeAnimationCurve: Curves.linear,
-            theme: defaultLightTheme,
-            darkTheme: defaultDarkTheme,
+            theme: AppTheme.light,
+            darkTheme: AppTheme.dark,
             themeMode: _themeMode,
             locale: locale,
             supportedLocales: AppLocalizations.supportedLocales,
@@ -83,8 +82,8 @@ class _MyAppState extends State<MyApp> {
           debugShowCheckedModeBanner: false,
           themeAnimationDuration: Duration.zero,
           themeAnimationCurve: Curves.linear,
-          theme: defaultLightTheme,
-          darkTheme: defaultDarkTheme,
+          theme: AppTheme.light,
+          darkTheme: AppTheme.dark,
           themeMode: _themeMode,
           locale: locale,
           supportedLocales: AppLocalizations.supportedLocales,

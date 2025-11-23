@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../themes/nomirro_colors.dart';
 
 class SidebarMenu extends StatelessWidget {
   final bool compact;
@@ -27,13 +26,16 @@ class SidebarMenu extends StatelessWidget {
 
     final theme = Theme.of(context);
     final bool isDark = theme.brightness == Brightness.dark;
-    final Color unselectedTextColor =
-        isDark ? Colors.white70 : NomirroColors.textSecondary;
+    final ColorScheme colorScheme = theme.colorScheme;
+    final Color unselectedTextColor = isDark
+        ? Colors.white70
+        : colorScheme.onSurface.withValues(alpha: 0.7);
     final Color selectedTextColor =
-        isDark ? NomirroColors.lilac : NomirroColors.primary;
-    final Color selectedTileColor = isDark
-        ? NomirroColors.primary.withValues(alpha: 0.16)
-        : NomirroColors.primary.withValues(alpha: 0.06);
+        isDark ? colorScheme.secondary : colorScheme.primary;
+    final Color selectedTileColor =
+        isDark
+            ? colorScheme.primary.withValues(alpha: 0.16)
+            : colorScheme.primary.withValues(alpha: 0.06);
 
     return Container(
       color: Theme.of(context).scaffoldBackgroundColor,
@@ -99,7 +101,7 @@ class SidebarMenu extends StatelessWidget {
                   Icons.workspace_premium_outlined,
                   color: selectedIndex == 5
                       ? selectedTextColor
-                      : NomirroColors.accentDark,
+                      : colorScheme.secondary,
                 ),
                 title: compact
                     ? null
