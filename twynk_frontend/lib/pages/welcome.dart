@@ -370,6 +370,7 @@ class _NomirroLandingPageState extends State<NomirroLandingPage> {
     final bool isMobile = screenWidth < 600;
 
     final Color headerBg = Theme.of(context).scaffoldBackgroundColor;
+    final ColorScheme colorScheme = Theme.of(context).colorScheme;
     return Theme(
       data: Theme.of(context).copyWith(
         scaffoldBackgroundColor: headerBg,
@@ -382,7 +383,7 @@ class _NomirroLandingPageState extends State<NomirroLandingPage> {
           surfaceTintColor: Colors.transparent,
           elevation: 0,
           titleTextStyle: TextStyle(color: isDark ? Colors.white : Colors.black, fontSize: 20, fontWeight: FontWeight.bold),
-          iconTheme: const IconThemeData(color: NomirroColors.primary),
+          iconTheme: IconThemeData(color: colorScheme.primary),
         ),
       ),
       child: Scaffold(
@@ -454,8 +455,8 @@ class _NomirroLandingPageState extends State<NomirroLandingPage> {
                 }
               },
               mini: isMobile,
-              backgroundColor: NomirroColors.primary,
-              foregroundColor: Colors.white,
+              backgroundColor: Theme.of(context).colorScheme.primary,
+              foregroundColor: Theme.of(context).colorScheme.onPrimary,
               child: const Icon(Icons.arrow_upward),
             ),
           ),
@@ -536,6 +537,7 @@ class _NomirroAppBar extends StatelessWidget {
 
   List<Widget> _buildDesktopNav(BuildContext context) {
     final loc = AppLocalizations.of(context)!;
+    final ColorScheme colorScheme = Theme.of(context).colorScheme;
     return [
       TextButton(
         onPressed: () => scrollToSection(aboutKey),
@@ -586,9 +588,12 @@ class _NomirroAppBar extends StatelessWidget {
         child: ElevatedButton(
           onPressed: () => scrollToSection(downloadKey),
           style: ElevatedButton.styleFrom(
-            backgroundColor: NomirroColors.primary,
-            foregroundColor: Colors.white,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30), side: const BorderSide(color: NomirroColors.primary, width: 1.5)),
+            backgroundColor: colorScheme.primary,
+            foregroundColor: colorScheme.onPrimary,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(30),
+              side: BorderSide(color: colorScheme.primary, width: 1.5),
+            ),
             elevation: 4,
           ),
           child: Text(
@@ -627,7 +632,7 @@ class _NomirroAppBar extends StatelessWidget {
     return IconButton(
       icon: Icon(
         isDark ? Icons.light_mode : Icons.dark_mode,
-        color: isDark ? Colors.white : NomirroColors.textDark,
+        color: Theme.of(context).colorScheme.onSurface,
       ),
       onPressed: () => onThemeToggle(!isDark),
       tooltip: isDark ? 'Alternar para Tema Claro' : 'Alternar para Tema Escuro',
@@ -728,6 +733,7 @@ class _NomirroDrawer extends StatelessWidget {
   }
 
   Widget _buildDrawerItem(BuildContext context, String title, GlobalKey? key, {bool isPrimary = false, required IconData icon}) {
+    final ColorScheme colorScheme = Theme.of(context).colorScheme;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 1.0),
       child: ListTile(
@@ -736,14 +742,14 @@ class _NomirroDrawer extends StatelessWidget {
         visualDensity: const VisualDensity(horizontal: 0, vertical: -3),
         leading: Icon(
           icon,
-          color: isPrimary ? NomirroColors.primary : (isDark ? Colors.white70 : Colors.black54),
+          color: isPrimary ? colorScheme.primary : (isDark ? Colors.white70 : Colors.black54),
         ),
         title: Text(
           title,
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.normal,
-            color: isPrimary ? NomirroColors.primary : (isDark ? Colors.white : Colors.black87),
+            color: isPrimary ? colorScheme.primary : (isDark ? Colors.white : Colors.black87),
           ),
         ),
         onTap: () {
@@ -897,6 +903,7 @@ class _HeroSectionState extends State<_HeroSection> with SingleTickerProviderSta
     final bool isMobile = w <= 600;
     final TextAlign titleAlign = isMobile ? TextAlign.justify : textAlign;
     final loc = AppLocalizations.of(context)!;
+    final ColorScheme colorScheme = Theme.of(context).colorScheme;
     final String titleText = loc.heroTitle;
     final String subtitleText = loc.heroSubtitle;
     final String ctaText = loc.heroCta;
@@ -935,8 +942,8 @@ class _HeroSectionState extends State<_HeroSection> with SingleTickerProviderSta
                 child: ElevatedButton(
                   onPressed: () { /* Baixar Agora */ },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: NomirroColors.primary,
-                    foregroundColor: Colors.white,
+                    backgroundColor: colorScheme.primary,
+                    foregroundColor: colorScheme.onPrimary,
                     padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
                     elevation: 8,
@@ -959,8 +966,8 @@ class _HeroSectionState extends State<_HeroSection> with SingleTickerProviderSta
               ElevatedButton(
                 onPressed: () { /* Baixar Agora */ },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: NomirroColors.primary,
-                  foregroundColor: Colors.white,
+                  backgroundColor: colorScheme.primary,
+                  foregroundColor: colorScheme.onPrimary,
                   padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 18),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
                   elevation: 10,
@@ -1190,8 +1197,6 @@ class _AboutSection extends StatelessWidget {
       ),
     );
   }
-
-
 }
 
 class _AboutItem extends StatefulWidget {
@@ -1230,13 +1235,13 @@ class _AboutItemState extends State<_AboutItem> {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: NomirroColors.primary,
+              color: Theme.of(context).colorScheme.primary,
               width: _hover ? 2.0 : 1.0,
             ),
             boxShadow: _hover
                 ? [
                     BoxShadow(
-                      color: NomirroColors.primary.withAlpha(38),
+                      color: Theme.of(context).colorScheme.primary.withAlpha(38),
                       blurRadius: 18,
                       spreadRadius: 0,
                       offset: const Offset(0, 10),
@@ -1256,7 +1261,7 @@ class _AboutItemState extends State<_AboutItem> {
                   border: Border.all(color: NomirroColors.accentDark.withAlpha(128), width: 1.5),
                 ),
                 alignment: Alignment.center,
-                child: Icon(widget.icon, color: NomirroColors.accentDark, size: 24),
+                child: Icon(widget.icon, color: Theme.of(context).colorScheme.secondary, size: 24),
               ),
               const SizedBox(width: 16),
               Expanded(
@@ -1320,13 +1325,13 @@ class _AboutItemPremiumState extends State<_AboutItemPremium> {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: NomirroColors.primary,
+              color: Theme.of(context).colorScheme.primary,
               width: _hover ? 2.0 : 1.0,
             ),
             boxShadow: _hover
                 ? [
                     BoxShadow(
-                      color: NomirroColors.primary.withAlpha(38),
+                      color: Theme.of(context).colorScheme.primary.withAlpha(38),
                       blurRadius: 18,
                       spreadRadius: 0,
                       offset: const Offset(0, 10),
@@ -1632,13 +1637,13 @@ class _HowItWorksStepState extends State<_HowItWorksStep> {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: NomirroColors.primary,
+              color: Theme.of(context).colorScheme.primary,
               width: _hover ? 2.0 : 1.0,
             ),
             boxShadow: _hover
                 ? [
                     BoxShadow(
-                      color: NomirroColors.primary.withAlpha(38),
+                      color: Theme.of(context).colorScheme.primary.withAlpha(38),
                       blurRadius: 18,
                       spreadRadius: 0,
                       offset: const Offset(0, 10),
@@ -1653,12 +1658,12 @@ class _HowItWorksStepState extends State<_HowItWorksStep> {
                 width: 60,
                 height: 60,
                 decoration: BoxDecoration(
-                  color: NomirroColors.primary.withAlpha(25),
+                color: Theme.of(context).colorScheme.primary.withAlpha(25),
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: NomirroColors.primary.withAlpha(128), width: 1.5),
+                  border: Border.all(color: Theme.of(context).colorScheme.primary.withAlpha(128), width: 1.5),
                 ),
                 alignment: Alignment.center,
-                child: Icon(widget.icon, color: NomirroColors.primary, size: 32),
+                child: Icon(widget.icon, color: Theme.of(context).colorScheme.primary, size: 32),
               ),
               const SizedBox(height: 24),
               Text(
@@ -1834,13 +1839,13 @@ class _FeatureCardState extends State<_FeatureCard> {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(20),
               border: Border.all(
-                color: NomirroColors.primary,
+                color: Theme.of(context).colorScheme.primary,
                 width: _hover ? 2.0 : 1.0,
               ),
               boxShadow: _hover
                   ? [
                       BoxShadow(
-                        color: NomirroColors.primary.withAlpha(isDark ? 51 : 38),
+                        color: Theme.of(context).colorScheme.primary.withAlpha(isDark ? 51 : 38),
                         blurRadius: 20,
                         spreadRadius: 0,
                         offset: const Offset(0, 10),
@@ -1852,7 +1857,7 @@ class _FeatureCardState extends State<_FeatureCard> {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(widget.icon, color: NomirroColors.accentDark, size: 28),
+                Icon(widget.icon, color: Theme.of(context).colorScheme.secondary, size: 28),
                 const SizedBox(height: 8),
                 Text(
                   widget.title,
@@ -1900,6 +1905,7 @@ class _DownloadSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final loc = AppLocalizations.of(context)!;
+    final ColorScheme colorScheme = Theme.of(context).colorScheme;
     return Container(
       decoration: BoxDecoration(
         color: sectionBg,
@@ -1936,16 +1942,16 @@ class _DownloadSection extends StatelessWidget {
                   _StoreButton(
                     assetIconPath: 'assets/icons/app_store.png',
                     text: loc.ctaAppStore,
-                    backgroundColor: NomirroColors.primary,
-                    textColor: Colors.white,
+                    backgroundColor: colorScheme.primary,
+                    textColor: colorScheme.onPrimary,
                     onPressed: () { /* Link App Store */ },
                   ),
                   const SizedBox(width: 12),
                   _StoreButton(
                     assetIconPath: 'assets/icons/play_store.png',
                     text: loc.ctaPlayStore,
-                    backgroundColor: NomirroColors.primary,
-                    textColor: Colors.white,
+                    backgroundColor: colorScheme.primary,
+                    textColor: colorScheme.onPrimary,
                     onPressed: () { /* Link Google Play */ },
                   ),
                 ];
@@ -2159,7 +2165,7 @@ class _FooterLinkState extends State<_FooterLink> {
           duration: const Duration(milliseconds: 200),
           style: TextStyle(
             color: _isHovered
-                ? NomirroColors.primary
+                ? Theme.of(context).colorScheme.primary
                 : (widget.isDark ? Colors.white70 : Colors.black54),
             fontSize: 14,
             fontWeight: FontWeight.normal,
