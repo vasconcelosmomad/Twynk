@@ -541,104 +541,146 @@ class _NomirroAppBar extends StatelessWidget {
     final loc = AppLocalizations.of(context)!;
     final ColorScheme colorScheme = Theme.of(context).colorScheme;
     return [
-      TextButton(
-        onPressed: () => scrollToSection(aboutKey),
-        child: Text(
-          loc.navAbout,
-          style: TextStyle(
-            fontWeight: FontWeight.normal,
-            color: Theme.of(context).textTheme.bodyLarge?.color,
-          ),
-        ),
-      ),
-      TextButton(
-        onPressed: () => scrollToSection(howItWorksKey),
-        child: Text(
-          loc.navHowItWorks,
-          style: TextStyle(
-            fontWeight: FontWeight.normal,
-            color: Theme.of(context).textTheme.bodyLarge?.color,
-          ),
-        ),
-      ),
-      TextButton(
-        onPressed: () => scrollToSection(featuresKey),
-        child: Text(
-          loc.navFeatures,
-          style: TextStyle(
-            fontWeight: FontWeight.normal,
-            color: Theme.of(context).textTheme.bodyLarge?.color,
-          ),
-        ),
-      ),
-      TextButton(
-        onPressed: () {
-          Navigator.of(context).push(
-            MaterialPageRoute(builder: (_) => const LoginPage()),
-          );
-        },
-        child: Text(
-          loc.navLogin,
-          style: TextStyle(
-            fontWeight: FontWeight.normal,
-            color: Theme.of(context).textTheme.bodyLarge?.color,
-          ),
-        ),
-      ),
-      Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 48.0),
-        child: ElevatedButton(
-          onPressed: () => scrollToSection(downloadKey),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: colorScheme.primary,
-            foregroundColor: colorScheme.onPrimary,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(30),
-              side: BorderSide(color: colorScheme.primary, width: 1.5),
-            ),
-            elevation: 4,
+      Center(
+        child: TextButton(
+          onPressed: () => scrollToSection(aboutKey),
+          style: TextButton.styleFrom(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 0),
+            minimumSize: const Size(0, 32),
+            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            visualDensity: const VisualDensity(horizontal: 0, vertical: -2),
           ),
           child: Text(
-            loc.navSignUp,
-            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+            loc.navAbout,
+            style: TextStyle(
+              fontWeight: FontWeight.normal,
+              color: Theme.of(context).textTheme.bodyLarge?.color,
+            ),
           ),
         ),
       ),
+      Center(
+        child: TextButton(
+          onPressed: () => scrollToSection(howItWorksKey),
+          style: TextButton.styleFrom(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 0),
+            minimumSize: const Size(0, 32),
+            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            visualDensity: const VisualDensity(horizontal: 0, vertical: -2),
+          ),
+          child: Text(
+            loc.navHowItWorks,
+            style: TextStyle(
+              fontWeight: FontWeight.normal,
+              color: Theme.of(context).textTheme.bodyLarge?.color,
+            ),
+          ),
+        ),
+      ),
+      Center(
+        child: TextButton(
+          onPressed: () => scrollToSection(featuresKey),
+          style: TextButton.styleFrom(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 0),
+            minimumSize: const Size(0, 32),
+            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            visualDensity: const VisualDensity(horizontal: 0, vertical: -2),
+          ),
+          child: Text(
+            loc.navFeatures,
+            style: TextStyle(
+              fontWeight: FontWeight.normal,
+              color: Theme.of(context).textTheme.bodyLarge?.color,
+            ),
+          ),
+        ),
+      ),
+      Center(
+        child: TextButton(
+          onPressed: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => const LoginPage()),
+            );
+          },
+          style: TextButton.styleFrom(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 0),
+            minimumSize: const Size(0, 32),
+            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            visualDensity: const VisualDensity(horizontal: 0, vertical: -2),
+          ),
+          child: Text(
+            loc.navLogin,
+            style: TextStyle(
+              fontWeight: FontWeight.normal,
+              color: Theme.of(context).textTheme.bodyLarge?.color,
+            ),
+          ),
+        ),
+      ),
+      Center(
+        child: ElevatedButton(
+          onPressed: () {
+            // TODO: Implementar navegação para página de registro
+          },
+          style: ElevatedButton.styleFrom(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          ),
+          child: Text(loc.navSignUp),
+        ),
+      ),
+      const SizedBox(width: 16),
     ];
   }
 
   Widget _buildLanguageButton(BuildContext context) {
     final ColorScheme colorScheme = Theme.of(context).colorScheme;
-    return PopupMenuButton<String>(
-      tooltip: 'Idioma / Language',
-      icon: Icon(Icons.language, color: colorScheme.secondary),
-      position: PopupMenuPosition.under,
-      offset: const Offset(0, 4),
-      onSelected: (value) {
-        final lang = value == 'en' ? AppLanguage.en : AppLanguage.pt;
-        LanguageController.instance.setLanguage(lang);
-      },
-      itemBuilder: (context) => const [
-        PopupMenuItem<String>(
-          value: 'pt',
-          child: Text('Português'),
+    return Center(
+      child: Theme(
+        data: Theme.of(context).copyWith(
+          splashColor: Colors.transparent,
+          highlightColor: Colors.transparent,
+          hoverColor: Colors.transparent,
         ),
-        PopupMenuItem<String>(
-          value: 'en',
-          child: Text('English'),
+        child: PopupMenuButton<String>(
+          tooltip: 'Idioma / Language',
+          icon: Icon(Icons.language, color: colorScheme.secondary),
+          position: PopupMenuPosition.under,
+          offset: const Offset(0, 4),
+          onSelected: (value) {
+            final lang = value == 'en' ? AppLanguage.en : AppLanguage.pt;
+            LanguageController.instance.setLanguage(lang);
+          },
+          itemBuilder: (context) => const [
+            PopupMenuItem<String>(
+              value: 'pt',
+              child: Text('Português'),
+            ),
+            PopupMenuItem<String>(
+              value: 'en',
+              child: Text('English'),
+            ),
+          ],
         ),
-      ],
+      ),
     );
   }
 
   Widget _buildThemeToggleButton(BuildContext context) {
-    return IconButton(
-      icon: Icon(
-        isDark ? Icons.light_mode : Icons.dark_mode,
-        color: Theme.of(context).colorScheme.onSurface,
+    return Center(
+      child: IconButton(
+        style: ButtonStyle(
+          overlayColor: WidgetStateProperty.all(Colors.transparent),
+        ),
+        hoverColor: Colors.transparent,
+        splashColor: Colors.transparent,
+        highlightColor: Colors.transparent,
+        icon: Icon(
+          isDark ? Icons.light_mode : Icons.dark_mode,
+          color: Theme.of(context).colorScheme.onSurface,
+        ),
+        onPressed: () => onThemeToggle(!isDark),
+        tooltip: isDark ? 'Alternar para Tema Claro' : 'Alternar para Tema Escuro',
       ),
-      onPressed: () => onThemeToggle(!isDark),
-      tooltip: isDark ? 'Alternar para Tema Claro' : 'Alternar para Tema Escuro',
     );
   }
 }

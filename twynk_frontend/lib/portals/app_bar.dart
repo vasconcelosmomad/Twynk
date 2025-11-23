@@ -94,6 +94,8 @@ class _NomirroAppBarState extends State<NomirroAppBar> {
       if (widget.isMobile)
         IconButton(
           icon: const Icon(Icons.search),
+          padding: EdgeInsets.zero,
+          constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
           onPressed: () => setState(() => _searchActive = true),
         ),
       const SizedBox(width: 16.0),
@@ -105,6 +107,9 @@ class _NomirroAppBarState extends State<NomirroAppBar> {
           style: IconButton.styleFrom(
             backgroundColor: colorScheme.primary.withValues(alpha: 0.12),
             foregroundColor: colorScheme.primary,
+            padding: EdgeInsets.zero,
+            minimumSize: const Size(36, 36),
+            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
           ),
         )
       else
@@ -113,7 +118,9 @@ class _NomirroAppBarState extends State<NomirroAppBar> {
           icon: const Icon(Icons.add_circle_outline),
           label: const Text('Criar'),
           style: TextButton.styleFrom(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+            padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 0.0),
+            minimumSize: const Size(0, 36),
+            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
             foregroundColor: colorScheme.onPrimary,
             backgroundColor: colorScheme.primary,
             shape: RoundedRectangleBorder(
@@ -201,7 +208,7 @@ class _SearchFormFlutterState extends State<SearchFormFlutter> {
           controller: _searchController,
           decoration: InputDecoration(
             contentPadding:
-                const EdgeInsets.symmetric(vertical: 10, horizontal: 40),
+                const EdgeInsets.symmetric(vertical: 8, horizontal: 40),
             hintText: 'Search',
             hintStyle: TextStyle(color: Colors.grey[600]),
             filled: true,
@@ -229,8 +236,9 @@ class _SearchFormFlutterState extends State<SearchFormFlutter> {
                 foregroundColor: theme.brightness == Brightness.dark
                     ? Colors.white
                     : colorScheme.secondary,
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16),
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                minimumSize: const Size(40, 32),
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                 shape: const RoundedRectangleBorder(
                   borderRadius: BorderRadius.only(
                     topRight: Radius.circular(20),
