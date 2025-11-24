@@ -16,6 +16,14 @@ class SidebarMenu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final mediaQuery = MediaQuery.of(context);
+    final double screenWidth = mediaQuery.size.width;
+    final double menuFontSize = screenWidth >= 1024
+        ? 16
+        : screenWidth >= 600
+            ? 15
+            : 14;
+
     final items = [
       {'icon': Icons.person_search, 'label': 'Nearby'},
       {'icon': Icons.people_alt, 'label': 'Encounters'},
@@ -47,7 +55,7 @@ class SidebarMenu extends StatelessWidget {
             children: [
               if (showDrawerHeader)
                 Padding(
-                  padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
+                  padding: EdgeInsets.only(top: mediaQuery.padding.top),
                   child: SizedBox(
                     height: kToolbarHeight,
                     child: Padding(
@@ -84,7 +92,11 @@ class SidebarMenu extends StatelessWidget {
                       ? null
                       : Text(
                           item['label'] as String,
-                          style: TextStyle(color: textColor),
+                          style: TextStyle(
+                            color: textColor,
+                            fontSize: menuFontSize,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                   selected: isSelected,
                   onTap: () => onItemSelected?.call(index),
@@ -111,6 +123,8 @@ class SidebarMenu extends StatelessWidget {
                           color: selectedIndex == 5
                               ? selectedTextColor
                               : unselectedTextColor,
+                          fontSize: menuFontSize,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
                 selected: selectedIndex == 5,
@@ -136,6 +150,8 @@ class SidebarMenu extends StatelessWidget {
                           color: selectedIndex == 6
                               ? selectedTextColor
                               : unselectedTextColor,
+                          fontSize: menuFontSize,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
                 selected: selectedIndex == 6,

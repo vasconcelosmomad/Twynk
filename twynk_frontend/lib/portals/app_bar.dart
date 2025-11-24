@@ -179,45 +179,76 @@ class _NomirroAppBarState extends State<NomirroAppBar> {
 
   Widget _buildUserMenu(BuildContext context) {
     final ColorScheme colorScheme = Theme.of(context).colorScheme;
-    return PopupMenuButton<String>(
-      itemBuilder: (context) => [
-        PopupMenuItem<String>(
-          value: 'name',
-          child: Row(
-            children: [
-              Icon(Icons.person, size: 18),
-              SizedBox(width: 8),
-              Text('Nome'),
-            ],
-          ),
-        ),
-        PopupMenuItem<String>(
-          value: 'profile',
-          child: Row(
-            children: [
-              Icon(Icons.settings, size: 18),
-              SizedBox(width: 8),
-              Text('Profile'),
-            ],
-          ),
-        ),
-        PopupMenuItem<String>(
-          value: 'update_plan',
-          child: Row(
-            children: [
-              Icon(Icons.workspace_premium_outlined, size: 18, color: colorScheme.secondary),
-              SizedBox(width: 8),
-              Text('Update plan'),
-            ],
-          ),
-        ),
-      ],
-      position: PopupMenuPosition.under,
-      onSelected: (value) {},
-      child: const CircleAvatar(
-        radius: 16,
-        backgroundColor: Colors.grey,
-        child: Icon(Icons.person, size: 18, color: Colors.white),
+    // Use a Builder to get the context of the button for positioning the menu.
+    return Center(
+      child: Builder(
+        builder: (context) {
+          return Tooltip(
+            message: 'User Menu',
+            child: InkWell(
+              customBorder: const CircleBorder(),
+              onTap: () {
+                final RenderBox button = context.findRenderObject() as RenderBox;
+                final RenderBox overlay = Overlay.of(context).context.findRenderObject() as RenderBox;
+                final RelativeRect position = RelativeRect.fromRect(
+                  Rect.fromPoints(
+                    button.localToGlobal(const Offset(0, 0), ancestor: overlay),
+                    button.localToGlobal(button.size.bottomRight(Offset.zero), ancestor: overlay),
+                  ),
+                  Offset.zero & overlay.size,
+                );
+
+                showMenu<String>(
+                  context: context,
+                  position: position.shift(const Offset(0, 44)), // Adjust offset as needed
+                  items: [
+                    PopupMenuItem<String>(
+                      value: 'name',
+                      child: Row(
+                        children: [
+                          Icon(Icons.person, size: 18),
+                          SizedBox(width: 8),
+                          Text('Nome'),
+                        ],
+                      ),
+                    ),
+                    PopupMenuItem<String>(
+                      value: 'profile',
+                      child: Row(
+                        children: [
+                          Icon(Icons.settings, size: 18),
+                          SizedBox(width: 8),
+                          Text('Profile'),
+                        ],
+                      ),
+                    ),
+                    PopupMenuItem<String>(
+                      value: 'update_plan',
+                      child: Row(
+                        children: [
+                          Icon(Icons.workspace_premium_outlined, size: 18, color: colorScheme.secondary),
+                          SizedBox(width: 8),
+                          Text('Update plan'),
+                        ],
+                      ),
+                    ),
+                  ],
+                ).then((value) {
+                  if (value == null) return; // Menu dismissed
+                  // Handle selection
+                });
+              },
+              child: const Padding(
+                padding: EdgeInsets.all(8.0),
+                child: CircleAvatar(
+                  radius: 16,
+                  backgroundColor: Colors.grey,
+                  child: Icon(Icons.person, size: 18, color: Colors.white),
+                ),
+              ),
+            ),
+          );
+        },
       ),
     );
   }
