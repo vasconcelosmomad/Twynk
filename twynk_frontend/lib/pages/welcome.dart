@@ -336,7 +336,7 @@ class _NomirroLandingPageState extends State<NomirroLandingPage> {
   final ScrollController _scrollController = ScrollController();
   bool _showFab = false;
 
-  @override
+@override
   void initState() {
     super.initState();
     _scrollController.addListener(() {
@@ -539,7 +539,6 @@ class _NomirroAppBar extends StatelessWidget {
 
   List<Widget> _buildDesktopNav(BuildContext context) {
     final loc = AppLocalizations.of(context)!;
-    final ColorScheme colorScheme = Theme.of(context).colorScheme;
     return [
       Center(
         child: TextButton(
@@ -635,51 +634,69 @@ class _NomirroAppBar extends StatelessWidget {
   Widget _buildLanguageButton(BuildContext context) {
     final ColorScheme colorScheme = Theme.of(context).colorScheme;
     return Center(
-      child: Theme(
-        data: Theme.of(context).copyWith(
-          splashColor: Colors.transparent,
-          highlightColor: Colors.transparent,
-          hoverColor: Colors.transparent,
-        ),
-        child: PopupMenuButton<String>(
-          tooltip: 'Idioma / Language',
-          icon: Icon(Icons.language, color: colorScheme.secondary),
-          position: PopupMenuPosition.under,
-          offset: const Offset(0, 4),
-          onSelected: (value) {
-            final lang = value == 'en' ? AppLanguage.en : AppLanguage.pt;
-            LanguageController.instance.setLanguage(lang);
-          },
-          itemBuilder: (context) => const [
-            PopupMenuItem<String>(
-              value: 'pt',
-              child: Text('Português'),
+      // Use a Builder to get the context of the button for positioning the menu.
+      child: Builder(
+        builder: (context) {
+          return Tooltip(
+            message: 'Idioma / Language',
+            child: InkWell(
+              customBorder: const CircleBorder(),
+              onTap: () {
+                final RenderBox button = context.findRenderObject() as RenderBox;
+                final RenderBox overlay = Overlay.of(context).context.findRenderObject() as RenderBox;
+                final RelativeRect position = RelativeRect.fromRect(
+                  Rect.fromPoints(
+                    button.localToGlobal(const Offset(0, 0), ancestor: overlay),
+                    button.localToGlobal(button.size.bottomRight(Offset.zero), ancestor: overlay),
+                  ),
+                  Offset.zero & overlay.size,
+                );
+
+                showMenu<String>(
+                  context: context,
+                  position: position.shift(const Offset(0, 44)), // Adjust offset as needed
+                  items: const [
+                    PopupMenuItem<String>(
+                      value: 'pt',
+                      child: Text('Português'),
+                    ),
+                    PopupMenuItem<String>(
+                      value: 'en',
+                      child: Text('English'),
+                    ),
+                  ],
+                ).then((value) {
+                  if (value == null) return; // Menu dismissed
+                  final lang = value == 'en' ? AppLanguage.en : AppLanguage.pt;
+                  LanguageController.instance.setLanguage(lang);
+                });
+              },
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Icon(Icons.language, color: colorScheme.secondary),
+              ),
             ),
-            PopupMenuItem<String>(
-              value: 'en',
-              child: Text('English'),
-            ),
-          ],
-        ),
+          );
+        },
       ),
     );
   }
 
   Widget _buildThemeToggleButton(BuildContext context) {
     return Center(
-      child: IconButton(
-        style: ButtonStyle(
-          overlayColor: WidgetStateProperty.all(Colors.transparent),
+      child: Tooltip(
+        message: isDark ? 'Alternar para Tema Claro' : 'Alternar para Tema Escuro',
+        child: InkWell(
+          customBorder: const CircleBorder(),
+          onTap: () => onThemeToggle(!isDark),
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Icon(
+              isDark ? Icons.light_mode : Icons.dark_mode,
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
+          ),
         ),
-        hoverColor: Colors.transparent,
-        splashColor: Colors.transparent,
-        highlightColor: Colors.transparent,
-        icon: Icon(
-          isDark ? Icons.light_mode : Icons.dark_mode,
-          color: Theme.of(context).colorScheme.onSurface,
-        ),
-        onPressed: () => onThemeToggle(!isDark),
-        tooltip: isDark ? 'Alternar para Tema Claro' : 'Alternar para Tema Escuro',
       ),
     );
   }

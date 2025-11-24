@@ -46,10 +46,6 @@ class _NomirroAppBarState extends State<NomirroAppBar> {
     );
   }
 
-  void _toggleLanguage(BuildContext context) {
-    LanguageController.instance.toggle();
-  }
-
   Widget _buildTitle(BuildContext context) {
     // MOBILE
     if (widget.isMobile && _searchActive) {
@@ -113,29 +109,68 @@ class _NomirroAppBarState extends State<NomirroAppBar> {
           ),
         )
       else
-        TextButton.icon(
-          onPressed: () {},
-          icon: const Icon(Icons.add_circle_outline),
-          label: const Text('Criar'),
-          style: TextButton.styleFrom(
-            padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 0.0),
-            minimumSize: const Size(0, 36),
-            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-            foregroundColor: colorScheme.onPrimary,
-            backgroundColor: colorScheme.primary,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(30.0),
+        Center(
+          child: TextButton.icon(
+            onPressed: () {},
+            icon: const Icon(Icons.add_circle_outline),
+            label: const Text('Criar'),
+            style: TextButton.styleFrom(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+              foregroundColor: colorScheme.onPrimary,
+              backgroundColor: colorScheme.primary,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(30.0),
+              ),
             ),
           ),
         ),
       const SizedBox(width: 8.0),
-      IconButton(
-        tooltip: LanguageController.instance.current == AppLanguage.en
-            ? 'Mudar para Português'
-            : 'Switch to English',
-        icon: Icon(Icons.language, color: colorScheme.secondary),
-        onPressed: () => _toggleLanguage(context),
-      ),
+      // Use a Builder to get the context of the button for positioning the menu.
+      Center(
+        child: Builder(
+          builder: (context) {
+            return Tooltip(
+            message: 'Idioma / Language',
+            child: InkWell(
+              customBorder: const CircleBorder(),
+              onTap: () {
+                final RenderBox button = context.findRenderObject() as RenderBox;
+                final RenderBox overlay = Overlay.of(context).context.findRenderObject() as RenderBox;
+                final RelativeRect position = RelativeRect.fromRect(
+                  Rect.fromPoints(
+                    button.localToGlobal(const Offset(0, 0), ancestor: overlay),
+                    button.localToGlobal(button.size.bottomRight(Offset.zero), ancestor: overlay),
+                  ),
+                  Offset.zero & overlay.size,
+                );
+
+                showMenu<String>(
+                  context: context,
+                  position: position.shift(const Offset(0, 44)), // Adjust offset as needed
+                  items: const [
+                    PopupMenuItem<String>(
+                      value: 'pt',
+                      child: Text('Português'),
+                    ),
+                    PopupMenuItem<String>(
+                      value: 'en',
+                      child: Text('English'),
+                    ),
+                  ],
+                ).then((value) {
+                  if (value == null) return; // Menu dismissed
+                  final lang = value == 'en' ? AppLanguage.en : AppLanguage.pt;
+                  LanguageController.instance.setLanguage(lang);
+                });
+              },
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Icon(Icons.language, color: colorScheme.secondary),
+              ),
+            ),
+          );
+        },
+      )),
       const SizedBox(width: 16.0),
       _buildUserMenu(context),
       const SizedBox(width: 16.0),

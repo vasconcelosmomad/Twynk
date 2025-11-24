@@ -80,16 +80,18 @@ class _NomirroAppBarState extends State<NomirroAppBar> {
           ),
         )
       else
-        TextButton.icon(
-          onPressed: () {},
-          icon: const Icon(Icons.add_circle_outline),
-          label: const Text('Criar'),
-          style: TextButton.styleFrom(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-            foregroundColor: colorScheme.onPrimary,
-            backgroundColor: colorScheme.primary,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(30.0),
+        Center(
+          child: TextButton.icon(
+            onPressed: () {},
+            icon: const Icon(Icons.add_circle_outline),
+            label: const Text('Criar'),
+            style: TextButton.styleFrom(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+              foregroundColor: colorScheme.onPrimary,
+              backgroundColor: colorScheme.primary,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(30.0),
+              ),
             ),
           ),
         ),
