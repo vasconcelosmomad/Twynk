@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../services/api_client.dart';
 import '../portals/app_bar_copy.dart';
 import '../portals/drawer.dart';
 import '../portals/footer.dart';
 import 'explore.dart';
 import 'chat.dart';
+import 'login.dart';
 import '../themes/app_theme.dart';
 
 // --- MODELO DE DADOS ---
@@ -45,10 +48,6 @@ final List<Photo> initialPhotos = [
   Photo(id: 2, url: 'https://images.unsplash.com/photo-1500462918059-b1a0cb512f1d?auto=format&fit=crop&w=500&q=60', isPrivate: true, isProfile: false, title: 'Abstrato'),
   Photo(id: 3, url: 'https://images.unsplash.com/photo-1472214103451-9374bd1c798e?auto=format&fit=crop&w=500&q=60', isPrivate: false, isProfile: false, title: 'Natureza'),
 ];
-
-void main() {
-  runApp(const PhotoMasterApp());
-}
 
 // --- WIDGET PRINCIPAL ---
 
@@ -120,6 +119,17 @@ class _PhotoMasterAppState extends State<PhotoMasterApp> {
     });
   }
 
+  Future<void> _logout() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('auth_token');
+    ApiClient.instance.clearToken();
+    if (!mounted) return;
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(builder: (_) => const LoginPage()),
+      (route) => false,
+    );
+  }
+
   void _onBottomNavTap(int index) {
     final isMobile = MediaQuery.of(context).size.width < 1024;
     setState(() => _selectedDrawerIndex = index);
@@ -141,6 +151,11 @@ class _PhotoMasterAppState extends State<PhotoMasterApp> {
     }
     if (index == 4) {
       if (isMobile && _drawerOpen) Navigator.of(context).pop();
+      return;
+    }
+    if (index == 6) {
+      if (isMobile && _drawerOpen) Navigator.of(context).pop();
+      _logout();
       return;
     }
     if (isMobile && _drawerOpen) Navigator.of(context).pop();

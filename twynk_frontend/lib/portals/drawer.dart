@@ -25,11 +25,11 @@ class SidebarMenu extends StatelessWidget {
             : 14;
 
     final items = [
-      {'icon': Icons.person_search, 'label': 'Nearby'},
-      {'icon': Icons.people_alt, 'label': 'Encounters'},
+      {'icon': Icons.person_search, 'label': 'Encontros'},
+      {'icon': Icons.people_alt, 'label': 'Proximo'},
       {'icon': Icons.play_circle_fill, 'label': 'Explore'},
       {'icon': Icons.chat_bubble, 'label': 'Chats'},
-      {'icon': Icons.notifications, 'label': 'Notification'},
+      {'icon': Icons.notifications, 'label': 'Profile'},
     ];
 
     final theme = Theme.of(context);

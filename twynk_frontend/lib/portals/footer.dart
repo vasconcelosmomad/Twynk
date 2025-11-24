@@ -43,7 +43,7 @@ class Footer extends StatelessWidget {
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.notifications),
-          label: 'Notification',
+          label: 'Profile',
         ),
       ],
     );
