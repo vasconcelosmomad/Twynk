@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:twynk_frontend/pages/plans.dart';
+import '../services/language_controller.dart';
 
 class _TwoBarMenuIcon extends StatelessWidget {
   final Color color;
@@ -152,6 +153,64 @@ class _NomirroAppBarState extends State<NomirroAppBar> {
             ),
           ),
         ),
+      const SizedBox(width: 16.0),
+      Center(
+        child: Builder(
+          builder: (context) {
+            return Tooltip(
+              message: 'Idioma / Language',
+              child: InkWell(
+                customBorder: const CircleBorder(),
+                onTap: () {
+                  final RenderBox button =
+                      context.findRenderObject() as RenderBox;
+                  final RenderBox overlay = Overlay.of(context)
+                      .context
+                      .findRenderObject() as RenderBox;
+                  final RelativeRect position = RelativeRect.fromRect(
+                    Rect.fromPoints(
+                      button.localToGlobal(
+                        const Offset(0, 0),
+                        ancestor: overlay,
+                      ),
+                      button.localToGlobal(
+                        button.size.bottomRight(Offset.zero),
+                        ancestor: overlay,
+                      ),
+                    ),
+                    Offset.zero & overlay.size,
+                  );
+
+                  showMenu<String>(
+                    context: context,
+                    position: position.shift(const Offset(0, 44)),
+                    items: const [
+                      PopupMenuItem<String>(
+                        value: 'pt',
+                        child: Text('Português'),
+                      ),
+                      PopupMenuItem<String>(
+                        value: 'en',
+                        child: Text('English'),
+                      ),
+                    ],
+                  ).then((value) {
+                    if (value == null) return;
+                    final lang =
+                        value == 'en' ? AppLanguage.en : AppLanguage.pt;
+                    LanguageController.instance.setLanguage(lang);
+                  });
+                },
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child:
+                      Icon(Icons.language, color: colorScheme.secondary),
+                ),
+              ),
+            );
+          },
+        ),
+      ),
       const SizedBox(width: 16.0),
       _buildUserMenu(context),
       const SizedBox(width: 16.0),

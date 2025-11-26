@@ -108,11 +108,6 @@ class _NomirroAppBarState extends State<NomirroAppBar> {
         Image.asset('assets/icons/logo_02.png', height: 32),
         const SizedBox(width: 8.0),
         const Spacer(),
-        SizedBox(
-          width: MediaQuery.of(context).size.width * 0.4,
-          height: 40,
-          child: const SearchFormFlutter(),
-        ),
       ],
     );
   }
