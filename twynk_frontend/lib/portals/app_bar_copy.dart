@@ -1,4 +1,48 @@
 import 'package:flutter/material.dart';
+import 'package:twynk_frontend/pages/plans.dart';
+
+class _TwoBarMenuIcon extends StatelessWidget {
+  final Color color;
+
+  const _TwoBarMenuIcon({required this.color});
+
+  @override
+  Widget build(BuildContext context) {
+    const double size = 22;
+    final double barHeight = size * 0.1;
+    final double topWidth = size;
+    final double bottomWidth = size * 0.7;
+    final double spacing = size * 0.28;
+
+    return SizedBox(
+      width: size,
+      height: size,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: topWidth,
+            height: barHeight,
+            decoration: BoxDecoration(
+              color: color,
+              borderRadius: BorderRadius.circular(barHeight),
+            ),
+          ),
+          SizedBox(height: spacing),
+          Container(
+            width: bottomWidth,
+            height: barHeight,
+            decoration: BoxDecoration(
+              color: color,
+              borderRadius: BorderRadius.circular(barHeight),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
 
 class NomirroAppBar extends StatefulWidget implements PreferredSizeWidget {
   final bool isMobile;
@@ -18,24 +62,34 @@ class NomirroAppBar extends StatefulWidget implements PreferredSizeWidget {
 }
 
 class _NomirroAppBarState extends State<NomirroAppBar> {
-
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final Color baseForegroundColor = colorScheme.onSurface;
+
     return AppBar(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      backgroundColor: theme.scaffoldBackgroundColor,
+      foregroundColor: baseForegroundColor,
       surfaceTintColor: Colors.transparent,
       elevation: 0,
       automaticallyImplyLeading: false,
-      titleSpacing: 0,
+      titleSpacing: 4.0,
       leading: widget.isMobile
           ? Builder(
               builder: (ctx) => IconButton(
-                icon: const Icon(Icons.menu),
+                icon: _TwoBarMenuIcon(
+                  color: colorScheme.primary,
+                ),
                 onPressed: () {
+                  final scaffoldState = Scaffold.maybeOf(ctx);
+                  if (scaffoldState == null) {
+                    return;
+                  }
                   if (widget.drawerOpen == true) {
                     Navigator.of(ctx).pop();
-                  } else {
-                    Scaffold.of(ctx).openDrawer();
+                  } else if (scaffoldState.hasDrawer) {
+                    scaffoldState.openDrawer();
                   }
                 },
               ),
@@ -69,7 +123,10 @@ class _NomirroAppBarState extends State<NomirroAppBar> {
       if (widget.isMobile)
         IconButton.filledTonal(
           onPressed: () {},
-          icon: const Icon(Icons.add_outlined),
+          icon: Icon(
+            Icons.add_outlined,
+            color: colorScheme.primary,
+          ),
           tooltip: 'Criar',
           style: IconButton.styleFrom(
             backgroundColor: colorScheme.primary.withValues(alpha: 0.12),
@@ -83,12 +140,12 @@ class _NomirroAppBarState extends State<NomirroAppBar> {
         Center(
           child: TextButton.icon(
             onPressed: () {},
-            icon: const Icon(Icons.add_circle_outline),
+            icon: Icon(Icons.add_outlined, color: colorScheme.primary),
             label: const Text('Criar'),
             style: TextButton.styleFrom(
               padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-              foregroundColor: colorScheme.onPrimary,
-              backgroundColor: colorScheme.primary,
+              foregroundColor: colorScheme.primary,
+              backgroundColor: colorScheme.primary.withValues(alpha: 0.12),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(30.0),
               ),
@@ -137,7 +194,15 @@ class _NomirroAppBarState extends State<NomirroAppBar> {
         ),
       ],
       position: PopupMenuPosition.under,
-      onSelected: (value) {},
+      onSelected: (value) {
+        if (value == 'update_plan') {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (_) => const PlansPage(),
+            ),
+          );
+        }
+      },
       child: const CircleAvatar(
         radius: 16,
         backgroundColor: Colors.grey,

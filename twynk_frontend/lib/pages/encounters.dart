@@ -1,8 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:twynk_frontend/pages/shorts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:twynk_frontend/pages/explore.dart';
+import 'package:twynk_frontend/pages/proflie.dart';
+import 'package:twynk_frontend/pages/chat.dart';
+import 'package:twynk_frontend/pages/login.dart';
+import 'package:twynk_frontend/pages/noerby.dart';
+import 'package:twynk_frontend/pages/plans.dart';
 import 'package:twynk_frontend/portals/footer.dart';
 import 'package:twynk_frontend/portals/app_bar.dart';
 import 'package:twynk_frontend/portals/drawer.dart';
+import 'package:twynk_frontend/services/api_client.dart';
 
 class HomeYouTubeStyleFlutter extends StatefulWidget {
   const HomeYouTubeStyleFlutter({super.key});
@@ -15,15 +22,51 @@ class _HomeYouTubeStyleFlutterState extends State<HomeYouTubeStyleFlutter> {
   bool _drawerOpen = false;
   int _selectedIndex = 0;
 
+  Future<void> _logout() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('auth_token');
+    ApiClient.instance.clearToken();
+    if (!mounted) return;
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(
+        builder: (_) => const LoginPage(),
+      ),
+      (route) => false,
+    );
+  }
+
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
     });
 
-    if (index == 1) {
+    if (index == 6) {
+      _logout();
+      return;
+    } else if (index == 1) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const HomePage()),
+      );
+    } else if (index == 2) {
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => ShortsPage()),
+      );
+    } else if (index == 3) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const ChatPage()),
+      );
+    } else if (index == 4) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const PainelAssinantePage()),
+      );
+    } else if (index == 5) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const PlansPage()),
       );
     } else if (MediaQuery.of(context).size.width < 1024) {
       Navigator.of(context).pop();
@@ -127,16 +170,14 @@ class _HomeYouTubeStyleFlutterState extends State<HomeYouTubeStyleFlutter> {
                                           ),
                                         ),
                                         Container(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 8, vertical: 4),
+                                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                                           decoration: BoxDecoration(
                                             color: Colors.lightGreen,
                                             borderRadius: BorderRadius.circular(12),
                                           ),
                                           child: const Text(
                                             'Online',
-                                            style: TextStyle(
-                                                color: Colors.white, fontSize: 12),
+                                            style: TextStyle(color: Colors.white, fontSize: 12),
                                           ),
                                         ),
                                       ],
@@ -260,7 +301,7 @@ class _HomeYouTubeStyleFlutterState extends State<HomeYouTubeStyleFlutter> {
 
       bottomNavigationBar: isMobile
           ? Footer(
-              currentIndex: _selectedIndex,
+              currentIndex: _selectedIndex > 4 ? 0 : _selectedIndex,
               onTap: _onItemTapped,
             )
           : null,

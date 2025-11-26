@@ -110,7 +110,7 @@ class _RegisterPageState extends State<RegisterPage> {
   String? _city;
 
   // UI State
-  bool _obscurePassword = true;
+  final bool _obscurePassword = true;
   Map<String, String?> _errors = {};
 
   // Computed Properties (Getters)
@@ -670,6 +670,7 @@ class _RegisterPageState extends State<RegisterPage> {
       mainAxisSize: MainAxisSize.min,
       children: [
         DropdownButtonFormField<String>(
+          // ignore: deprecated_member_use
           value: value,
           items: items.map((String val) {
             return DropdownMenuItem(value: val, child: Text(val));

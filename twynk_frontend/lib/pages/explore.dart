@@ -5,6 +5,9 @@ import 'package:twynk_frontend/portals/drawer.dart';
 import 'package:twynk_frontend/portals/footer.dart';
 import 'package:twynk_frontend/pages/login.dart';
 import 'package:twynk_frontend/pages/chat.dart';
+import 'package:twynk_frontend/pages/encounters.dart';
+import 'package:twynk_frontend/pages/noerby.dart';
+import 'package:twynk_frontend/pages/plans.dart';
 import 'package:twynk_frontend/services/api_client.dart';
 import 'package:video_player/video_player.dart';
 
@@ -107,7 +110,21 @@ class _ShortsPageState extends State<ShortsPage> {
       if (fromDrawer && isMobile && _drawerOpen) {
         Navigator.of(context).pop();
       }
-      Navigator.of(context).maybePop();
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const HomeYouTubeStyleFlutter()),
+      );
+      return;
+    }
+
+    if (index == 1) {
+      if (fromDrawer && isMobile && _drawerOpen) {
+        Navigator.of(context).pop();
+      }
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const HomePage()),
+      );
       return;
     }
 
@@ -125,6 +142,17 @@ class _ShortsPageState extends State<ShortsPage> {
       Navigator.push(
         context,
         MaterialPageRoute(builder: (_) => const ChatPage()),
+      );
+      return;
+    }
+
+    if (index == 5) {
+      if (fromDrawer && isMobile && _drawerOpen) {
+        Navigator.of(context).pop();
+      }
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const PlansPage()),
       );
       return;
     }

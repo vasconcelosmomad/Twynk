@@ -1,6 +1,49 @@
 import 'package:flutter/material.dart';
 import '../services/language_controller.dart';
 
+class _TwoBarMenuIcon extends StatelessWidget {
+  final Color color;
+
+  const _TwoBarMenuIcon({required this.color});
+
+  @override
+  Widget build(BuildContext context) {
+    const double size = 22;
+    final double barHeight = size * 0.1;
+    final double topWidth = size;
+    final double bottomWidth = size * 0.7;
+    final double spacing = size * 0.28;
+
+    return SizedBox(
+      width: size,
+      height: size,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: topWidth,
+            height: barHeight,
+            decoration: BoxDecoration(
+              color: color,
+              borderRadius: BorderRadius.circular(barHeight),
+            ),
+          ),
+          SizedBox(height: spacing),
+          Container(
+            width: bottomWidth,
+            height: barHeight,
+            decoration: BoxDecoration(
+              color: color,
+              borderRadius: BorderRadius.circular(barHeight),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class NomirroAppBar extends StatefulWidget implements PreferredSizeWidget {
   final bool isMobile;
   final bool drawerOpen;
@@ -23,15 +66,22 @@ class _NomirroAppBarState extends State<NomirroAppBar> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final Color baseForegroundColor = colorScheme.onSurface;
+
     return AppBar(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      backgroundColor: theme.scaffoldBackgroundColor,
+      foregroundColor: baseForegroundColor,
       surfaceTintColor: Colors.transparent,
       elevation: 0,
       automaticallyImplyLeading: false,
-      titleSpacing: 0,
+      titleSpacing: 4.0,
       leading: widget.isMobile
           ? IconButton(
-              icon: const Icon(Icons.menu),
+              icon: _TwoBarMenuIcon(
+                color: colorScheme.primary,
+              ),
               onPressed: () {
                 if (widget.drawerOpen) {
                   Navigator.of(context).pop();
@@ -47,16 +97,8 @@ class _NomirroAppBarState extends State<NomirroAppBar> {
   }
 
   Widget _buildTitle(BuildContext context) {
-    // MOBILE
-    if (widget.isMobile && _searchActive) {
-      return const SizedBox(
-        height: 40,
-        child: SearchFormFlutter(),
-      );
-    }
-
     if (widget.isMobile) {
-      return Image.asset('assets/icons/logo_02.png', height: 42);
+      return Image.asset('assets/icons/logo_02.png', height: 32);
     }
 
     // DESKTOP
@@ -89,7 +131,7 @@ class _NomirroAppBarState extends State<NomirroAppBar> {
     return [
       if (widget.isMobile)
         IconButton(
-          icon: const Icon(Icons.search),
+          icon: Icon(Icons.search, color: colorScheme.primary),
           padding: EdgeInsets.zero,
           constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
           onPressed: () => setState(() => _searchActive = true),
@@ -98,7 +140,7 @@ class _NomirroAppBarState extends State<NomirroAppBar> {
       if (widget.isMobile)
         IconButton.filledTonal(
           onPressed: () {},
-          icon: const Icon(Icons.add),
+          icon: Icon(Icons.add, color: colorScheme.primary),
           tooltip: 'Criar',
           style: IconButton.styleFrom(
             backgroundColor: colorScheme.primary.withValues(alpha: 0.12),
@@ -112,12 +154,12 @@ class _NomirroAppBarState extends State<NomirroAppBar> {
         Center(
           child: TextButton.icon(
             onPressed: () {},
-            icon: const Icon(Icons.add_circle_outline),
+            icon: Icon(Icons.add_outlined, color: colorScheme.primary),
             label: const Text('Criar'),
             style: TextButton.styleFrom(
               padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-              foregroundColor: colorScheme.onPrimary,
-              backgroundColor: colorScheme.primary,
+              foregroundColor: colorScheme.primary,
+              backgroundColor: colorScheme.primary.withValues(alpha: 0.12),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(30.0),
               ),

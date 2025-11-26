@@ -13,9 +13,15 @@ class Footer extends StatelessWidget {
     final bool isDark = theme.brightness == Brightness.dark;
     final Color selectedColor =
         isDark ? colorScheme.secondary : colorScheme.primary;
-    final Color unselectedColor = isDark
-        ? Colors.white70
-        : colorScheme.onSurface.withValues(alpha: 0.7);
+
+    final Color baseIconColor = isDark
+        ? (theme.appBarTheme.foregroundColor ??
+            theme.iconTheme.color ??
+            theme.textTheme.bodyMedium?.color ??
+            colorScheme.onSurface)
+        : (theme.textTheme.bodyMedium?.color ?? colorScheme.onSurface);
+
+    final Color unselectedColor = baseIconColor.withValues(alpha: 0.8);
 
     return BottomNavigationBar(
       type: BottomNavigationBarType.fixed,
@@ -24,14 +30,15 @@ class Footer extends StatelessWidget {
       backgroundColor: theme.scaffoldBackgroundColor,
       selectedItemColor: selectedColor,
       unselectedItemColor: unselectedColor,
+      elevation: 0,
       items: const [
         BottomNavigationBarItem(
           icon: Icon(Icons.person_search),
-          label: 'Nearby',
+          label: 'Encontros',
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.people_alt),
-          label: 'Encounters',
+          icon: Icon(Icons.notifications),
+          label: 'Proximo',
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.play_circle_fill),
@@ -42,8 +49,8 @@ class Footer extends StatelessWidget {
           label: 'Chats',
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.notifications),
-          label: 'Profile',
+          icon: Icon(Icons.person),
+          label: 'Perfil',
         ),
       ],
     );

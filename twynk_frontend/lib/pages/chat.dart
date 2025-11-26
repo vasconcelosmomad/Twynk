@@ -7,6 +7,10 @@ import '../portals/app_bar_copy.dart';
 import '../portals/drawer.dart';
 import '../portals/footer.dart';
 import '../services/api_client.dart';
+import 'package:twynk_frontend/pages/encounters.dart';
+import 'package:twynk_frontend/pages/noerby.dart';
+import 'package:twynk_frontend/pages/plans.dart';
+import 'package:twynk_frontend/pages/proflie.dart';
 import 'login.dart';
 
 class ChatPage extends StatefulWidget {
@@ -199,6 +203,42 @@ class _ChatPageState extends State<ChatPage> {
   void _onBottomNavTap(int index) {
     final isMobile = MediaQuery.of(context).size.width < 1024;
     setState(() => selectedDrawerIndex = index);
+
+    if (index == 0) {
+      if (isMobile && _drawerOpen) Navigator.pop(context);
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const HomeYouTubeStyleFlutter()),
+      );
+      return;
+    }
+
+    if (index == 1) {
+      if (isMobile && _drawerOpen) Navigator.pop(context);
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const HomePage()),
+      );
+      return;
+    }
+
+    if (index == 4) {
+      if (isMobile && _drawerOpen) Navigator.pop(context);
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const PhotoMasterApp()),
+      );
+      return;
+    }
+
+    if (index == 5) {
+      if (isMobile && _drawerOpen) Navigator.pop(context);
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const PlansPage()),
+      );
+      return;
+    }
 
     if (index == 6) {
       if (isMobile && _drawerOpen) Navigator.pop(context);

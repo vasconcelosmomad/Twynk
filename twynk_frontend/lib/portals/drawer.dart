@@ -26,18 +26,23 @@ class SidebarMenu extends StatelessWidget {
 
     final items = [
       {'icon': Icons.person_search, 'label': 'Encontros'},
-      {'icon': Icons.people_alt, 'label': 'Proximo'},
+      {'icon': Icons.notifications, 'label': 'Proximo'},
       {'icon': Icons.play_circle_fill, 'label': 'Explore'},
       {'icon': Icons.chat_bubble, 'label': 'Chats'},
-      {'icon': Icons.notifications, 'label': 'Profile'},
+      {'icon': Icons.person, 'label': 'Perfil'},
     ];
 
     final theme = Theme.of(context);
     final bool isDark = theme.brightness == Brightness.dark;
     final ColorScheme colorScheme = theme.colorScheme;
-    final Color unselectedTextColor = isDark
-        ? Colors.white70
-        : colorScheme.onSurface.withValues(alpha: 0.7);
+
+    final Color baseTextColor = isDark
+        ? (theme.textTheme.bodyMedium?.color ?? Colors.white70)
+        : (theme.textTheme.bodyMedium?.color ?? colorScheme.onSurface);
+
+    final Color unselectedTextColor =
+        baseTextColor.withValues(alpha: isDark ? 0.8 : 0.9);
+
     final Color selectedTextColor =
         isDark ? colorScheme.secondary : colorScheme.primary;
     final Color selectedTileColor =

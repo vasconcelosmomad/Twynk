@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:twynk_frontend/pages/encounters.dart';
+import 'package:twynk_frontend/pages/noerby.dart';
 import '../services/api_client.dart';
 import '../portals/app_bar_copy.dart';
 import '../portals/drawer.dart';
@@ -7,7 +9,7 @@ import '../portals/footer.dart';
 import 'explore.dart';
 import 'chat.dart';
 import 'login.dart';
-import '../themes/app_theme.dart';
+import 'plans.dart';
 
 // --- MODELO DE DADOS ---
 
@@ -136,7 +138,19 @@ class _PhotoMasterAppState extends State<PhotoMasterApp> {
 
     if (index == 0) {
       if (isMobile && _drawerOpen) Navigator.of(context).pop();
-      Navigator.of(context).maybePop();
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const HomeYouTubeStyleFlutter()),
+      );
+      return;
+    }
+
+    if (index == 1) {
+      if (isMobile && _drawerOpen) Navigator.of(context).pop();
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const HomePage()),
+      );
       return;
     }
     if (index == 2) {
@@ -153,6 +167,14 @@ class _PhotoMasterAppState extends State<PhotoMasterApp> {
       if (isMobile && _drawerOpen) Navigator.of(context).pop();
       return;
     }
+    if (index == 5) {
+      if (isMobile && _drawerOpen) Navigator.of(context).pop();
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const PlansPage()),
+      );
+      return;
+    }
     if (index == 6) {
       if (isMobile && _drawerOpen) Navigator.of(context).pop();
       _logout();
@@ -165,82 +187,76 @@ class _PhotoMasterAppState extends State<PhotoMasterApp> {
   Widget build(BuildContext context) {
     final isMobile = MediaQuery.of(context).size.width < 1024;
 
-    return MaterialApp(
-      title: 'PhotoMaster App',
-      debugShowCheckedModeBanner: false,
-      theme: AppTheme.light,
-      darkTheme: AppTheme.dark,
-      home: Scaffold(
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        drawerScrimColor: Colors.transparent,
-        appBar: NomirroAppBar(isMobile: isMobile, drawerOpen: _drawerOpen),
-        onDrawerChanged: (open) => setState(() => _drawerOpen = open),
-        drawer: isMobile
-            ? Drawer(
-                backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-                child: SidebarMenu(
-                  compact: false,
-                  showDrawerHeader: true,
-                  selectedIndex: _selectedDrawerIndex,
-                  onItemSelected: (index) {
-                    setState(() => _selectedDrawerIndex = index);
-                    Navigator.of(context).pop();
-                    _onBottomNavTap(index);
-                  },
-                ),
-              )
-            : null,
-        body: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (!isMobile)
-              Container(
-                width: 240,
-                color: Theme.of(context).cardColor,
-                child: SidebarMenu(
-                  compact: false,
-                  showDrawerHeader: false,
-                  selectedIndex: _selectedDrawerIndex,
-                  onItemSelected: _onBottomNavTap,
-                ),
+    return Scaffold(
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      drawerScrimColor: Colors.transparent,
+      appBar: NomirroAppBar(isMobile: isMobile, drawerOpen: _drawerOpen),
+      onDrawerChanged: (open) => setState(() => _drawerOpen = open),
+      drawer: isMobile
+          ? Drawer(
+              backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+              child: SidebarMenu(
+                compact: false,
+                showDrawerHeader: true,
+                selectedIndex: _selectedDrawerIndex,
+                onItemSelected: (index) {
+                  setState(() => _selectedDrawerIndex = index);
+                  Navigator.of(context).pop();
+                  _onBottomNavTap(index);
+                },
               ),
-            Expanded(
-              child: SafeArea(
-                child: Center(
-                  child: Container(
-                    constraints: const BoxConstraints(maxWidth: 1024),
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 32.0),
-                    child: AnimatedSwitcher(
-                      duration: const Duration(milliseconds: 300),
-                      child: _currentView == 'dashboard'
-                          ? DashboardPage(
-                              key: const ValueKey('dashboard'),
-                              navigateTo: _navigateTo,
-                              photos: _photos,
-                            )
-                          : EditPhotosPage(
-                              key: const ValueKey('edit-photos'),
-                              navigateTo: _navigateTo,
-                              photos: _photos,
-                              handleDelete: _handleDelete,
-                              togglePrivacy: _togglePrivacy,
-                              setProfile: _setProfile,
-                              handleAddPhoto: _handleAddPhoto,
-                            ),
-                    ),
+            )
+          : null,
+      body: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (!isMobile)
+            Container(
+              width: 240,
+              color: Theme.of(context).cardColor,
+              child: SidebarMenu(
+                compact: false,
+                showDrawerHeader: false,
+                selectedIndex: _selectedDrawerIndex,
+                onItemSelected: _onBottomNavTap,
+              ),
+            ),
+          Expanded(
+            child: SafeArea(
+              child: Center(
+                child: Container(
+                  constraints: const BoxConstraints(maxWidth: 1024),
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 32.0),
+                  child: AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 300),
+                    child: _currentView == 'dashboard'
+                        ? DashboardPage(
+                            key: const ValueKey('dashboard'),
+                            navigateTo: _navigateTo,
+                            photos: _photos,
+                          )
+                        : EditPhotosPage(
+                            key: const ValueKey('edit-photos'),
+                            navigateTo: _navigateTo,
+                            photos: _photos,
+                            handleDelete: _handleDelete,
+                            togglePrivacy: _togglePrivacy,
+                            setProfile: _setProfile,
+                            handleAddPhoto: _handleAddPhoto,
+                          ),
                   ),
                 ),
               ),
             ),
-          ],
-        ),
-        bottomNavigationBar: isMobile
-            ? Footer(
-	            currentIndex: _selectedDrawerIndex > 4 ? 0 : _selectedDrawerIndex,
-	            onTap: _onBottomNavTap,
-	          )
-            : null,
+          ),
+        ],
       ),
+      bottomNavigationBar: isMobile
+          ? Footer(
+	          currentIndex: _selectedDrawerIndex > 4 ? 0 : _selectedDrawerIndex,
+	          onTap: _onBottomNavTap,
+	        )
+          : null,
     );
   }
 }
@@ -394,12 +410,12 @@ class DashboardPage extends StatelessWidget {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                Text(
                   'Painel de Controle',
                   style: TextStyle(
                     fontSize: 28,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF1E293B), // slate-800
+                    color: primaryTextColor, // slate-800
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -551,12 +567,17 @@ class DashboardPage extends StatelessWidget {
                       alignment: Alignment.center,
                       height: 100,
                       decoration: BoxDecoration(
-                        color: Colors.grey.shade50,
+                        color: isDark
+                            ? theme.colorScheme.surfaceContainerHighest
+                                .withValues(alpha: 0.25)
+                            : theme.colorScheme.surfaceContainerHighest
+                                .withValues(alpha: 0.12),
                         borderRadius: BorderRadius.circular(8),
                         border: Border.all(
-                            color: theme.dividerColor.withAlpha(40),
-                            style: BorderStyle.solid,
-                            width: 2),
+                          color: theme.dividerColor.withAlpha(40),
+                          style: BorderStyle.solid,
+                          width: 2,
+                        ),
                       ),
                       child: Text(
                         'Nenhuma foto adicionada ainda.',
@@ -608,8 +629,13 @@ class EditPhotosPage extends StatelessWidget {
         // Header
         Container(
           padding: const EdgeInsets.only(bottom: 24.0),
-          decoration: const BoxDecoration(
-            border: Border(bottom: BorderSide(color: Color(0xFFE5E7EB), width: 1)),
+          decoration: BoxDecoration(
+            border: Border(
+              bottom: BorderSide(
+                color: theme.dividerColor.withAlpha(60),
+                width: 1,
+              ),
+            ),
           ),
           child: Wrap(
             alignment: WrapAlignment.spaceBetween,
@@ -761,12 +787,17 @@ class EditPhotosPage extends StatelessWidget {
                 borderRadius: BorderRadius.circular(12),
                 child: Container(
                   decoration: BoxDecoration(
-                    color: Colors.grey.shade50,
+                    color: isDark
+                        ? theme.colorScheme.surfaceContainerHighest
+                            .withValues(alpha: 0.25)
+                        : theme.colorScheme.surfaceContainerHighest
+                            .withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
-                        color: theme.dividerColor.withAlpha(40),
-                        style: BorderStyle.solid,
-                        width: 2),
+                      color: theme.dividerColor.withAlpha(40),
+                      style: BorderStyle.solid,
+                      width: 2,
+                    ),
                   ),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -775,18 +806,28 @@ class EditPhotosPage extends StatelessWidget {
                         width: 48,
                         height: 48,
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: theme.cardColor,
                           borderRadius: BorderRadius.circular(999),
-                          boxShadow: [BoxShadow(color: Colors.grey.withValues(alpha: 0.2), blurRadius: 5)],
+                          boxShadow: [
+                            BoxShadow(
+                              color: theme.shadowColor
+                                  .withValues(alpha: 0.24),
+                              blurRadius: 5,
+                            ),
+                          ],
                         ),
-                        child: const Icon(Icons.camera_alt, size: 24, color: Color(0xFF64748B)),
+                        child: Icon(
+                          Icons.camera_alt,
+                          size: 24,
+                          color: theme.colorScheme.secondary,
+                        ),
                       ),
                       const SizedBox(height: 12),
-                      const Text(
+                      Text(
                         'Adicionar Nova Foto',
                         style: TextStyle(
                           fontWeight: FontWeight.w500,
-                          color: Color(0xFF64748B), // slate-600
+                          color: secondaryTextColor,
                         ),
                       ),
                     ],
