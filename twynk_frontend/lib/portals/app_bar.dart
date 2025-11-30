@@ -68,80 +68,21 @@ class _NomirroAppBarState extends State<NomirroAppBar> {
     final Widget logo =
         Image.asset('assets/icons/logo_02.png', height: 42);
 
-    // Quando a busca não está habilitada, mostramos apenas o logo.
-    if (!widget.enableSearch) {
-      if (widget.isMobile) {
-        return logo;
-      }
-
-      // Layout simples no desktop/tablet sem campo de busca.
-      return Row(
-        children: [
-          const SizedBox(width: 8.0),
-          logo,
-          const SizedBox(width: 8.0),
-          const Spacer(),
-        ],
-      );
-    }
-
+    // MOBILE: quando a busca está habilitada, o título vira o campo de busca.
     if (widget.isMobile) {
-      if (_isMobileSearchActive) {
+      if (widget.enableSearch && _isMobileSearchActive) {
         return const SearchFormFlutter();
       }
       return logo;
     }
 
-    final double width = MediaQuery.of(context).size.width;
-    final bool isDesktopWidth = width >= 1024;
-    final bool isTabletWidth = width >= 600 && width < 1024;
-
-    if (isDesktopWidth) {
-      return Row(
-        children: [
-          const SizedBox(width: 8.0),
-          logo,
-          const SizedBox(width: 16.0),
-          Expanded(
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 420),
-                child: const SearchFormFlutter(),
-              ),
-            ),
-          ),
-          const Spacer(),
-        ],
-      );
-    }
-
-    if (isTabletWidth) {
-      return Row(
-        children: [
-          const SizedBox(width: 8.0),
-          logo,
-          const SizedBox(width: 12.0),
-          Expanded(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 360),
-              child: const SearchFormFlutter(),
-            ),
-          ),
-        ],
-      );
-    }
-
+    // DESKTOP/TABLET: o campo de busca fica nas actions, não no título.
     return Row(
       children: [
+        const SizedBox(width: 8.0),
         logo,
         const SizedBox(width: 8.0),
-        Expanded(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 320),
-            child: const SearchFormFlutter(),
-          ),
-        ),
+        const Spacer(),
       ],
     );
   }
@@ -189,6 +130,16 @@ class _NomirroAppBarState extends State<NomirroAppBar> {
             ),
           ),
       if (widget.showCreateAction) const SizedBox(width: 16.0),
+      // DESKTOP/TABLET: quando habilitado, o campo de busca fica nas actions.
+      if (widget.enableSearch && !widget.isMobile) ...[
+        Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 360),
+            child: const SearchFormFlutter(),
+          ),
+        ),
+        const SizedBox(width: 16.0),
+      ],
       if (widget.enableSearch && widget.isMobile) ...[
         Center(
           child: IconButton(

@@ -227,28 +227,28 @@ class _PhotoMasterAppState extends State<PhotoMasterApp> {
             ),
           Expanded(
             child: SafeArea(
-              child: Center(
-                child: Container(
-                  constraints: const BoxConstraints(maxWidth: 1024),
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 32.0),
-                  child: AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 300),
-                    child: _currentView == 'dashboard'
-                        ? DashboardPage(
-                            key: const ValueKey('dashboard'),
-                            navigateTo: _navigateTo,
-                            photos: _photos,
-                          )
-                        : EditPhotosPage(
-                            key: const ValueKey('edit-photos'),
-                            navigateTo: _navigateTo,
-                            photos: _photos,
-                            handleDelete: _handleDelete,
-                            togglePrivacy: _togglePrivacy,
-                            setProfile: _setProfile,
-                            handleAddPhoto: _handleAddPhoto,
-                          ),
-                  ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16.0,
+                  vertical: 16.0,
+                ),
+                child: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 300),
+                  child: _currentView == 'dashboard'
+                      ? DashboardPage(
+                          key: const ValueKey('dashboard'),
+                          navigateTo: _navigateTo,
+                          photos: _photos,
+                        )
+                      : EditPhotosPage(
+                          key: const ValueKey('edit-photos'),
+                          navigateTo: _navigateTo,
+                          photos: _photos,
+                          handleDelete: _handleDelete,
+                          togglePrivacy: _togglePrivacy,
+                          setProfile: _setProfile,
+                          handleAddPhoto: _handleAddPhoto,
+                        ),
                 ),
               ),
             ),
@@ -429,17 +429,34 @@ class DashboardPage extends StatelessWidget {
                 ),
               ],
             ),
-            ElevatedButton.icon(
-              onPressed: () => navigateTo('edit-photos'),
-              icon: const Icon(Icons.settings, size: 18),
-              label: const Text('Gerenciar Fotos'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: theme.colorScheme.primary,
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                elevation: 3,
-              ),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                OutlinedButton.icon(
+                  onPressed: () {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Funcionalidade de editar perfil ainda não foi implementada.'),
+                      ),
+                    );
+                  },
+                  icon: const Icon(Icons.person, size: 18),
+                  label: const Text('Editar Perfil'),
+                ),
+                ElevatedButton.icon(
+                  onPressed: () => navigateTo('edit-photos'),
+                  icon: const Icon(Icons.settings, size: 18),
+                  label: const Text('Gerenciar Fotos'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: theme.colorScheme.primary,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                    elevation: 3,
+                  ),
+                ),
+              ],
             ),
           ],
         ),

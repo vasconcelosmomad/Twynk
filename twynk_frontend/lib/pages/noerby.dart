@@ -459,11 +459,13 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 class UserCard extends StatefulWidget {
   final UserModel user;
   final bool showActionsMenu;
+  final Future<void> Function(UserModel user)? onMessageTap;
 
   const UserCard({
     super.key,
     required this.user,
     this.showActionsMenu = false,
+    this.onMessageTap,
   });
 
   @override
@@ -643,6 +645,9 @@ class _UserCardState extends State<UserCard> {
                               setState(() {
                                 _menuOpen = false;
                               });
+                              if (widget.onMessageTap != null) {
+                                widget.onMessageTap!(widget.user);
+                              }
                               // TODO: ação Beijo
                             },
                             child: const Padding(
