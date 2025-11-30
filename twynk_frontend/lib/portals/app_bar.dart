@@ -22,6 +22,8 @@ class NomirroAppBar extends StatefulWidget implements PreferredSizeWidget {
 }
 
 class _NomirroAppBarState extends State<NomirroAppBar> {
+  bool _isMobileSearchActive = false;
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -36,9 +38,18 @@ class _NomirroAppBarState extends State<NomirroAppBar> {
       automaticallyImplyLeading: false,
       titleSpacing: 4.0,
       // REMOVIDO: O leading widget para mobile foi removido.
-      // Agora ele é sempre null, garantindo que o logo (no title)
+      // Agora ele é sempre null, garantindo que o logo (no título)
       // fique posicionado mais à esquerda.
-      leading: null,
+      leading: widget.isMobile && _isMobileSearchActive
+          ? IconButton(
+              icon: const Icon(Icons.arrow_back),
+              onPressed: () {
+                setState(() {
+                  _isMobileSearchActive = false;
+                });
+              },
+            )
+          : null,
       title: _buildTitle(context),
       actions: _buildActions(context),
     );
@@ -47,23 +58,77 @@ class _NomirroAppBarState extends State<NomirroAppBar> {
   Widget _buildTitle(BuildContext context) {
     // O logo é mantido no título para ambas as visualizações.
     // Com o `leading` null, ele se alinha à esquerda no mobile.
+    final Widget logo =
+        Image.asset('assets/icons/logo_02.png', height: 42);
+
     if (widget.isMobile) {
-      return Image.asset('assets/icons/logo_02.png', height: 42);
+      if (_isMobileSearchActive) {
+        return const SearchFormFlutter();
+      }
+      return logo;
     }
 
-    // DESKTOP
+    final double width = MediaQuery.of(context).size.width;
+    final bool isDesktopWidth = width >= 1024;
+    final bool isTabletWidth = width >= 600 && width < 1024;
+
+    if (isDesktopWidth) {
+      return Row(
+        children: [
+          const SizedBox(width: 8.0),
+          logo,
+          const SizedBox(width: 16.0),
+          Expanded(
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 420),
+                child: const SearchFormFlutter(),
+              ),
+            ),
+          ),
+          const Spacer(),
+        ],
+      );
+    }
+
+    if (isTabletWidth) {
+      return Row(
+        children: [
+          const SizedBox(width: 8.0),
+          logo,
+          const SizedBox(width: 12.0),
+          Expanded(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 360),
+              child: const SearchFormFlutter(),
+            ),
+          ),
+        ],
+      );
+    }
+
     return Row(
       children: [
+        logo,
         const SizedBox(width: 8.0),
-        Image.asset('assets/icons/logo_02.png', height: 42),
-        const SizedBox(width: 8.0),
-        const Spacer(),
+        Expanded(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 320),
+            child: const SearchFormFlutter(),
+          ),
+        ),
       ],
     );
   }
 
   List<Widget> _buildActions(BuildContext context) {
     final ColorScheme colorScheme = Theme.of(context).colorScheme;
+
+    if (widget.isMobile && _isMobileSearchActive) {
+      return const <Widget>[];
+    }
+
     return [
       const SizedBox(width: 16.0),
       if (widget.isMobile)
@@ -158,6 +223,18 @@ class _NomirroAppBarState extends State<NomirroAppBar> {
       ),
       const SizedBox(width: 16.0),
       _buildUserMenu(context),
+      if (widget.isMobile) ...[
+        const SizedBox(width: 8.0),
+        IconButton(
+          onPressed: () {
+            setState(() {
+              _isMobileSearchActive = true;
+            });
+          },
+          icon: const Icon(Icons.search),
+          tooltip: 'Buscar',
+        ),
+      ],
       const SizedBox(width: 16.0),
     ];
   }
