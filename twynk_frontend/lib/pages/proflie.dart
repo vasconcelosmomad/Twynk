@@ -3,7 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:twynk_frontend/pages/encounters.dart';
 import 'package:twynk_frontend/pages/noerby.dart';
 import '../services/api_client.dart';
-import '../portals/app_bar_copy.dart';
+import '../portals/app_bar.dart';
 import '../portals/drawer.dart';
 import '../portals/footer.dart';
 import 'explore.dart';

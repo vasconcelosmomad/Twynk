@@ -1,59 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:twynk_frontend/pages/plans.dart';
 import '../services/language_controller.dart';
 
-class _TwoBarMenuIcon extends StatelessWidget {
-  final Color color;
-
-  const _TwoBarMenuIcon({required this.color});
-
-  @override
-  Widget build(BuildContext context) {
-    const double size = 22;
-    final double barHeight = size * 0.1;
-    final double topWidth = size;
-    final double bottomWidth = size * 0.7;
-    final double spacing = size * 0.28;
-
-    return SizedBox(
-      width: size,
-      height: size,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            width: topWidth,
-            height: barHeight,
-            decoration: BoxDecoration(
-              color: color,
-              borderRadius: BorderRadius.circular(barHeight),
-            ),
-          ),
-          SizedBox(height: spacing),
-          Container(
-            width: bottomWidth,
-            height: barHeight,
-            decoration: BoxDecoration(
-              color: color,
-              borderRadius: BorderRadius.circular(barHeight),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
+// O widget _TwoBarMenuIcon foi removido pois não é mais necessário.
 
 class NomirroAppBar extends StatefulWidget implements PreferredSizeWidget {
   final bool isMobile;
-  final bool drawerOpen;
-  final bool showLogoOnMobile;
+  final bool? drawerOpen;
 
   const NomirroAppBar({
     super.key,
     required this.isMobile,
-    required this.drawerOpen,
-    this.showLogoOnMobile = true,
+    this.drawerOpen = false,
   });
 
   @override
@@ -64,8 +22,6 @@ class NomirroAppBar extends StatefulWidget implements PreferredSizeWidget {
 }
 
 class _NomirroAppBarState extends State<NomirroAppBar> {
-  bool _searchActive = false;
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -79,87 +35,49 @@ class _NomirroAppBarState extends State<NomirroAppBar> {
       elevation: 0,
       automaticallyImplyLeading: false,
       titleSpacing: 4.0,
-      leading: widget.isMobile
-          ? IconButton(
-              icon: _TwoBarMenuIcon(
-                color: colorScheme.primary,
-              ),
-              onPressed: () {
-                if (widget.drawerOpen) {
-                  Navigator.of(context).pop();
-                } else {
-                  Scaffold.of(context).openDrawer();
-                }
-              },
-            )
-          : null,
+      // REMOVIDO: O leading widget para mobile foi removido.
+      // Agora ele é sempre null, garantindo que o logo (no title)
+      // fique posicionado mais à esquerda.
+      leading: null,
       title: _buildTitle(context),
       actions: _buildActions(context),
     );
   }
 
   Widget _buildTitle(BuildContext context) {
-    // MOBILE
-    if (widget.isMobile && _searchActive) {
-      return const SizedBox(
-        height: 40,
-        child: SearchFormFlutter(),
-      );
-    }
-
-    if (widget.isMobile && widget.showLogoOnMobile) {
-      return Image.asset('assets/icons/logo_02.png', height: 32);
-    }
-
-    if (widget.isMobile && !widget.showLogoOnMobile) {
-      return const SizedBox.shrink();
+    // O logo é mantido no título para ambas as visualizações.
+    // Com o `leading` null, ele se alinha à esquerda no mobile.
+    if (widget.isMobile) {
+      return Image.asset('assets/icons/logo_02.png', height: 42);
     }
 
     // DESKTOP
     return Row(
       children: [
         const SizedBox(width: 8.0),
-        Image.asset('assets/icons/logo_02.png', height: 32),
+        Image.asset('assets/icons/logo_02.png', height: 42),
         const SizedBox(width: 8.0),
         const Spacer(),
-        SizedBox(
-          width: MediaQuery.of(context).size.width * 0.4,
-          height: 40,
-          child: const SearchFormFlutter(),
-        ),
       ],
     );
   }
 
   List<Widget> _buildActions(BuildContext context) {
     final ColorScheme colorScheme = Theme.of(context).colorScheme;
-    if (widget.isMobile && _searchActive) {
-      return [
-        IconButton(
-          icon: Icon(Icons.close, color: colorScheme.primary),
-          onPressed: () => setState(() => _searchActive = false),
-        ),
-      ];
-    }
-
     return [
-      if (widget.isMobile)
-        IconButton(
-          icon: Icon(Icons.search, color: colorScheme.primary),
-          padding: EdgeInsets.zero,
-          constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
-          onPressed: () => setState(() => _searchActive = true),
-        ),
       const SizedBox(width: 16.0),
       if (widget.isMobile)
         IconButton.filledTonal(
           onPressed: () {},
-          icon: Icon(Icons.add, color: colorScheme.primary),
+          icon: Icon(
+            Icons.add_outlined,
+            color: colorScheme.primary,
+          ),
           tooltip: 'Criar',
           style: IconButton.styleFrom(
             backgroundColor: colorScheme.primary.withValues(alpha: 0.12),
             foregroundColor: colorScheme.primary,
-            padding: EdgeInsets.zero,
+            padding: const EdgeInsets.all(6.0),
             minimumSize: const Size(36, 36),
             tapTargetSize: MaterialTapTargetSize.shrinkWrap,
           ),
@@ -180,53 +98,64 @@ class _NomirroAppBarState extends State<NomirroAppBar> {
             ),
           ),
         ),
-      const SizedBox(width: 8.0),
-      // Use a Builder to get the context of the button for positioning the menu.
+      const SizedBox(width: 16.0),
       Center(
         child: Builder(
           builder: (context) {
             return Tooltip(
-            message: 'Idioma / Language',
-            child: InkWell(
-              customBorder: const CircleBorder(),
-              onTap: () {
-                final RenderBox button = context.findRenderObject() as RenderBox;
-                final RenderBox overlay = Overlay.of(context).context.findRenderObject() as RenderBox;
-                final RelativeRect position = RelativeRect.fromRect(
-                  Rect.fromPoints(
-                    button.localToGlobal(const Offset(0, 0), ancestor: overlay),
-                    button.localToGlobal(button.size.bottomRight(Offset.zero), ancestor: overlay),
-                  ),
-                  Offset.zero & overlay.size,
-                );
+              message: 'Idioma / Language',
+              child: InkWell(
+                customBorder: const CircleBorder(),
+                onTap: () {
+                  final RenderBox button =
+                      context.findRenderObject() as RenderBox;
+                  final RenderBox overlay = Overlay.of(context)
+                      .context
+                      .findRenderObject() as RenderBox;
+                  final RelativeRect position = RelativeRect.fromRect(
+                    Rect.fromPoints(
+                      button.localToGlobal(
+                        const Offset(0, 0),
+                        ancestor: overlay,
+                      ),
+                      button.localToGlobal(
+                        button.size.bottomRight(Offset.zero),
+                        ancestor: overlay,
+                      ),
+                    ),
+                    Offset.zero & overlay.size,
+                  );
 
-                showMenu<String>(
-                  context: context,
-                  position: position.shift(const Offset(0, 44)), // Adjust offset as needed
-                  items: const [
-                    PopupMenuItem<String>(
-                      value: 'pt',
-                      child: Text('Português'),
-                    ),
-                    PopupMenuItem<String>(
-                      value: 'en',
-                      child: Text('English'),
-                    ),
-                  ],
-                ).then((value) {
-                  if (value == null) return; // Menu dismissed
-                  final lang = value == 'en' ? AppLanguage.en : AppLanguage.pt;
-                  LanguageController.instance.setLanguage(lang);
-                });
-              },
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Icon(Icons.language, color: colorScheme.secondary),
+                  showMenu<String>(
+                    context: context,
+                    position: position.shift(const Offset(0, 44)),
+                    items: const [
+                      PopupMenuItem<String>(
+                        value: 'pt',
+                        child: Text('Português'),
+                      ),
+                      PopupMenuItem<String>(
+                        value: 'en',
+                        child: Text('English'),
+                      ),
+                    ],
+                  ).then((value) {
+                    if (value == null) return;
+                    final lang =
+                        value == 'en' ? AppLanguage.en : AppLanguage.pt;
+                    LanguageController.instance.setLanguage(lang);
+                  });
+                },
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child:
+                      Icon(Icons.language, color: colorScheme.secondary),
+                ),
               ),
-            ),
-          );
-        },
-      )),
+            );
+          },
+        ),
+      ),
       const SizedBox(width: 16.0),
       _buildUserMenu(context),
       const SizedBox(width: 16.0),
@@ -235,76 +164,53 @@ class _NomirroAppBarState extends State<NomirroAppBar> {
 
   Widget _buildUserMenu(BuildContext context) {
     final ColorScheme colorScheme = Theme.of(context).colorScheme;
-    // Use a Builder to get the context of the button for positioning the menu.
-    return Center(
-      child: Builder(
-        builder: (context) {
-          return Tooltip(
-            message: 'User Menu',
-            child: InkWell(
-              customBorder: const CircleBorder(),
-              onTap: () {
-                final RenderBox button = context.findRenderObject() as RenderBox;
-                final RenderBox overlay = Overlay.of(context).context.findRenderObject() as RenderBox;
-                final RelativeRect position = RelativeRect.fromRect(
-                  Rect.fromPoints(
-                    button.localToGlobal(const Offset(0, 0), ancestor: overlay),
-                    button.localToGlobal(button.size.bottomRight(Offset.zero), ancestor: overlay),
-                  ),
-                  Offset.zero & overlay.size,
-                );
-
-                showMenu<String>(
-                  context: context,
-                  position: position.shift(const Offset(0, 44)), // Adjust offset as needed
-                  items: [
-                    PopupMenuItem<String>(
-                      value: 'name',
-                      child: Row(
-                        children: [
-                          Icon(Icons.person, size: 18),
-                          SizedBox(width: 8),
-                          Text('Nome'),
-                        ],
-                      ),
-                    ),
-                    PopupMenuItem<String>(
-                      value: 'profile',
-                      child: Row(
-                        children: [
-                          Icon(Icons.settings, size: 18),
-                          SizedBox(width: 8),
-                          Text('Profile'),
-                        ],
-                      ),
-                    ),
-                    PopupMenuItem<String>(
-                      value: 'update_plan',
-                      child: Row(
-                        children: [
-                          Icon(Icons.workspace_premium_outlined, size: 18, color: colorScheme.secondary),
-                          SizedBox(width: 8),
-                          Text('Update plan'),
-                        ],
-                      ),
-                    ),
-                  ],
-                ).then((value) {
-                  if (value == null) return; // Menu dismissed
-                  // Handle selection
-                });
-              },
-              child: const Padding(
-                padding: EdgeInsets.all(8.0),
-                child: CircleAvatar(
-                  radius: 16,
-                  backgroundColor: Colors.grey,
-                  child: Icon(Icons.person, size: 18, color: Colors.white),
-                ),
-              ),
+    return PopupMenuButton<String>(
+      itemBuilder: (context) => [
+        PopupMenuItem<String>(
+          value: 'name',
+          child: Row(
+            children: [
+              const Icon(Icons.person, size: 18),
+              const SizedBox(width: 8),
+              const Text('Nome'),
+            ],
+          ),
+        ),
+        PopupMenuItem<String>(
+          value: 'profile',
+          child: Row(
+            children: [
+              const Icon(Icons.settings, size: 18),
+              const SizedBox(width: 8),
+              const Text('Profile'),
+            ],
+          ),
+        ),
+        PopupMenuItem<String>(
+          value: 'update_plan',
+          child: Row(
+            children: [
+              Icon(Icons.workspace_premium_outlined, size: 18, color: colorScheme.secondary),
+              const SizedBox(width: 8),
+              const Text('Update plan'),
+            ],
+          ),
+        ),
+      ],
+      position: PopupMenuPosition.under,
+      onSelected: (value) {
+        if (value == 'update_plan') {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (_) => const PlansPage(),
             ),
           );
-        },
+        }
+      },
+      child: const CircleAvatar(
+        radius: 16,
+        backgroundColor: Colors.grey,
+        child: Icon(Icons.person, size: 18, color: Colors.white),
       ),
     );
   }
@@ -330,7 +236,7 @@ class _SearchFormFlutterState extends State<SearchFormFlutter> {
           controller: _searchController,
           decoration: InputDecoration(
             contentPadding:
-                const EdgeInsets.symmetric(vertical: 8, horizontal: 40),
+                const EdgeInsets.symmetric(vertical: 10, horizontal: 40),
             hintText: 'Search',
             hintStyle: TextStyle(color: Colors.grey[600]),
             filled: true,
@@ -341,7 +247,6 @@ class _SearchFormFlutterState extends State<SearchFormFlutter> {
               borderRadius: BorderRadius.circular(20),
               borderSide: BorderSide.none,
             ),
-            // No borders on enabled/focused as requested
           ),
         ),
         Positioned(
@@ -358,9 +263,8 @@ class _SearchFormFlutterState extends State<SearchFormFlutter> {
                 foregroundColor: theme.brightness == Brightness.dark
                     ? Colors.white
                     : colorScheme.secondary,
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                minimumSize: const Size(40, 32),
-                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16),
                 shape: const RoundedRectangleBorder(
                   borderRadius: BorderRadius.only(
                     topRight: Radius.circular(20),

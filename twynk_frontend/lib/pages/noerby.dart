@@ -3,7 +3,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:twynk_frontend/portals/app_bar_copy.dart';
+import 'package:twynk_frontend/portals/app_bar.dart';
 import 'package:twynk_frontend/portals/drawer.dart';
 import 'package:twynk_frontend/portals/footer.dart';
 import 'package:twynk_frontend/pages/encounters.dart';
@@ -499,48 +499,71 @@ class _UserCardState extends State<UserCard> {
               ),
             ),
           ),
-          // Badge de status (Online/Offline) no canto superior esquerdo
+          // Info (texto) na parte inferior
+          Positioned(
+            left: 12,
+            bottom: 12,
+            right: 12,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        '${widget.user.name}, ${widget.user.age}',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 6),
+                Row(
+                  children: [
+                    const Icon(
+                      Icons.location_on,
+                      size: 14,
+                      color: Colors.white70,
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      widget.user.location,
+                      style: const TextStyle(color: Colors.white70),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          // Badge de status (apenas círculo) no canto superior esquerdo
           Positioned(
             top: 8,
             left: 8,
             child: Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 8,
-                vertical: 4,
-              ),
+              padding: const EdgeInsets.all(6),
               decoration: BoxDecoration(
                 color: widget.user.online
                     ? Colors.green.withValues(alpha: 0.18)
                     : Colors.grey.withValues(alpha: 0.14),
-                borderRadius: BorderRadius.circular(16),
+                shape: BoxShape.circle,
                 border: widget.user.online
                     ? Border.all(
                         color: Colors.green.withValues(alpha: 0.3),
                       )
                     : null,
               ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    Icons.circle,
-                    size: 8,
-                    color: widget.user.online ? Colors.green : Colors.grey,
-                  ),
-                  const SizedBox(width: 6),
-                  Text(
-                    widget.user.online ? 'Online' : 'Offline',
-                    style: TextStyle(
-                      color:
-                          widget.user.online ? Colors.green : Colors.white70,
-                      fontSize: 12,
-                    ),
-                  ),
-                ],
+              child: Icon(
+                Icons.circle,
+                size: 8,
+                color: widget.user.online ? Colors.green : Colors.grey,
               ),
             ),
           ),
-          // Menu de três pontinhos no canto superior direito
+          // Menu de três pontinhos no canto superior direito (sempre acima dos demais conteúdos)
           if (widget.showActionsMenu)
             Positioned(
               top: 8,
@@ -600,7 +623,7 @@ class _UserCardState extends State<UserCard> {
                                   Icon(
                                     Icons.thumb_up_alt_outlined,
                                     size: 20,
-                                    color: Colors.white,
+                                    color: Colors.pinkAccent,
                                   ),
                                   SizedBox(width: 8),
                                   Text(
@@ -629,10 +652,12 @@ class _UserCardState extends State<UserCard> {
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  Icon(
-                                    Icons.favorite_border,
-                                    size: 20,
-                                    color: Colors.white,
+                                  Text(
+                                    '💋',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 18,
+                                    ),
                                   ),
                                   SizedBox(width: 8),
                                   Text(
@@ -662,13 +687,13 @@ class _UserCardState extends State<UserCard> {
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   Icon(
-                                    Icons.flash_on_outlined,
+                                    Icons.message_outlined,
                                     size: 20,
-                                    color: Colors.white,
+                                    color: Colors.lightBlueAccent,
                                   ),
                                   SizedBox(width: 8),
                                   Text(
-                                    'Meg',
+                                    'Msg',
                                     style: TextStyle(
                                       color: Colors.white,
                                       fontSize: 13,
@@ -696,7 +721,7 @@ class _UserCardState extends State<UserCard> {
                                   Icon(
                                     Icons.chat_bubble_outline,
                                     size: 20,
-                                    color: Colors.white,
+                                    color: Colors.greenAccent,
                                   ),
                                   SizedBox(width: 8),
                                   Text(
@@ -716,46 +741,6 @@ class _UserCardState extends State<UserCard> {
                 ],
               ),
             ),
-          // Info
-          Positioned(
-            left: 12,
-            bottom: 12,
-            right: 12,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        '${widget.user.name}, ${widget.user.age}',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 6),
-                Row(
-                  children: [
-                    const Icon(
-                      Icons.location_on,
-                      size: 14,
-                      color: Colors.white70,
-                    ),
-                    const SizedBox(width: 6),
-                    Text(
-                      widget.user.location,
-                      style: const TextStyle(color: Colors.white70),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
         ],
       ),
     );
