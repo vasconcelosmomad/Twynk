@@ -168,6 +168,8 @@ class _HomeYouTubeStyleFlutterState extends State<HomeYouTubeStyleFlutter> {
       appBar: NomirroAppBar(
         isMobile: isMobile,
         drawerOpen: _drawerOpen,
+        showCreateAction: false,
+        enableSearch: true,
       ),
 
       drawer: !isMobile

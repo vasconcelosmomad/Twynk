@@ -280,7 +280,11 @@ class _PlansPageState extends State<PlansPage> {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       drawerScrimColor: Colors.transparent,
-      appBar: NomirroAppBar(isMobile: isMobile, drawerOpen: _drawerOpen),
+      appBar: NomirroAppBar(
+        isMobile: isMobile,
+        drawerOpen: _drawerOpen,
+        showCreateAction: false,
+      ),
       onDrawerChanged: (open) => setState(() => _drawerOpen = open),
       drawer: isMobile
           ? Drawer(

@@ -212,6 +212,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       appBar: NomirroAppBar(
         isMobile: isMobile,
         drawerOpen: _drawerOpen,
+        showCreateAction: false,
       ),
       drawer: isMobile
           ? Drawer(
@@ -643,40 +644,6 @@ class _UserCardState extends State<UserCard> {
                                 _menuOpen = false;
                               });
                               // TODO: ação Beijo
-                            },
-                            child: const Padding(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: 4,
-                                vertical: 6,
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Text(
-                                    '💋',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 18,
-                                    ),
-                                  ),
-                                  SizedBox(width: 8),
-                                  Text(
-                                    'Beijo',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 13,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                          InkWell(
-                            onTap: () {
-                              setState(() {
-                                _menuOpen = false;
-                              });
-                              // TODO: ação Meg / Mensagem
                             },
                             child: const Padding(
                               padding: EdgeInsets.symmetric(

@@ -417,7 +417,11 @@ class _ChatPageState extends State<ChatPage> {
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       drawerScrimColor: Colors.transparent,
       appBar: (!isMobile || isChatListVisible)
-          ? NomirroAppBar(isMobile: isMobile, drawerOpen: _drawerOpen)
+          ? NomirroAppBar(
+              isMobile: isMobile,
+              drawerOpen: _drawerOpen,
+              showCreateAction: false,
+            )
           : null,
       onDrawerChanged: (open) => setState(() => _drawerOpen = open),
       drawer: isMobile

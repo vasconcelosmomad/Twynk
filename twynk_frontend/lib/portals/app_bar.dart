@@ -7,11 +7,15 @@ import '../services/language_controller.dart';
 class NomirroAppBar extends StatefulWidget implements PreferredSizeWidget {
   final bool isMobile;
   final bool? drawerOpen;
+  final bool showCreateAction;
+  final bool enableSearch;
 
   const NomirroAppBar({
     super.key,
     required this.isMobile,
     this.drawerOpen = false,
+    this.showCreateAction = true,
+    this.enableSearch = false,
   });
 
   @override
@@ -40,9 +44,12 @@ class _NomirroAppBarState extends State<NomirroAppBar> {
       // REMOVIDO: O leading widget para mobile foi removido.
       // Agora ele é sempre null, garantindo que o logo (no título)
       // fique posicionado mais à esquerda.
-      leading: widget.isMobile && _isMobileSearchActive
+      leading: widget.isMobile && widget.enableSearch && _isMobileSearchActive
           ? IconButton(
-              icon: const Icon(Icons.arrow_back),
+              icon: Icon(
+                Icons.arrow_back,
+                color: colorScheme.secondary,
+              ),
               onPressed: () {
                 setState(() {
                   _isMobileSearchActive = false;
@@ -60,6 +67,23 @@ class _NomirroAppBarState extends State<NomirroAppBar> {
     // Com o `leading` null, ele se alinha à esquerda no mobile.
     final Widget logo =
         Image.asset('assets/icons/logo_02.png', height: 42);
+
+    // Quando a busca não está habilitada, mostramos apenas o logo.
+    if (!widget.enableSearch) {
+      if (widget.isMobile) {
+        return logo;
+      }
+
+      // Layout simples no desktop/tablet sem campo de busca.
+      return Row(
+        children: [
+          const SizedBox(width: 8.0),
+          logo,
+          const SizedBox(width: 8.0),
+          const Spacer(),
+        ],
+      );
+    }
 
     if (widget.isMobile) {
       if (_isMobileSearchActive) {
@@ -125,45 +149,63 @@ class _NomirroAppBarState extends State<NomirroAppBar> {
   List<Widget> _buildActions(BuildContext context) {
     final ColorScheme colorScheme = Theme.of(context).colorScheme;
 
-    if (widget.isMobile && _isMobileSearchActive) {
+    if (widget.enableSearch && widget.isMobile && _isMobileSearchActive) {
       return const <Widget>[];
     }
 
     return [
       const SizedBox(width: 16.0),
-      if (widget.isMobile)
-        IconButton.filledTonal(
-          onPressed: () {},
-          icon: Icon(
-            Icons.add_outlined,
-            color: colorScheme.primary,
-          ),
-          tooltip: 'Criar',
-          style: IconButton.styleFrom(
-            backgroundColor: colorScheme.primary.withValues(alpha: 0.12),
-            foregroundColor: colorScheme.primary,
-            padding: const EdgeInsets.all(6.0),
-            minimumSize: const Size(36, 36),
-            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-          ),
-        )
-      else
-        Center(
-          child: TextButton.icon(
+      if (widget.showCreateAction)
+        if (widget.isMobile)
+          IconButton.filledTonal(
             onPressed: () {},
-            icon: Icon(Icons.add_outlined, color: colorScheme.primary),
-            label: const Text('Criar'),
-            style: TextButton.styleFrom(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-              foregroundColor: colorScheme.primary,
+            icon: Icon(
+              Icons.add_outlined,
+              color: colorScheme.primary,
+            ),
+            tooltip: 'Criar',
+            style: IconButton.styleFrom(
               backgroundColor: colorScheme.primary.withValues(alpha: 0.12),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(30.0),
+              foregroundColor: colorScheme.primary,
+              padding: const EdgeInsets.all(6.0),
+              minimumSize: const Size(36, 36),
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            ),
+          )
+        else
+          Center(
+            child: TextButton.icon(
+              onPressed: () {},
+              icon: Icon(Icons.add_outlined, color: colorScheme.primary),
+              label: const Text('Criar'),
+              style: TextButton.styleFrom(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                foregroundColor: colorScheme.primary,
+                backgroundColor: colorScheme.primary.withValues(alpha: 0.12),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30.0),
+                ),
               ),
             ),
           ),
+      if (widget.showCreateAction) const SizedBox(width: 16.0),
+      if (widget.enableSearch && widget.isMobile) ...[
+        Center(
+          child: IconButton(
+            onPressed: () {
+              setState(() {
+                _isMobileSearchActive = true;
+              });
+            },
+            icon: Icon(
+              Icons.search,
+              color: colorScheme.secondary,
+            ),
+            tooltip: 'Buscar',
+          ),
         ),
-      const SizedBox(width: 16.0),
+        const SizedBox(width: 16.0),
+      ],
       Center(
         child: Builder(
           builder: (context) {
@@ -223,18 +265,6 @@ class _NomirroAppBarState extends State<NomirroAppBar> {
       ),
       const SizedBox(width: 16.0),
       _buildUserMenu(context),
-      if (widget.isMobile) ...[
-        const SizedBox(width: 8.0),
-        IconButton(
-          onPressed: () {
-            setState(() {
-              _isMobileSearchActive = true;
-            });
-          },
-          icon: const Icon(Icons.search),
-          tooltip: 'Buscar',
-        ),
-      ],
       const SizedBox(width: 16.0),
     ];
   }
