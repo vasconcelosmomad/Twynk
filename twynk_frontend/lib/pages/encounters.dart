@@ -11,6 +11,89 @@ import 'package:twynk_frontend/portals/app_bar.dart';
 import 'package:twynk_frontend/portals/drawer.dart';
 import 'package:twynk_frontend/services/api_client.dart';
 
+final List<UserModel> _encounterUsers = [
+  UserModel(
+    id: 1,
+    name: 'Ana',
+    age: 24,
+    location: 'São Paulo',
+    img:
+        'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=400',
+    online: true,
+    recent: true,
+  ),
+  UserModel(
+    id: 2,
+    name: 'Carlos',
+    age: 29,
+    location: 'Rio de Janeiro',
+    img:
+        'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=400',
+    online: false,
+    recent: true,
+  ),
+  UserModel(
+    id: 3,
+    name: 'Beatriz',
+    age: 22,
+    location: 'Belo Horizonte',
+    img:
+        'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=400',
+    online: true,
+    recent: false,
+  ),
+  UserModel(
+    id: 4,
+    name: 'Daniel',
+    age: 30,
+    location: 'Curitiba',
+    img:
+        'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&q=80&w=400',
+    online: true,
+    recent: true,
+  ),
+  UserModel(
+    id: 5,
+    name: 'Elena',
+    age: 26,
+    location: 'Florianópolis',
+    img:
+        'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&q=80&w=400',
+    online: false,
+    recent: false,
+  ),
+  UserModel(
+    id: 6,
+    name: 'Fernando',
+    age: 28,
+    location: 'Porto Alegre',
+    img:
+        'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=400',
+    online: false,
+    recent: false,
+  ),
+  UserModel(
+    id: 7,
+    name: 'Gabriela',
+    age: 25,
+    location: 'Salvador',
+    img:
+        'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&q=80&w=400',
+    online: true,
+    recent: true,
+  ),
+  UserModel(
+    id: 8,
+    name: 'Hugo',
+    age: 31,
+    location: 'Recife',
+    img:
+        'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&q=80&w=400',
+    online: true,
+    recent: false,
+  ),
+];
+
 class HomeYouTubeStyleFlutter extends StatefulWidget {
   const HomeYouTubeStyleFlutter({super.key});
 
@@ -85,6 +168,7 @@ class _HomeYouTubeStyleFlutterState extends State<HomeYouTubeStyleFlutter> {
       appBar: NomirroAppBar(
         isMobile: isMobile,
         drawerOpen: _drawerOpen,
+        showLogoOnMobile: false,
       ),
 
       drawer: !isMobile
@@ -128,165 +212,23 @@ class _HomeYouTubeStyleFlutterState extends State<HomeYouTubeStyleFlutter> {
                       } else if (constraints.maxWidth > 600) {
                         crossAxisCount = 3;
                       } else {
-                        crossAxisCount = 1;
+                        crossAxisCount = 2;
                       }
 
                       return GridView.builder(
                         padding: const EdgeInsets.all(12),
-                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        gridDelegate:
+                            SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: crossAxisCount,
                           crossAxisSpacing: 12,
                           mainAxisSpacing: 12,
-                          childAspectRatio: 0.70,
+                          childAspectRatio: 3 / 4,
                         ),
-                        itemCount: 12,
+                        itemCount: _encounterUsers.length,
                         itemBuilder: (context, i) {
-                          return Container(
-                            decoration: BoxDecoration(
-                              color: Theme.of(context).cardColor,
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(16),
-                              child: Padding(
-                                padding: const EdgeInsets.all(12.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Row(
-                                      children: [
-                                        Expanded(
-                                          child: Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: [
-                                              Text('Nome do Usuário, 25',
-                                                  style: const TextStyle(
-                                                      fontWeight: FontWeight.bold)),
-                                              Text('Maputo, Maputo',
-                                                  style: Theme.of(context).textTheme.bodySmall),
-                                              Text('1.5 km de distância',
-                                                  style: Theme.of(context).textTheme.bodySmall),
-                                            ],
-                                          ),
-                                        ),
-                                        Container(
-                                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                          decoration: BoxDecoration(
-                                            color: Colors.lightGreen,
-                                            borderRadius: BorderRadius.circular(12),
-                                          ),
-                                          child: const Text(
-                                            'Online',
-                                            style: TextStyle(color: Colors.white, fontSize: 12),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-
-                                    const SizedBox(height: 10),
-
-                                    Expanded(
-                                      child: Container(
-                                        width: double.infinity,
-                                        decoration: BoxDecoration(
-                                          color: Theme.of(context).scaffoldBackgroundColor,
-                                          borderRadius: BorderRadius.circular(12),
-                                        ),
-                                        child: const Center(
-                                          child: Icon(Icons.person,
-                                              size: 60, color: Colors.grey),
-                                        ),
-                                      ),
-                                    ),
-
-                                    const SizedBox(height: 10),
-
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                      children: [
-                                        InkWell(
-                                          onTap: () {},
-                                          borderRadius: BorderRadius.circular(8),
-                                          child: Padding(
-                                            padding: const EdgeInsets.all(6.0),
-                                            child: Column(
-                                              mainAxisSize: MainAxisSize.min,
-                                              children: [
-                                                Icon(Icons.favorite_border, color: Theme.of(context).primaryColor),
-                                                const SizedBox(height: 2),
-                                                const Text('Like', style: TextStyle(fontSize: 10)),
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                        InkWell(
-                                          onTap: () {},
-                                          borderRadius: BorderRadius.circular(8),
-                                          child: Padding(
-                                            padding: const EdgeInsets.all(6.0),
-                                            child: Column(
-                                              mainAxisSize: MainAxisSize.min,
-                                              children: [
-                                                Icon(Icons.message, color: Theme.of(context).colorScheme.secondary),
-                                                const SizedBox(height: 2),
-                                                const Text('Mensagem', style: TextStyle(fontSize: 10)),
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                        InkWell(
-                                          onTap: () {},
-                                          borderRadius: BorderRadius.circular(8),
-                                          child: Padding(
-                                            padding: const EdgeInsets.all(6.0),
-                                            child: Column(
-                                              mainAxisSize: MainAxisSize.min,
-                                              children: [
-                                                const Icon(Icons.star_border, color: Colors.amber),
-                                                const SizedBox(height: 2),
-                                                const Text('Favorito', style: TextStyle(fontSize: 10)),
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                        InkWell(
-                                          onTap: () {},
-                                          borderRadius: BorderRadius.circular(8),
-                                          child: Padding(
-                                            padding: const EdgeInsets.all(6.0),
-                                            child: Column(
-                                              mainAxisSize: MainAxisSize.min,
-                                              children: [
-                                                const Icon(Icons.chat_bubble_outline),
-                                                const SizedBox(height: 2),
-                                                const Text('Chat', style: TextStyle(fontSize: 10)),
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-
-                                    const SizedBox(height: 10),
-
-                                    RichText(
-                                      text: TextSpan(
-                                        style: Theme.of(context).textTheme.bodyMedium,
-                                        children: const <TextSpan>[
-                                          TextSpan(
-                                              text: 'Interesse(s): ',
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.bold)),
-                                          TextSpan(
-                                            text: 'Amizade, Namoro casual, Namoro sério',
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
+                          return UserCard(
+                            user: _encounterUsers[i],
+                            showActionsMenu: true,
                           );
                         },
                       );

@@ -47,11 +47,13 @@ class _TwoBarMenuIcon extends StatelessWidget {
 class NomirroAppBar extends StatefulWidget implements PreferredSizeWidget {
   final bool isMobile;
   final bool drawerOpen;
+  final bool showLogoOnMobile;
 
   const NomirroAppBar({
     super.key,
     required this.isMobile,
     required this.drawerOpen,
+    this.showLogoOnMobile = true,
   });
 
   @override
@@ -97,8 +99,20 @@ class _NomirroAppBarState extends State<NomirroAppBar> {
   }
 
   Widget _buildTitle(BuildContext context) {
-    if (widget.isMobile) {
+    // MOBILE
+    if (widget.isMobile && _searchActive) {
+      return const SizedBox(
+        height: 40,
+        child: SearchFormFlutter(),
+      );
+    }
+
+    if (widget.isMobile && widget.showLogoOnMobile) {
       return Image.asset('assets/icons/logo_02.png', height: 32);
+    }
+
+    if (widget.isMobile && !widget.showLogoOnMobile) {
+      return const SizedBox.shrink();
     }
 
     // DESKTOP
@@ -108,6 +122,11 @@ class _NomirroAppBarState extends State<NomirroAppBar> {
         Image.asset('assets/icons/logo_02.png', height: 32),
         const SizedBox(width: 8.0),
         const Spacer(),
+        SizedBox(
+          width: MediaQuery.of(context).size.width * 0.4,
+          height: 40,
+          child: const SearchFormFlutter(),
+        ),
       ],
     );
   }
@@ -117,7 +136,7 @@ class _NomirroAppBarState extends State<NomirroAppBar> {
     if (widget.isMobile && _searchActive) {
       return [
         IconButton(
-          icon: const Icon(Icons.close),
+          icon: Icon(Icons.close, color: colorScheme.primary),
           onPressed: () => setState(() => _searchActive = false),
         ),
       ];
