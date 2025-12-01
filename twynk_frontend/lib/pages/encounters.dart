@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:twynk_frontend/emoji_picker.dart';
 import 'package:twynk_frontend/pages/explore.dart';
 import 'package:twynk_frontend/pages/proflie.dart';
 import 'package:twynk_frontend/pages/chat.dart';
@@ -156,6 +157,73 @@ class _HomeYouTubeStyleFlutterState extends State<HomeYouTubeStyleFlutter> {
     }
   }
 
+  void _showMessageSentAlert(String userName) {
+    final theme = Theme.of(context);
+
+    showDialog<void>(
+      context: context,
+      barrierDismissible: true,
+      builder: (dialogContext) {
+        final padding = MediaQuery.of(dialogContext).padding;
+        final Size size = MediaQuery.of(dialogContext).size;
+
+        return Align(
+          alignment: Alignment.topCenter,
+          child: Padding(
+            padding: EdgeInsets.only(
+              top: padding.top + 16,
+              left: 16,
+              right: 16,
+            ),
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                maxWidth: size.width < 600 ? size.width : 480,
+              ),
+              child: Material(
+                color: Colors.green.withValues(alpha: 0.9),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  side: const BorderSide(
+                    color: Colors.green,
+                  ),
+                ),
+                elevation: 0,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.check_circle,
+                        color: theme.colorScheme.primary,
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          'Mensagem enviada para $userName.',
+                          style: theme.textTheme.bodyMedium,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.close),
+                        onPressed: () => Navigator.of(dialogContext).pop(),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   Future<void> _openMessageSheet(UserModel user) async {
     final rootContext = context;
     final Size size = MediaQuery.of(rootContext).size;
@@ -165,208 +233,172 @@ class _HomeYouTubeStyleFlutterState extends State<HomeYouTubeStyleFlutter> {
       final theme = Theme.of(rootContext);
       final TextEditingController controller = TextEditingController();
       bool showEmojis = false;
-      int selectedEmojiCategory = 0;
 
-      const List<String> mobileEmojisSmileys = [
-        '😀','😁','😂','🤣','😃','😄','😅','😉','😊','😍',
-        '😘','😎','🤩','🤗','😢','😭','😱',
-      ];
-
-      const List<String> mobileEmojisGestures = [
-        '👍','👎','🙏','👏',
-      ];
-
-      const List<String> mobileEmojisHearts = [
-        '❤️','💔','🔥','✨',
-      ];
-
-      final List<List<String>> mobileEmojiCategories = [
-        mobileEmojisSmileys,
-        mobileEmojisGestures,
-        mobileEmojisHearts,
-      ];
-
-      await showDialog<void>(
+      final bool? messageSent = await showModalBottomSheet<bool>(
         context: rootContext,
-        barrierDismissible: true,
-        builder: (dialogContext) {
-          final EdgeInsets viewInsets = MediaQuery.of(dialogContext).viewInsets;
-          final EdgeInsets padding = MediaQuery.of(dialogContext).padding;
+        isScrollControlled: true,
+        useSafeArea: true,
+        backgroundColor: Colors.transparent,
+        enableDrag: false,
+        builder: (bottomContext) {
+          final EdgeInsets viewInsets = MediaQuery.of(bottomContext).viewInsets;
+          final Size localSize = MediaQuery.of(bottomContext).size;
 
-          return Align(
-            alignment: Alignment.topCenter,
-            child: Padding(
-              padding: EdgeInsets.only(
-                top: padding.top,
-                left: 0,
-                right: 0,
-                bottom: viewInsets.bottom,
-              ),
+          return Padding(
+            padding: EdgeInsets.only(bottom: viewInsets.bottom),
+            child: Align(
+              alignment: Alignment.bottomCenter,
               child: ConstrainedBox(
                 constraints: BoxConstraints(
-                  maxWidth: size.width,
-                  maxHeight: size.height * 0.8,
+                  maxWidth: localSize.width,
+                  maxHeight: localSize.height * 0.8,
                 ),
                 child: StatefulBuilder(
                   builder: (context, setState) {
-                    final List<IconData> categoryIcons = [
-                      Icons.emoji_emotions,
-                      Icons.back_hand,
-                      Icons.favorite,
-                    ];
-
-                    return Material(
-                      color: theme.cardColor,
-                      borderRadius: const BorderRadius.only(
-                        bottomLeft: Radius.circular(16),
-                        bottomRight: Radius.circular(16),
+                    return Container(
+                      margin: EdgeInsets.zero,
+                      padding: const EdgeInsets.all(16.0),
+                      decoration: BoxDecoration(
+                        color: theme.cardColor,
+                        borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(16),
+                          topRight: Radius.circular(16),
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.2),
+                            blurRadius: 16,
+                            offset: const Offset(0, 8),
+                          ),
+                        ],
                       ),
-                      elevation: 8,
                       child: SingleChildScrollView(
-                        child: Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              Row(
-                                children: [
-                                  CircleAvatar(
-                                    radius: 22,
-                                    backgroundImage: NetworkImage(user.img),
-                                    backgroundColor: Colors.grey[300],
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Row(
+                              children: [
+                                CircleAvatar(
+                                  radius: 22,
+                                  backgroundImage: NetworkImage(user.img),
+                                  backgroundColor: Colors.grey[300],
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text(
+                                        user.name,
+                                        style: theme.textTheme.titleMedium?.copyWith(
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ],
                                   ),
-                                  const SizedBox(width: 12),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      mainAxisSize: MainAxisSize.min,
+                                ),
+                                IconButton(
+                                  icon: const Icon(Icons.close),
+                                  onPressed: () {
+                                    Navigator.of(bottomContext).pop();
+                                  },
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 12),
+                            Container(
+                              decoration: BoxDecoration(
+                                color: Colors.grey[100],
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(
+                                  color: theme.dividerColor,
+                                ),
+                              ),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 8,
+                                      vertical: 4,
+                                    ),
+                                    child: TextField(
+                                      controller: controller,
+                                      maxLines: 3,
+                                      minLines: 1,
+                                      decoration: const InputDecoration(
+                                        border: InputBorder.none,
+                                        hintText: 'Escreva sua mensagem...',
+                                        filled: false,
+                                      ),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 4,
+                                      vertical: 2,
+                                    ),
+                                    child: Row(
                                       children: [
-                                        Text(
-                                          user.name,
-                                          style: theme.textTheme.titleMedium?.copyWith(
-                                            fontWeight: FontWeight.bold,
+                                        IconButton(
+                                          icon: const Icon(
+                                            Icons.emoji_emotions_outlined,
                                           ),
-                                          overflow: TextOverflow.ellipsis,
+                                          onPressed: () {
+                                            setState(() {
+                                              showEmojis = !showEmojis;
+                                            });
+                                          },
+                                        ),
+                                        const Spacer(),
+                                        FilledButton.icon(
+                                          onPressed: () {
+                                            Navigator.of(bottomContext).pop(true);
+                                          },
+                                          icon: const Icon(Icons.send),
+                                          label: const Text('Enviar'),
                                         ),
                                       ],
                                     ),
                                   ),
-                                  IconButton(
-                                    icon: const Icon(Icons.close),
-                                    onPressed: () => Navigator.of(dialogContext).pop(),
-                                  ),
                                 ],
                               ),
-                              const SizedBox(height: 12),
-                              TextField(
-                                controller: controller,
-                                maxLines: 3,
-                                minLines: 1,
-                                decoration: const InputDecoration(
-                                  border: OutlineInputBorder(),
-                                  hintText: 'Escreva sua mensagem...',
-                                ),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              'Segurança: Evite informar dados de contato particular.',
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: theme.textTheme.bodySmall?.color
+                                    ?.withValues(alpha: 0.7),
                               ),
+                            ),
+                            const SizedBox(height: 12),
+                            if (showEmojis) ...[
                               const SizedBox(height: 8),
-                              Text(
-                                'Segurança: Evite informar dados de contato particular.',
-                                style: theme.textTheme.bodySmall?.copyWith(
-                                  color: theme.textTheme.bodySmall?.color
-                                      ?.withValues(alpha: 0.7),
-                                ),
+                              EmojiPicker(
+                                onEmojiSelected: (emoji) {
+                                  final text = controller.text;
+                                  final selection = controller.selection;
+                                  final int insertAt = selection.isValid
+                                      ? selection.start
+                                      : text.length;
+                                  final newText = text.replaceRange(
+                                    insertAt,
+                                    insertAt,
+                                    emoji,
+                                  );
+                                  controller.text = newText;
+                                  controller.selection =
+                                      TextSelection.collapsed(
+                                    offset: insertAt + emoji.length,
+                                  );
+                                },
                               ),
-                              const SizedBox(height: 12),
-                              Row(
-                                children: [
-                                  IconButton(
-                                    icon: const Icon(Icons.emoji_emotions_outlined),
-                                    onPressed: () {
-                                      setState(() {
-                                        showEmojis = !showEmojis;
-                                      });
-                                    },
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Expanded(
-                                    child: FilledButton.icon(
-                                      onPressed: () {
-                                        Navigator.of(dialogContext).pop();
-                                        ScaffoldMessenger.of(rootContext)
-                                            .showSnackBar(
-                                          SnackBar(
-                                            content: Text(
-                                              'Mensagem enviada para ${user.name}.',
-                                            ),
-                                          ),
-                                        );
-                                      },
-                                      icon: const Icon(Icons.send),
-                                      label: const Text('Enviar'),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              if (showEmojis) ...[
-                                const SizedBox(height: 8),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: List.generate(categoryIcons.length, (index) {
-                                    final bool isSelected =
-                                        selectedEmojiCategory == index;
-                                    return IconButton(
-                                      icon: Icon(categoryIcons[index]),
-                                      color: isSelected
-                                          ? theme.colorScheme.primary
-                                          : theme.iconTheme.color,
-                                      onPressed: () {
-                                        setState(() {
-                                          selectedEmojiCategory = index;
-                                        });
-                                      },
-                                    );
-                                  }),
-                                ),
-                                const SizedBox(height: 8),
-                                SizedBox(
-                                  height: 120,
-                                  child: SingleChildScrollView(
-                                    child: Wrap(
-                                      spacing: 8,
-                                      runSpacing: 8,
-                                      children: mobileEmojiCategories
-                                          [selectedEmojiCategory]
-                                          .map((emoji) {
-                                        return GestureDetector(
-                                          onTap: () {
-                                            final text = controller.text;
-                                            final selection = controller.selection;
-                                            final int insertAt = selection.isValid
-                                                ? selection.start
-                                                : text.length;
-                                            final newText = text.replaceRange(
-                                              insertAt,
-                                              insertAt,
-                                              emoji,
-                                            );
-                                            controller.text = newText;
-                                            controller.selection =
-                                                TextSelection.collapsed(
-                                              offset: insertAt + emoji.length,
-                                            );
-                                          },
-                                          child: Text(
-                                            emoji,
-                                            style: const TextStyle(fontSize: 24),
-                                          ),
-                                        );
-                                      }).toList(),
-                                    ),
-                                  ),
-                                ),
-                              ],
                             ],
-                          ),
+                          ],
                         ),
                       ),
                     );
@@ -377,30 +409,17 @@ class _HomeYouTubeStyleFlutterState extends State<HomeYouTubeStyleFlutter> {
           );
         },
       );
+
+      // Após o drawer ser completamente fechado, então fechamos o teclado
+      if (!mounted) return;
+      FocusScope.of(context).unfocus();
+      if (messageSent == true) {
+        _showMessageSentAlert(user.name);
+      }
     } else {
       bool showEmojis = false;
-      int selectedEmojiCategory = 0;
 
-      const List<String> desktopEmojisSmileys = [
-        '😀','😁','😂','🤣','😃','😄','😅','😉','😊','😍',
-        '😘','😎','🤩','🤗','😢','😭','😱',
-      ];
-
-      const List<String> desktopEmojisGestures = [
-        '👍','👎','🙏','👏',
-      ];
-
-      const List<String> desktopEmojisHearts = [
-        '❤️','💔','🔥','✨',
-      ];
-
-      final List<List<String>> desktopEmojiCategories = [
-        desktopEmojisSmileys,
-        desktopEmojisGestures,
-        desktopEmojisHearts,
-      ];
-
-      await showModalBottomSheet<void>(
+      final bool? messageSent = await showModalBottomSheet<bool>(
         context: rootContext,
         isScrollControlled: true,
         useSafeArea: true,
@@ -419,17 +438,11 @@ class _HomeYouTubeStyleFlutterState extends State<HomeYouTubeStyleFlutter> {
               alignment: Alignment.bottomCenter,
               child: ConstrainedBox(
                 constraints: BoxConstraints(
-                  maxWidth: 480,
+                  maxWidth: 560,
                   maxHeight: localSize.height * 0.8,
                 ),
                 child: StatefulBuilder(
                   builder: (context, setState) {
-                    final List<IconData> categoryIcons = [
-                      Icons.emoji_emotions,
-                      Icons.back_hand,
-                      Icons.favorite,
-                    ];
-
                     return Container(
                       margin: const EdgeInsets.all(16.0),
                       padding: const EdgeInsets.all(16.0),
@@ -474,19 +487,71 @@ class _HomeYouTubeStyleFlutterState extends State<HomeYouTubeStyleFlutter> {
                                 ),
                                 IconButton(
                                   icon: const Icon(Icons.close),
-                                  onPressed: () =>
-                                      Navigator.of(bottomContext).pop(),
+                                  onPressed: () {
+                                    Navigator.of(bottomContext).pop();
+                                  },
                                 ),
                               ],
                             ),
                             const SizedBox(height: 12),
-                            TextField(
-                              controller: controller,
-                              maxLines: 3,
-                              minLines: 1,
-                              decoration: const InputDecoration(
-                                border: OutlineInputBorder(),
-                                hintText: 'Escreva sua mensagem...',
+                            Container(
+                              decoration: BoxDecoration(
+                                color: theme.brightness == Brightness.dark
+                                    ? Colors.white10
+                                    : const Color(0xFFF6EAFE),
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(
+                                  color: theme.dividerColor,
+                                ),
+                              ),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 8,
+                                      vertical: 4,
+                                    ),
+                                    child: TextField(
+                                      controller: controller,
+                                      maxLines: 3,
+                                      minLines: 1,
+                                      decoration: const InputDecoration(
+                                        border: InputBorder.none,
+                                        hintText: 'Escreva sua mensagem...',
+                                        filled: false,
+                                      ),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 4,
+                                      vertical: 2,
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        IconButton(
+                                          icon: const Icon(
+                                            Icons.emoji_emotions_outlined,
+                                          ),
+                                          onPressed: () {
+                                            setState(() {
+                                              showEmojis = !showEmojis;
+                                            });
+                                          },
+                                        ),
+                                        const Spacer(),
+                                        FilledButton.icon(
+                                          onPressed: () {
+                                            Navigator.of(bottomContext).pop(true);
+                                          },
+                                          icon: const Icon(Icons.send),
+                                          label: const Text('Enviar'),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                             const SizedBox(height: 8),
@@ -498,94 +563,26 @@ class _HomeYouTubeStyleFlutterState extends State<HomeYouTubeStyleFlutter> {
                               ),
                             ),
                             const SizedBox(height: 12),
-                            Row(
-                              children: [
-                                IconButton(
-                                  icon:
-                                      const Icon(Icons.emoji_emotions_outlined),
-                                  onPressed: () {
-                                    setState(() {
-                                      showEmojis = !showEmojis;
-                                    });
-                                  },
-                                ),
-                                const SizedBox(width: 8),
-                                Expanded(
-                                  child: FilledButton.icon(
-                                    onPressed: () {
-                                      Navigator.of(bottomContext).pop();
-                                      ScaffoldMessenger.of(rootContext)
-                                          .showSnackBar(
-                                        SnackBar(
-                                          content: Text(
-                                            'Mensagem enviada para ${user.name}.',
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                    icon: const Icon(Icons.send),
-                                    label: const Text('Enviar'),
-                                  ),
-                                ),
-                              ],
-                            ),
                             if (showEmojis) ...[
                               const SizedBox(height: 8),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: List.generate(categoryIcons.length, (index) {
-                                  final bool isSelected =
-                                      selectedEmojiCategory == index;
-                                  return IconButton(
-                                    icon: Icon(categoryIcons[index]),
-                                    color: isSelected
-                                        ? theme.colorScheme.primary
-                                        : theme.iconTheme.color,
-                                    onPressed: () {
-                                      setState(() {
-                                        selectedEmojiCategory = index;
-                                      });
-                                    },
+                              EmojiPicker(
+                                onEmojiSelected: (emoji) {
+                                  final text = controller.text;
+                                  final selection = controller.selection;
+                                  final int insertAt = selection.isValid
+                                      ? selection.start
+                                      : text.length;
+                                  final newText = text.replaceRange(
+                                    insertAt,
+                                    insertAt,
+                                    emoji,
                                   );
-                                }),
-                              ),
-                              const SizedBox(height: 8),
-                              SizedBox(
-                                height: 120,
-                                child: SingleChildScrollView(
-                                  child: Wrap(
-                                    spacing: 8,
-                                    runSpacing: 8,
-                                    children: desktopEmojiCategories
-                                        [selectedEmojiCategory]
-                                        .map((emoji) {
-                                      return GestureDetector(
-                                        onTap: () {
-                                          final text = controller.text;
-                                          final selection = controller.selection;
-                                          final int insertAt = selection.isValid
-                                              ? selection.start
-                                              : text.length;
-                                          final newText = text.replaceRange(
-                                            insertAt,
-                                            insertAt,
-                                            emoji,
-                                          );
-                                          controller.text = newText;
-                                          controller.selection =
-                                              TextSelection.collapsed(
-                                            offset: insertAt + emoji.length,
-                                          );
-                                        },
-                                        child: Text(
-                                          emoji,
-                                          style:
-                                              const TextStyle(fontSize: 24),
-                                        ),
-                                      );
-                                    }).toList(),
-                                  ),
-                                ),
+                                  controller.text = newText;
+                                  controller.selection =
+                                      TextSelection.collapsed(
+                                    offset: insertAt + emoji.length,
+                                  );
+                                },
                               ),
                             ],
                           ],
@@ -599,6 +596,12 @@ class _HomeYouTubeStyleFlutterState extends State<HomeYouTubeStyleFlutter> {
           );
         },
       );
+
+      if (!mounted) return;
+      FocusScope.of(context).unfocus();
+      if (messageSent == true) {
+        _showMessageSentAlert(user.name);
+      }
     }
   }
 
