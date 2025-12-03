@@ -4,10 +4,11 @@ import 'package:twynk_frontend/portals/app_bar.dart';
 import 'package:twynk_frontend/portals/drawer.dart';
 import 'package:twynk_frontend/portals/footer.dart';
 import 'package:twynk_frontend/pages/encounters.dart';
-import 'package:twynk_frontend/pages/noerby.dart';
-import 'package:twynk_frontend/pages/explore.dart';
+import 'package:twynk_frontend/pages/ping.dart';
+import 'package:twynk_frontend/pages/snaps.dart';
 import 'package:twynk_frontend/pages/chat.dart';
 import 'package:twynk_frontend/pages/login.dart';
+import 'package:twynk_frontend/pages/payment_screen.dart';
 import 'package:twynk_frontend/services/api_client.dart';
 
 // ==================== BENEFÍCIOS ====================
@@ -239,7 +240,7 @@ class _PlansPageState extends State<PlansPage> {
       if (isMobile && _drawerOpen) Navigator.of(context).pop();
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (_) => const ShortsPage()),
+        MaterialPageRoute(builder: (_) => const SnapsPage()),
       );
       return;
     }
@@ -354,8 +355,7 @@ class _PlansPageState extends State<PlansPage> {
       ),
       bottomNavigationBar: isMobile
           ? Footer(
-              currentIndex:
-                  _selectedDrawerIndex > 4 ? 0 : _selectedDrawerIndex,
+              currentIndex: 4,
               onTap: _onBottomNavTap,
             )
           : null,
@@ -422,23 +422,55 @@ class _PlansPageState extends State<PlansPage> {
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
                 ),
               ),
-              ...plans.map((p) => Expanded(
-                    flex: 2,
-                    child: Column(
-                      children: [
-                        Icon(Icons.diamond, size: 26, color: p.accent),
-                        const SizedBox(height: 4),
-                        Text(
-                          p.name,
-                          style: TextStyle(
-                            fontWeight: FontWeight.w900,
-                            fontSize: 24,
-                            color: p.accent,
+              ...plans.map(
+                (p) => Expanded(
+                  flex: 2,
+                  child: GestureDetector(
+                    onTap: p.id == 'free'
+                        ? null
+                        : () {
+                            final raw = p.price.split(' ').first;
+                            final value = double.tryParse(raw) ?? 0.0;
+                            final initialAmount = value.toStringAsFixed(2);
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (_) => PaymentScreen(
+                                  initialAmount: initialAmount,
+                                ),
+                              ),
+                            );
+                          },
+                    child: MouseRegion(
+                      cursor: p.id == 'free'
+                          ? SystemMouseCursors.basic
+                          : SystemMouseCursors.click,
+                      child: Column(
+                        children: [
+                          Icon(Icons.diamond, size: 26, color: p.accent),
+                          const SizedBox(height: 4),
+                          Text(
+                            p.name,
+                            style: TextStyle(
+                              fontWeight: FontWeight.w900,
+                              fontSize: 24,
+                              color: p.accent,
+                            ),
                           ),
-                        ),
-                      ],
+                          const SizedBox(height: 4),
+                          Text(
+                            p.price,
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.grey,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ))
+                  ),
+                ),
+              )
             ],
           ),
           const SizedBox(height: 20),
@@ -457,9 +489,13 @@ class _PlansPageState extends State<PlansPage> {
                           children: [
                             Icon(benefit.icon, size: 22),
                             const SizedBox(width: 10),
-                            Text(
-                              benefit.label,
-                              style: const TextStyle(fontSize: 16),
+                            Expanded(
+                              child: Text(
+                                benefit.label,
+                                style: const TextStyle(fontSize: 16),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
                             ),
                           ],
                         ),
@@ -557,22 +593,39 @@ class PlanCard extends StatelessWidget {
           const SizedBox(height: 25),
 
           // Botão
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.symmetric(vertical: 14),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(colors: plan.buttonGradient),
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Center(
-              child: Text(
-                plan.id == 'free'
-                    ? "Começar Grátis"
-                    : "Assinar por ${plan.price}",
-                style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18),
+          InkWell(
+            borderRadius: BorderRadius.circular(16),
+            onTap: plan.id == 'free'
+                ? null
+                : () {
+                    final raw = plan.price.split(' ').first;
+                    final value = double.tryParse(raw) ?? 0.0;
+                    final initialAmount = value.toStringAsFixed(2);
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => PaymentScreen(
+                          initialAmount: initialAmount,
+                        ),
+                      ),
+                    );
+                  },
+            child: Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(vertical: 14),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(colors: plan.buttonGradient),
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Center(
+                child: Text(
+                  plan.id == 'free'
+                      ? "Começar Grátis"
+                      : "Assinar por ${plan.price}",
+                  style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18),
+                ),
               ),
             ),
           ),

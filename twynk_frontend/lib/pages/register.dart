@@ -321,7 +321,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       children: [
                         Image.asset(
                           'assets/icons/logo_02.png',
-                          height: 42,
+                          height: 48,
                           fit: BoxFit.contain,
                         ),
                         const SizedBox(height: 8),

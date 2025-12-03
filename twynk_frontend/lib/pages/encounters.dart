@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:twynk_frontend/emoji_picker.dart';
-import 'package:twynk_frontend/pages/explore.dart';
-import 'package:twynk_frontend/pages/proflie.dart';
+import 'package:twynk_frontend/pages/snaps.dart';
 import 'package:twynk_frontend/pages/chat.dart';
 import 'package:twynk_frontend/pages/login.dart';
-import 'package:twynk_frontend/pages/noerby.dart';
+import 'package:twynk_frontend/pages/ping.dart';
 import 'package:twynk_frontend/pages/plans.dart';
 import 'package:twynk_frontend/portals/footer.dart';
 import 'package:twynk_frontend/portals/app_bar.dart';
@@ -119,45 +118,103 @@ class _HomeYouTubeStyleFlutterState extends State<HomeYouTubeStyleFlutter> {
     );
   }
 
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
+  Future<void> _showChatInviteAlert(UserModel user) async {
+    final theme = Theme.of(context);
+
+    Future.delayed(const Duration(minutes: 1), () {
+      if (!mounted) return;
+      _showChatTimeoutAlert();
     });
 
-    if (index == 6) {
-      _logout();
-      return;
-    } else if (index == 1) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => const HomePage()),
-      );
-    } else if (index == 2) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => ShortsPage()),
-      );
-    } else if (index == 3) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => const ChatPage()),
-      );
-    } else if (index == 4) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => const PainelAssinantePage()),
-      );
-    } else if (index == 5) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (_) => const PlansPage()),
-      );
-    } else if (MediaQuery.of(context).size.width < 1024) {
-      Navigator.of(context).pop();
-    }
+    showDialog<void>(
+      context: context,
+      barrierDismissible: true,
+      builder: (dialogContext) {
+        final padding = MediaQuery.of(dialogContext).padding;
+        final Size size = MediaQuery.of(dialogContext).size;
+        final route = ModalRoute.of(dialogContext);
+
+        Future.delayed(const Duration(seconds: 6), () {
+          if (route?.isActive ?? false) {
+            route?.navigator?.pop();
+          }
+        });
+
+        return Align(
+          alignment: Alignment.topCenter,
+          child: Padding(
+            padding: EdgeInsets.only(
+              top: padding.top + 16,
+              left: 16,
+              right: 16,
+            ),
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                maxWidth: size.width < 600 ? size.width - 32 : 360,
+              ),
+              child: Material(
+                color: theme.cardColor,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  side: BorderSide(
+                    color: theme.colorScheme.primary.withValues(alpha: 0.4),
+                  ),
+                ),
+                elevation: 8,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      CircleAvatar(
+                        radius: 18,
+                        backgroundImage: NetworkImage(user.img),
+                        backgroundColor: Colors.grey[300],
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              'Chat com ${user.name}',
+                              style: theme.textTheme.titleSmall?.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              'Aguarde o convite ser aceito.',
+                              style: theme.textTheme.bodySmall,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
+                        ),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.close),
+                        tooltip: 'Fechar',
+                        onPressed: () => Navigator.of(dialogContext).pop(),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
   }
 
-  void _showMessageSentAlert(String userName) {
+  Future<void> _showChatTimeoutAlert() async {
     final theme = Theme.of(context);
 
     showDialog<void>(
@@ -166,6 +223,105 @@ class _HomeYouTubeStyleFlutterState extends State<HomeYouTubeStyleFlutter> {
       builder: (dialogContext) {
         final padding = MediaQuery.of(dialogContext).padding;
         final Size size = MediaQuery.of(dialogContext).size;
+        final route = ModalRoute.of(dialogContext);
+
+        Future.delayed(const Duration(seconds: 6), () {
+          if (route?.isActive ?? false) {
+            route?.navigator?.pop();
+          }
+        });
+
+        return Align(
+          alignment: Alignment.topCenter,
+          child: Padding(
+            padding: EdgeInsets.only(
+              top: padding.top + 16,
+              left: 16,
+              right: 16,
+            ),
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                maxWidth: size.width < 600 ? size.width : 480,
+              ),
+              child: Material(
+                color: Colors.orange.withValues(alpha: 0.95),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  side: const BorderSide(
+                    color: Colors.orange,
+                  ),
+                ),
+                elevation: 0,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 16,
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(
+                        Icons.warning_amber_rounded,
+                        color: Colors.white,
+                        size: 26,
+                      ),
+                      const SizedBox(width: 12),
+                      const Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              'Aviso!',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
+                            ),
+                            SizedBox(height: 2),
+                            Text(
+                              'Convite não respondido.',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 14,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.close),
+                        color: Colors.white,
+                        onPressed: () => Navigator.of(dialogContext).pop(),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void _showLikeSentAlert(String userName) {
+    final theme = Theme.of(context);
+
+    showDialog<void>(
+      context: context,
+      barrierDismissible: true,
+      builder: (dialogContext) {
+        final padding = MediaQuery.of(dialogContext).padding;
+        final Size size = MediaQuery.of(dialogContext).size;
+        final route = ModalRoute.of(dialogContext);
+
+        Future.delayed(const Duration(seconds: 6), () {
+          if (route?.isActive ?? false) {
+            route?.navigator?.pop();
+          }
+        });
 
         return Align(
           alignment: Alignment.topCenter,
@@ -191,7 +347,120 @@ class _HomeYouTubeStyleFlutterState extends State<HomeYouTubeStyleFlutter> {
                 child: Padding(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 16,
-                    vertical: 12,
+                    vertical: 16,
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.thumb_up_alt_outlined,
+                        color: theme.colorScheme.primary,
+                        size: 26,
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          'Like enviado para $userName.',
+                          style: theme.textTheme.bodyMedium,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.close),
+                        onPressed: () => Navigator.of(dialogContext).pop(),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+
+    if (index == 6) {
+      _logout();
+      return;
+    } else if (index == 1) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const HomePage()),
+      );
+    } else if (index == 2) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const SnapsPage()),
+      );
+    } else if (index == 3) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const ChatPage()),
+      );
+    } else if (index == 4) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const PlansPage()),
+      );
+    } else if (index == 5) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const PlansPage()),
+      );
+    } else if (MediaQuery.of(context).size.width < 1024) {
+      Navigator.of(context).pop();
+    }
+  }
+
+  void _showMessageSentAlert(String userName) {
+    final theme = Theme.of(context);
+
+    showDialog<void>(
+      context: context,
+      barrierDismissible: true,
+      builder: (dialogContext) {
+        final padding = MediaQuery.of(dialogContext).padding;
+        final Size size = MediaQuery.of(dialogContext).size;
+        final route = ModalRoute.of(dialogContext);
+
+        Future.delayed(const Duration(seconds: 6), () {
+          if (route?.isActive ?? false) {
+            route?.navigator?.pop();
+          }
+        });
+
+        return Align(
+          alignment: Alignment.topCenter,
+          child: Padding(
+            padding: EdgeInsets.only(
+              top: padding.top + 16,
+              left: 16,
+              right: 16,
+            ),
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                maxWidth: size.width < 600 ? size.width : 480,
+              ),
+              child: Material(
+                color: Colors.green.withValues(alpha: 0.9),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  side: const BorderSide(
+                    color: Colors.green,
+                  ),
+                ),
+                elevation: 0,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 16,
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
@@ -199,6 +468,7 @@ class _HomeYouTubeStyleFlutterState extends State<HomeYouTubeStyleFlutter> {
                       Icon(
                         Icons.check_circle,
                         color: theme.colorScheme.primary,
+                        size: 26,
                       ),
                       const SizedBox(width: 12),
                       Expanded(
@@ -224,6 +494,7 @@ class _HomeYouTubeStyleFlutterState extends State<HomeYouTubeStyleFlutter> {
     );
   }
 
+  // ignore: unused_element
   Future<void> _openMessageSheet(UserModel user) async {
     final rootContext = context;
     final Size size = MediaQuery.of(rootContext).size;
@@ -696,7 +967,10 @@ class _HomeYouTubeStyleFlutterState extends State<HomeYouTubeStyleFlutter> {
             return UserCard(
               user: data[index],
               showActionsMenu: true,
-              onMessageTap: _openMessageSheet,
+              onMessageTap: _showChatInviteAlert,
+              onLikeTap: (user) async {
+                _showLikeSentAlert(user.name);
+              },
             );
           },
         );

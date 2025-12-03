@@ -7,8 +7,7 @@ import 'package:twynk_frontend/portals/app_bar.dart';
 import 'package:twynk_frontend/portals/drawer.dart';
 import 'package:twynk_frontend/portals/footer.dart';
 import 'package:twynk_frontend/pages/encounters.dart';
-import 'package:twynk_frontend/pages/explore.dart';
-import 'package:twynk_frontend/pages/proflie.dart';
+import 'package:twynk_frontend/pages/snaps.dart';
 import 'package:twynk_frontend/pages/chat.dart';
 import 'package:twynk_frontend/pages/login.dart';
 import 'package:twynk_frontend/pages/plans.dart';
@@ -158,7 +157,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       }
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (_) => const ShortsPage()),
+        MaterialPageRoute(builder: (_) => const SnapsPage()),
       );
       return;
     }
@@ -175,17 +174,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     }
 
     if (index == 4) {
-      if (isMobile && _drawerOpen) {
-        Navigator.of(context).pop();
-      }
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (_) => const PainelAssinantePage()),
-      );
-      return;
-    }
-
-    if (index == 5) {
       if (isMobile && _drawerOpen) {
         Navigator.of(context).pop();
       }
@@ -253,8 +241,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                       unselectedLabelColor: Colors.grey,
                       isScrollable: true,
                       tabs: [
-                        _buildTab('Recebidos', Icons.favorite),
-                        _buildTab('Enviados', Icons.send),
+                        _buildTab('Recebidos', Icons.thumb_up_alt_outlined),
+                        _buildTab('Enviados', Icons.thumb_up_alt_outlined),
                         _buildTab('Matches', Icons.how_to_reg),
                         _buildTab('Inbox', Icons.message),
                         _buildTab('Enviadas', Icons.access_time),
@@ -460,12 +448,14 @@ class UserCard extends StatefulWidget {
   final UserModel user;
   final bool showActionsMenu;
   final Future<void> Function(UserModel user)? onMessageTap;
+  final Future<void> Function(UserModel user)? onLikeTap;
 
   const UserCard({
     super.key,
     required this.user,
     this.showActionsMenu = false,
     this.onMessageTap,
+    this.onLikeTap,
   });
 
   @override
@@ -609,11 +599,13 @@ class _UserCardState extends State<UserCard> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           InkWell(
-                            onTap: () {
+                            onTap: () async {
                               setState(() {
                                 _menuOpen = false;
                               });
-                              // TODO: ação Like
+                              if (widget.onLikeTap != null) {
+                                await widget.onLikeTap!(widget.user);
+                              }
                             },
                             child: const Padding(
                               padding: EdgeInsets.symmetric(
@@ -676,10 +668,13 @@ class _UserCardState extends State<UserCard> {
                             ),
                           ),
                           InkWell(
-                            onTap: () {
+                            onTap: () async {
                               setState(() {
                                 _menuOpen = false;
                               });
+                              if (widget.onMessageTap != null) {
+                                await widget.onMessageTap!(widget.user);
+                              }
                               // TODO: ação Chat
                             },
                             child: const Padding(

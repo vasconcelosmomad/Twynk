@@ -37,20 +37,20 @@ class Footer extends StatelessWidget {
           label: 'Encontros',
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.notifications),
-          label: 'Proximo',
+          icon: Icon(Icons.wifi_tethering),
+          label: 'Ping',
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.play_circle_fill),
-          label: 'Explore',
+          label: 'Snaps',
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.chat_bubble),
           label: 'Chats',
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.person),
-          label: 'Perfil',
+          icon: Icon(Icons.workspace_premium_outlined),
+          label: 'Atualizar',
         ),
       ],
     );

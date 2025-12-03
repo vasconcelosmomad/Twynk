@@ -26,10 +26,10 @@ class SidebarMenu extends StatelessWidget {
 
     final items = [
       {'icon': Icons.person_search, 'label': 'Encontros'},
-      {'icon': Icons.notifications, 'label': 'Proximo'},
-      {'icon': Icons.play_circle_fill, 'label': 'Explore'},
+      {'icon': Icons.wifi_tethering, 'label': 'Ping'},
+      {'icon': Icons.play_circle_fill, 'label': 'Snaps'},
       {'icon': Icons.chat_bubble, 'label': 'Chats'},
-      {'icon': Icons.person, 'label': 'Perfil'},
+      {'icon': Icons.workspace_premium_outlined, 'label': 'Atualizar'},
     ];
 
     final theme = Theme.of(context);
@@ -74,7 +74,7 @@ class SidebarMenu extends StatelessWidget {
                             tooltip: 'Fechar',
                             onPressed: () => Navigator.of(context).pop(),
                           ),
-                          Image.asset('assets/icons/logo_02.png', height: 32),
+                          Image.asset('assets/icons/logo_02.png', height: 48),
                           const SizedBox(width: 48),
                         ],
                       ),
@@ -112,61 +112,6 @@ class SidebarMenu extends StatelessWidget {
                       const EdgeInsets.symmetric(horizontal: 16.0),
                 );
               }),
-              const Divider(),
-              ListTile(
-                leading: Icon(
-                  Icons.workspace_premium_outlined,
-                  color: selectedIndex == 5
-                      ? selectedTextColor
-                      : colorScheme.secondary,
-                ),
-                title: compact
-                    ? null
-                    : Text(
-                        'Update plan',
-                        style: TextStyle(
-                          color: selectedIndex == 5
-                              ? selectedTextColor
-                              : unselectedTextColor,
-                          fontSize: menuFontSize,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                selected: selectedIndex == 5,
-                onTap: () => onItemSelected?.call(5),
-                selectedTileColor: selectedTileColor,
-                dense: true,
-                visualDensity: VisualDensity.compact,
-                contentPadding:
-                    const EdgeInsets.symmetric(horizontal: 16.0),
-              ),
-              ListTile(
-                leading: Icon(
-                  Icons.exit_to_app,
-                  color: selectedIndex == 6
-                      ? Colors.red.shade300
-                      : Colors.red,
-                ),
-                title: compact
-                    ? null
-                    : Text(
-                        'Log out / Sign out',
-                        style: TextStyle(
-                          color: selectedIndex == 6
-                              ? selectedTextColor
-                              : unselectedTextColor,
-                          fontSize: menuFontSize,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                selected: selectedIndex == 6,
-                onTap: () => onItemSelected?.call(6),
-                selectedTileColor: selectedTileColor,
-                dense: true,
-                visualDensity: VisualDensity.compact,
-                contentPadding:
-                    const EdgeInsets.symmetric(horizontal: 16.0),
-              ),
             ],
           ),
         ),

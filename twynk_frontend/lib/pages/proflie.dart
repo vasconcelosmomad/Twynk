@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:twynk_frontend/pages/encounters.dart';
-import 'package:twynk_frontend/pages/noerby.dart';
+import 'package:twynk_frontend/pages/ping.dart';
 import '../services/api_client.dart';
 import '../portals/app_bar.dart';
 import '../portals/drawer.dart';
 import '../portals/footer.dart';
-import 'explore.dart';
+import 'snaps.dart';
 import 'chat.dart';
 import 'login.dart';
 import 'plans.dart';
@@ -155,7 +155,7 @@ class _PhotoMasterAppState extends State<PhotoMasterApp> {
     }
     if (index == 2) {
       if (isMobile && _drawerOpen) Navigator.of(context).pop();
-      Navigator.push(context, MaterialPageRoute(builder: (context) => const ShortsPage()));
+      Navigator.push(context, MaterialPageRoute(builder: (context) => const SnapsPage()));
       return;
     }
     if (index == 3) {
@@ -165,10 +165,15 @@ class _PhotoMasterAppState extends State<PhotoMasterApp> {
     }
     if (index == 4) {
       if (isMobile && _drawerOpen) Navigator.of(context).pop();
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const PlansPage()),
+      );
       return;
     }
     if (index == 5) {
       if (isMobile && _drawerOpen) Navigator.of(context).pop();
+      // Já estamos em perfil, mas índice 5 ainda pode ser usado via menu lateral para planos.
       Navigator.push(
         context,
         MaterialPageRoute(builder: (_) => const PlansPage()),

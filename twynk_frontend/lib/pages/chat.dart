@@ -8,9 +8,8 @@ import '../portals/drawer.dart';
 import '../portals/footer.dart';
 import '../services/api_client.dart';
 import 'package:twynk_frontend/pages/encounters.dart';
-import 'package:twynk_frontend/pages/noerby.dart';
+import 'package:twynk_frontend/pages/ping.dart';
 import 'package:twynk_frontend/pages/plans.dart';
-import 'package:twynk_frontend/pages/proflie.dart';
 import 'login.dart';
 
 class ChatPage extends StatefulWidget {
@@ -226,7 +225,7 @@ class _ChatPageState extends State<ChatPage> {
       if (isMobile && _drawerOpen) Navigator.pop(context);
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (_) => const PhotoMasterApp()),
+        MaterialPageRoute(builder: (_) => const PlansPage()),
       );
       return;
     }

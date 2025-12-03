@@ -6,23 +6,22 @@ import 'package:twynk_frontend/portals/footer.dart';
 import 'package:twynk_frontend/pages/login.dart';
 import 'package:twynk_frontend/pages/chat.dart';
 import 'package:twynk_frontend/pages/encounters.dart';
-import 'package:twynk_frontend/pages/noerby.dart';
+import 'package:twynk_frontend/pages/ping.dart';
 import 'package:twynk_frontend/pages/plans.dart';
 import 'package:twynk_frontend/services/api_client.dart';
 import 'package:video_player/video_player.dart';
 
-class ShortsPage extends StatefulWidget {
-  const ShortsPage({super.key});
+class SnapsPage extends StatefulWidget {
+  const SnapsPage({super.key});
 
   @override
-  State<ShortsPage> createState() => _ShortsPageState();
+  State<SnapsPage> createState() => _SnapsPageState();
 }
 
-class _ShortsPageState extends State<ShortsPage> {
+class _SnapsPageState extends State<SnapsPage> {
   final PageController _pageController = PageController();
   int _currentIndex = 0;
   int _selectedIndex = 2;
-  bool _drawerOpen = false;
 
   final List<String> _videoUrls = [
     'https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
@@ -94,22 +93,15 @@ class _ShortsPageState extends State<ShortsPage> {
   }
 
   void _handleNavigation(int index, {bool fromDrawer = false}) {
-    final bool isMobile = MediaQuery.of(context).size.width < 1024;
-
+    if (fromDrawer) {}
     setState(() => _selectedIndex = index);
 
     if (index == 6) {
-      if (fromDrawer && isMobile && _drawerOpen) {
-        Navigator.of(context).pop();
-      }
       _logout();
       return;
     }
 
     if (index == 0) {
-      if (fromDrawer && isMobile && _drawerOpen) {
-        Navigator.of(context).pop();
-      }
       Navigator.push(
         context,
         MaterialPageRoute(builder: (_) => const HomeYouTubeStyleFlutter()),
@@ -118,9 +110,6 @@ class _ShortsPageState extends State<ShortsPage> {
     }
 
     if (index == 1) {
-      if (fromDrawer && isMobile && _drawerOpen) {
-        Navigator.of(context).pop();
-      }
       Navigator.push(
         context,
         MaterialPageRoute(builder: (_) => const HomePage()),
@@ -129,16 +118,10 @@ class _ShortsPageState extends State<ShortsPage> {
     }
 
     if (index == 2) {
-      if (fromDrawer && isMobile && _drawerOpen) {
-        Navigator.of(context).pop();
-      }
       return;
     }
 
     if (index == 3) {
-      if (fromDrawer && isMobile && _drawerOpen) {
-        Navigator.of(context).pop();
-      }
       Navigator.push(
         context,
         MaterialPageRoute(builder: (_) => const ChatPage()),
@@ -147,18 +130,11 @@ class _ShortsPageState extends State<ShortsPage> {
     }
 
     if (index == 5) {
-      if (fromDrawer && isMobile && _drawerOpen) {
-        Navigator.of(context).pop();
-      }
       Navigator.push(
         context,
         MaterialPageRoute(builder: (_) => const PlansPage()),
       );
       return;
-    }
-
-    if (fromDrawer && isMobile && _drawerOpen) {
-      Navigator.of(context).pop();
     }
   }
 
@@ -181,23 +157,9 @@ class _ShortsPageState extends State<ShortsPage> {
 
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      drawerScrimColor: Colors.transparent,
-      onDrawerChanged: (open) => setState(() => _drawerOpen = open),
       appBar: NomirroAppBar(
         isMobile: isMobile,
-        drawerOpen: _drawerOpen,
       ),
-      drawer: !isMobile
-          ? null
-          : Drawer(
-              backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-              child: SidebarMenu(
-                compact: false,
-                showDrawerHeader: true,
-                selectedIndex: _selectedIndex,
-                onItemSelected: (index) => _handleNavigation(index, fromDrawer: true),
-              ),
-            ),
       body: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -225,6 +187,7 @@ class _ShortsPageState extends State<ShortsPage> {
                   controller: _controllers[index],
                   onInitializeRequested: () => _initializeControllerAtIndex(index),
                   onLike: () => _onLike(index),
+                  onDislike: () => _onDislike(index),
                   onMessage: () => _onMessage(index),
                   onProfile: () => _onProfile(index),
                   onNext: () {
@@ -266,6 +229,12 @@ class _ShortsPageState extends State<ShortsPage> {
     );
   }
 
+  void _onDislike(int index) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Não gostou do vídeo #$index')),
+    );
+  }
+
   void _onMessage(int index) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('Abrir chat com usuário do vídeo #$index')),
@@ -285,6 +254,7 @@ class _ShortVideoPage extends StatefulWidget {
   final VideoPlayerController? controller;
   final VoidCallback onInitializeRequested;
   final VoidCallback onLike;
+  final VoidCallback onDislike;
   final VoidCallback onMessage;
   final VoidCallback onProfile;
   final VoidCallback onNext;
@@ -296,6 +266,7 @@ class _ShortVideoPage extends StatefulWidget {
     required this.controller,
     required this.onInitializeRequested,
     required this.onLike,
+    required this.onDislike,
     required this.onMessage,
     required this.onProfile,
     required this.onNext,
@@ -341,7 +312,8 @@ class _ShortVideoPageState extends State<_ShortVideoPage> {
       return const Center(child: CircularProgressIndicator());
     }
 
-    final bool isDesktop = MediaQuery.of(context).size.width >= 1024;
+    final double width = MediaQuery.of(context).size.width;
+    final bool isDesktop = width >= 1024;
     final theme = Theme.of(context);
     final bool isDark = theme.brightness == Brightness.dark;
     final Color overlayShade =
@@ -356,131 +328,27 @@ class _ShortVideoPageState extends State<_ShortVideoPage> {
         children: [
           Positioned.fill(child: Container(color: outerBackground)),
           Center(
-            child: AspectRatio(
-              aspectRatio: 9 / 16,
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(16),
-                child: Stack(
-                  children: [
-                    SizedBox.expand(
-                      child: FittedBox(
-                        fit: BoxFit.cover,
-                        child: SizedBox(
-                          width: controller.value.size.width,
-                          height: controller.value.size.height,
-                          child: VideoPlayer(controller),
-                        ),
+            child: isDesktop
+                ? AspectRatio(
+                    aspectRatio: 9 / 16,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(16),
+                      child: _buildVideoContent(
+                        controller,
+                        isDark,
+                        overlayShade,
+                        avatarBg,
                       ),
                     ),
-                    Positioned.fill(
-                      child: Container(
-                        decoration: const BoxDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                            colors: [Colors.transparent, Colors.black],
-                          ),
-                        ),
-                      ),
+                  )
+                : SizedBox.expand(
+                    child: _buildVideoContent(
+                      controller,
+                      isDark,
+                      overlayShade,
+                      avatarBg,
                     ),
-                    Positioned.fill(
-                      child: DecoratedBox(
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                            colors: [Colors.transparent, overlayShade],
-                          ),
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      right: 12,
-                      bottom: 120,
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          _IconButtonColumn(
-                            icon: Icons.favorite,
-                            label: 'Like',
-                            onTap: widget.onLike,
-                          ),
-                          const SizedBox(height: 16),
-                          _IconButtonColumn(
-                            icon: Icons.message,
-                            label: 'Msg',
-                            onTap: widget.onMessage,
-                          ),
-                          const SizedBox(height: 16),
-                          _IconButtonColumn(
-                            icon: Icons.person,
-                            label: 'Perfil',
-                            onTap: widget.onProfile,
-                          ),
-                        ],
-                      ),
-                    ),
-                    Positioned(
-                      left: 16,
-                      bottom: 24,
-                      right: 16,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Row(
-                            children: [
-                              GestureDetector(
-                                onTap: widget.onProfile,
-                                child: CircleAvatar(
-                                  radius: 20,
-                                  backgroundColor: avatarBg,
-                                  child:
-                                      const Icon(Icons.person, color: Colors.white),
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              const Expanded(
-                                child: Text(
-                                  'Nome do Usuário',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 8),
-                          const Text(
-                            'Descrição curta do usuário - interesses, frase de efeito, etc.',
-                            style: TextStyle(color: Colors.white70),
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ],
-                      ),
-                    ),
-                    Center(
-                      child: AnimatedOpacity(
-                        duration: const Duration(milliseconds: 200),
-                        opacity: controller.value.isPlaying ? 0.0 : 1.0,
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.black.withValues(alpha: isDark ? 0.5 : 0.35),
-                            borderRadius: BorderRadius.circular(50),
-                          ),
-                          padding: const EdgeInsets.all(12),
-                          child: const Icon(Icons.play_arrow,
-                              size: 48, color: Colors.white),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
+                  ),
           ),
           if (isDesktop)
             Positioned(
@@ -509,6 +377,131 @@ class _ShortVideoPageState extends State<_ShortVideoPage> {
             ),
         ],
       ),
+    );
+  }
+
+  Widget _buildVideoContent(
+    VideoPlayerController controller,
+    bool isDark,
+    Color overlayShade,
+    Color avatarBg,
+  ) {
+    return Stack(
+      children: [
+        SizedBox.expand(
+          child: FittedBox(
+            fit: BoxFit.cover,
+            child: SizedBox(
+              width: controller.value.size.width,
+              height: controller.value.size.height,
+              child: VideoPlayer(controller),
+            ),
+          ),
+        ),
+        Positioned.fill(
+          child: Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [Colors.transparent, Colors.black],
+              ),
+            ),
+          ),
+        ),
+        Positioned.fill(
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [Colors.transparent, overlayShade],
+              ),
+            ),
+          ),
+        ),
+        Positioned(
+          right: 12,
+          bottom: 120,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _IconButtonColumn(
+                icon: Icons.thumb_up_alt_outlined,
+                label: 'Like',
+                onTap: widget.onLike,
+              ),
+              const SizedBox(height: 16),
+              _IconButtonColumn(
+                icon: Icons.thumb_down_alt_outlined,
+                label: 'Dislike',
+                onTap: widget.onDislike,
+              ),
+              const SizedBox(height: 16),
+              _IconButtonColumn(
+                icon: Icons.message,
+                label: 'Comentário',
+                onTap: widget.onMessage,
+              ),
+            ],
+          ),
+        ),
+        Positioned(
+          left: 16,
+          bottom: 24,
+          right: 16,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Row(
+                children: [
+                  GestureDetector(
+                    onTap: widget.onProfile,
+                    child: CircleAvatar(
+                      radius: 20,
+                      backgroundColor: avatarBg,
+                      child: const Icon(Icons.person, color: Colors.white),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  const Expanded(
+                    child: Text(
+                      'Nome do Usuário',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                'Descrição curta do usuário - interesses, frase de efeito, etc.',
+                style: TextStyle(color: Colors.white70),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
+          ),
+        ),
+        Center(
+          child: AnimatedOpacity(
+            duration: const Duration(milliseconds: 200),
+            opacity: controller.value.isPlaying ? 0.0 : 1.0,
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.black.withValues(alpha: isDark ? 0.5 : 0.35),
+                borderRadius: BorderRadius.circular(50),
+              ),
+              padding: const EdgeInsets.all(12),
+              child: const Icon(Icons.play_arrow, size: 48, color: Colors.white),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

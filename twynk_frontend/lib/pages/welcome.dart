@@ -856,7 +856,7 @@ class _NomirroLogo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 42,
+      height: 48,
       child: FittedBox(
         fit: BoxFit.contain,
         child: Image.asset('assets/icons/logo_02.png'),
@@ -2225,7 +2225,7 @@ class _NomirroFooter extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                 Image.asset('assets/icons/logo_02.png', height:32),
+                 Image.asset('assets/icons/logo_02.png', height:48),
                 ],
               ),
               const SizedBox(height: 24),
