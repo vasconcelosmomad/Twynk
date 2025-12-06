@@ -449,6 +449,7 @@ class UserCard extends StatefulWidget {
   final bool showActionsMenu;
   final Future<void> Function(UserModel user)? onMessageTap;
   final Future<void> Function(UserModel user)? onLikeTap;
+  final Future<void> Function(UserModel user)? onChatTap;
 
   const UserCard({
     super.key,
@@ -456,6 +457,7 @@ class UserCard extends StatefulWidget {
     this.showActionsMenu = false,
     this.onMessageTap,
     this.onLikeTap,
+    this.onChatTap,
   });
 
   @override
@@ -672,8 +674,8 @@ class _UserCardState extends State<UserCard> {
                               setState(() {
                                 _menuOpen = false;
                               });
-                              if (widget.onMessageTap != null) {
-                                await widget.onMessageTap!(widget.user);
+                              if (widget.onChatTap != null) {
+                                await widget.onChatTap!(widget.user);
                               }
                               // TODO: ação Chat
                             },

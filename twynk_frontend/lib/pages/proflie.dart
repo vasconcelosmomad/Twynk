@@ -308,12 +308,19 @@ class StatCard extends StatelessWidget {
     final Color valueColor = isDark
         ? Colors.white
         : theme.textTheme.bodyLarge?.color ?? Colors.black87;
-    final bool compact = width <= 640;
-    final double cardPadding = compact ? 14.0 : 24.0;
-    final double iconPad = compact ? 8.0 : 12.0;
-    final double iconSize = compact ? 20.0 : 24.0;
-    final double valueFontSize = compact ? 20.0 : 24.0;
-    final double titleFontSize = compact ? 13.0 : 14.0;
+    
+    // Breakpoints responsivos
+    final bool isMobile = width < 768;
+    final bool isTablet = width >= 768 && width < 1024;
+    
+    // Ajustes baseados no tamanho da tela
+    final double cardPadding = isMobile ? 12.0 : (isTablet ? 18.0 : 24.0);
+    final double iconPad = isMobile ? 6.0 : (isTablet ? 9.0 : 12.0);
+    final double iconSize = isMobile ? 18.0 : (isTablet ? 22.0 : 24.0);
+    final double valueFontSize = isMobile ? 18.0 : (isTablet ? 22.0 : 24.0);
+    final double titleFontSize = isMobile ? 12.0 : (isTablet ? 13.0 : 14.0);
+    final double spacing = isMobile ? 12.0 : 16.0;
+    
     return Container(
       padding: EdgeInsets.all(cardPadding),
       decoration: BoxDecoration(
@@ -335,38 +342,40 @@ class StatCard extends StatelessWidget {
             padding: EdgeInsets.all(iconPad),
             decoration: BoxDecoration(
               color: color,
-              borderRadius: BorderRadius.circular(999), // rounded-full
+              borderRadius: BorderRadius.circular(999),
             ),
             child: Icon(icon, size: iconSize, color: Colors.white),
           ),
-          const SizedBox(width: 16),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                title,
-                style: TextStyle(
-                  fontSize: titleFontSize,
-                  color: labelColor,
-                  fontWeight: FontWeight.w500,
-                  height: 1.0,
+          SizedBox(width: spacing),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: titleFontSize,
+                    color: labelColor,
+                    fontWeight: FontWeight.w500,
+                    height: 1.0,
+                  ),
+                  maxLines: isMobile ? 1 : 2,
+                  overflow: TextOverflow.ellipsis,
                 ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-              Text(
-                value.toString(),
-                style: TextStyle(
-                  fontSize: valueFontSize,
-                  fontWeight: FontWeight.bold,
-                  color: valueColor,
-                  height: 1.0,
+                Text(
+                  value.toString(),
+                  style: TextStyle(
+                    fontSize: valueFontSize,
+                    fontWeight: FontWeight.bold,
+                    color: valueColor,
+                    height: 1.0,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ],
+              ],
+            ),
           ),
         ],
       ),
@@ -399,11 +408,11 @@ class DashboardPage extends StatelessWidget {
     final Color primaryTextColor = isDark
         ? Colors.white
         : theme.textTheme.bodyLarge?.color ?? Colors.black87;
-    final double cardAspect = screenWidth > 1024
+    final double cardAspect = screenWidth >= 1024
         ? 3.0
-        : screenWidth > 640
-            ? 2.4
-            : 1.8;
+        : screenWidth >= 768
+            ? 2.5
+            : 2.2;
 
     return SingleChildScrollView(
       child: Column(
@@ -469,13 +478,13 @@ class DashboardPage extends StatelessWidget {
 
         // Seção de Cards
         GridView.count(
-          crossAxisCount: MediaQuery.of(context).size.width > 1024
+          crossAxisCount: MediaQuery.of(context).size.width >= 1024
               ? 3
-              : MediaQuery.of(context).size.width > 640
+              : MediaQuery.of(context).size.width >= 768
                   ? 2
                   : 1,
-          crossAxisSpacing: 24,
-          mainAxisSpacing: 24,
+          crossAxisSpacing: MediaQuery.of(context).size.width >= 768 ? 24 : 16,
+          mainAxisSpacing: MediaQuery.of(context).size.width >= 768 ? 24 : 16,
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           childAspectRatio: cardAspect,

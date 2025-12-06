@@ -104,6 +104,7 @@ class HomeYouTubeStyleFlutter extends StatefulWidget {
 class _HomeYouTubeStyleFlutterState extends State<HomeYouTubeStyleFlutter> {
   bool _drawerOpen = false;
   int _selectedIndex = 0;
+  int _chatInviteToken = 0;
 
   Future<void> _logout() async {
     final prefs = await SharedPreferences.getInstance();
@@ -121,8 +122,12 @@ class _HomeYouTubeStyleFlutterState extends State<HomeYouTubeStyleFlutter> {
   Future<void> _showChatInviteAlert(UserModel user) async {
     final theme = Theme.of(context);
 
+    _chatInviteToken++;
+    final int currentToken = _chatInviteToken;
+
     Future.delayed(const Duration(minutes: 1), () {
       if (!mounted) return;
+      if (currentToken != _chatInviteToken) return;
       _showChatTimeoutAlert();
     });
 
@@ -215,8 +220,6 @@ class _HomeYouTubeStyleFlutterState extends State<HomeYouTubeStyleFlutter> {
   }
 
   Future<void> _showChatTimeoutAlert() async {
-    final theme = Theme.of(context);
-
     showDialog<void>(
       context: context,
       barrierDismissible: true,
@@ -967,7 +970,8 @@ class _HomeYouTubeStyleFlutterState extends State<HomeYouTubeStyleFlutter> {
             return UserCard(
               user: data[index],
               showActionsMenu: true,
-              onMessageTap: _showChatInviteAlert,
+              onMessageTap: _openMessageSheet,
+              onChatTap: _showChatInviteAlert,
               onLikeTap: (user) async {
                 _showLikeSentAlert(user.name);
               },

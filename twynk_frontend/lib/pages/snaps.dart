@@ -8,6 +8,7 @@ import 'package:twynk_frontend/pages/chat.dart';
 import 'package:twynk_frontend/pages/encounters.dart';
 import 'package:twynk_frontend/pages/ping.dart';
 import 'package:twynk_frontend/pages/plans.dart';
+import 'package:twynk_frontend/pages/user_profile.dart';
 import 'package:twynk_frontend/services/api_client.dart';
 import 'package:video_player/video_player.dart';
 
@@ -457,7 +458,13 @@ class _ShortVideoPageState extends State<_ShortVideoPage> {
               Row(
                 children: [
                   GestureDetector(
-                    onTap: widget.onProfile,
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => ProfilePage(),
+                        ),
+                      );
+                    },
                     child: CircleAvatar(
                       radius: 20,
                       backgroundColor: avatarBg,
@@ -465,13 +472,22 @@ class _ShortVideoPageState extends State<_ShortVideoPage> {
                     ),
                   ),
                   const SizedBox(width: 8),
-                  const Expanded(
-                    child: Text(
-                      'Nome do Usuário',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => ProfilePage(),
+                          ),
+                        );
+                      },
+                      child: const Text(
+                        'Nome do Usuário',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
                       ),
                     ),
                   ),
@@ -587,7 +603,7 @@ class _IconButtonColumnState extends State<_IconButtonColumn> {
               duration: const Duration(milliseconds: 150),
               decoration: BoxDecoration(
                 color: bgColor,
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(999), // Full rounded
               ),
               padding: const EdgeInsets.all(8),
               child: Icon(widget.icon, size: 28, color: Colors.white),

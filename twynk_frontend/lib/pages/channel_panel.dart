@@ -10,6 +10,8 @@ import 'package:twynk_frontend/pages/encounters.dart';
 import 'package:twynk_frontend/pages/ping.dart';
 import 'package:twynk_frontend/pages/snaps.dart';
 import 'package:twynk_frontend/pages/chat.dart';
+import 'package:twynk_frontend/models/snap.dart';
+import 'package:twynk_frontend/widgets/visibility_modal.dart';
 
 // -----------------------------
 // Models (Video e Comment)
@@ -38,6 +40,7 @@ class VideoModel {
   final int likes;
   final int dislikes;
   final List<CommentModel> comments;
+  final SnapVisibility visibility;
 
   VideoModel({
     required this.id,
@@ -47,7 +50,30 @@ class VideoModel {
     required this.likes,
     required this.dislikes,
     required this.comments,
+    this.visibility = SnapVisibility.public,
   });
+
+  VideoModel copyWith({
+    int? id,
+    String? title,
+    String? status,
+    int? views,
+    int? likes,
+    int? dislikes,
+    List<CommentModel>? comments,
+    SnapVisibility? visibility,
+  }) {
+    return VideoModel(
+      id: id ?? this.id,
+      title: title ?? this.title,
+      status: status ?? this.status,
+      views: views ?? this.views,
+      likes: likes ?? this.likes,
+      dislikes: dislikes ?? this.dislikes,
+      comments: comments ?? this.comments,
+      visibility: visibility ?? this.visibility,
+    );
+  }
 }
 
 // -----------------------------
@@ -61,6 +87,7 @@ final List<VideoModel> initialVideos = [
     views: 1200,
     likes: 80,
     dislikes: 5,
+    visibility: SnapVisibility.public,
     comments: [
       CommentModel(id: 101, user: "TechLover_99", text: "Muito bom! Quando sai a versão completa?", date: "2 horas atrás", parentId: null),
       CommentModel(id: 1011, user: "Creator_Handle", text: "Olá! A versão completa sai na próxima semana!", date: "1 hora atrás", parentId: 101),
@@ -74,6 +101,7 @@ final List<VideoModel> initialVideos = [
     views: 85000,
     likes: 7200,
     dislikes: 150,
+    visibility: SnapVisibility.public,
     comments: [
       CommentModel(id: 201, user: "Chef_Amador", text: "Tentei fazer e queimei tudo! kkkk", date: "4 dias atrás", parentId: null),
       CommentModel(id: 202, user: "ReceitasTop", text: "Ótima edição! Qual o segredo da transição?", date: "3 dias atrás", parentId: null),
@@ -88,6 +116,7 @@ final List<VideoModel> initialVideos = [
     views: 520000,
     likes: 45000,
     dislikes: 800,
+    visibility: SnapVisibility.public,
     comments: [
       CommentModel(id: 401, user: "CatMom", text: "Meu gato fez exatamente o mesmo!", date: "1 mês atrás", parentId: null),
       CommentModel(id: 402, user: "ViralHunter", text: "Esse vai bater 1M fácil! Parabéns!", date: "3 semanas atrás", parentId: null),
@@ -101,6 +130,7 @@ final List<VideoModel> initialVideos = [
     views: 900,
     likes: 50,
     dislikes: 2,
+    visibility: SnapVisibility.private,
     comments: [
       CommentModel(id: 501, user: "ArtistaAmador", text: "Que traço rápido! Impressionante.", date: "5 horas atrás", parentId: null),
     ],
@@ -148,6 +178,15 @@ class ExplorerPage extends StatefulWidget {
 class _ExplorerPageState extends State<ExplorerPage> {
   final List<VideoModel> videos = initialVideos;
   int _selectedIndex = 2; // Explore
+
+  void _onVisibilityChanged(VideoModel video, SnapVisibility newVisibility) {
+    setState(() {
+      final index = videos.indexWhere((v) => v.id == video.id);
+      if (index != -1) {
+        videos[index] = video.copyWith(visibility: newVisibility);
+      }
+    });
+  }
 
   Future<void> _logout() async {
     final prefs = await SharedPreferences.getInstance();
@@ -235,6 +274,10 @@ class _ExplorerPageState extends State<ExplorerPage> {
             ],
           ),
           actions: [
+            TextButton(
+              onPressed: () => navigator.pop(),
+              child: const Text('Cancelar'),
+            ),
             TextButton(
               onPressed: handlePick,
               child: const Text('Selecionar arquivos'),
@@ -451,7 +494,11 @@ class _ExplorerPageState extends State<ExplorerPage> {
                     childAspectRatio: 9 / 16, // mantém aspecto dos shorts
                   ),
                   itemBuilder: (context, index) {
-                    return VideoCard(video: videos[index], onTap: openVideoDetail);
+                    return VideoCard(
+                      video: videos[index], 
+                      onTap: openVideoDetail,
+                      onVisibilityChanged: _onVisibilityChanged,
+                    );
                   },
                 ),
               ),
@@ -472,10 +519,31 @@ class _ExplorerPageState extends State<ExplorerPage> {
 // -----------------------------
 // VideoCard widget
 // -----------------------------
-class VideoCard extends StatelessWidget {
+class VideoCard extends StatefulWidget {
   final VideoModel video;
   final void Function(VideoModel) onTap;
-  const VideoCard({super.key, required this.video, required this.onTap});
+  final void Function(VideoModel, SnapVisibility)? onVisibilityChanged;
+  const VideoCard({super.key, required this.video, required this.onTap, this.onVisibilityChanged});
+
+  @override
+  State<VideoCard> createState() => _VideoCardState();
+}
+
+class _VideoCardState extends State<VideoCard> {
+  void _showVisibilityOptions(BuildContext context) {
+    if (widget.onVisibilityChanged == null) return;
+    
+    showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) => VisibilityModal(
+        currentVisibility: widget.video.visibility,
+        onVisibilityChanged: (newVisibility) {
+          widget.onVisibilityChanged!(widget.video, newVisibility);
+        },
+      ),
+    );
+  }
 
   static const List<List<Color>> placeholderGradients = [
     [Color(0xFFEF4444), Color(0xFFEC4899)], // red -> pink
@@ -487,11 +555,11 @@ class VideoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = placeholderGradients[video.id % placeholderGradients.length];
-    final durationSeconds = (video.id * 13) % 60;
+    final colors = placeholderGradients[widget.video.id % placeholderGradients.length];
+    final durationSeconds = (widget.video.id * 13) % 60;
 
     return GestureDetector(
-      onTap: () => onTap(video),
+      onTap: () => widget.onTap(widget.video),
       child: MouseRegion(
         cursor: SystemMouseCursors.click,
         child: AnimatedContainer(
@@ -539,7 +607,7 @@ class VideoCard extends StatelessWidget {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
-                          video.title,
+                          widget.video.title,
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                           style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
@@ -549,13 +617,54 @@ class VideoCard extends StatelessWidget {
                           spacing: 12,
                           runSpacing: 6,
                           children: [
-                            _Metric(icon: Icons.remove_red_eye, text: formatNumber(video.views), color: Colors.white),
-                            _Metric(icon: Icons.thumb_up, text: formatNumber(video.likes), color: Colors.greenAccent.shade400),
-                            _Metric(icon: Icons.thumb_down, text: formatNumber(video.dislikes), color: Colors.redAccent.shade100),
-                            _Metric(icon: Icons.mode_comment, text: video.comments.length.toString(), color: Colors.white),
+                            _Metric(icon: Icons.remove_red_eye, text: formatNumber(widget.video.views), color: Colors.white),
+                            _Metric(icon: Icons.thumb_up, text: formatNumber(widget.video.likes), color: Colors.greenAccent.shade400),
+                            _Metric(icon: Icons.thumb_down, text: formatNumber(widget.video.dislikes), color: Colors.redAccent.shade100),
+                            _Metric(icon: Icons.mode_comment, text: widget.video.comments.length.toString(), color: Colors.white),
                           ],
                         )
                       ],
+                    ),
+                  ),
+                ),
+
+                // Ícone de visibilidade no topo esquerdo
+                Positioned(
+                  top: 8,
+                  left: 8,
+                  child: GestureDetector(
+                    onTap: widget.onVisibilityChanged != null 
+                        ? () => _showVisibilityOptions(context)
+                        : null,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: Colors.black.withAlpha(150),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            widget.video.visibility == SnapVisibility.public 
+                                ? Icons.public 
+                                : Icons.lock,
+                            size: 14,
+                            color: Colors.white,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            widget.video.visibility == SnapVisibility.public 
+                                ? 'Público'
+                                : 'Privado',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 11,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -614,6 +723,13 @@ class _VideoDetailModalState extends State<VideoDetailModal> {
   int? replyingToId;
   final Map<int, TextEditingController> replyControllers = {};
   final TextEditingController topCommentController = TextEditingController();
+
+  void _onVisibilityChanged(SnapVisibility newVisibility) {
+    setState(() {
+      // Como não temos acesso à lista original, apenas mostramos feedback
+      // Em um app real, isso atualizaria o estado global ou faria uma chamada à API
+    });
+  }
 
   @override
   void dispose() {
@@ -725,6 +841,48 @@ class _VideoDetailModalState extends State<VideoDetailModal> {
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
+                      // Botão de visibilidade
+                      GestureDetector(
+                        onTap: () {
+                          showModalBottomSheet<void>(
+                            context: context,
+                            backgroundColor: Colors.transparent,
+                            builder: (context) => VisibilityModal(
+                              currentVisibility: widget.video.visibility,
+                              onVisibilityChanged: _onVisibilityChanged,
+                            ),
+                          );
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: colorScheme.primary.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                widget.video.visibility == SnapVisibility.public 
+                                    ? Icons.public 
+                                    : Icons.lock,
+                                size: 16,
+                                color: colorScheme.primary,
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                widget.video.visibility.displayName,
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: colorScheme.primary,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
                       IconButton(
                         onPressed: () => Navigator.of(context).maybePop(),
                         icon: const Icon(Icons.close),
