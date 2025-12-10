@@ -10,6 +10,7 @@ import 'snaps.dart';
 import 'chat.dart';
 import 'login.dart';
 import 'plans.dart';
+import 'edit_profile.dart';
 
 // --- MODELO DE DADOS ---
 
@@ -449,9 +450,9 @@ class DashboardPage extends StatelessWidget {
               children: [
                 OutlinedButton.icon(
                   onPressed: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Funcionalidade de editar perfil ainda não foi implementada.'),
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => const EditProfilePage(),
                       ),
                     );
                   },

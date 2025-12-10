@@ -12,7 +12,7 @@ class ChatMensagemController extends Controller
      */
     public function index(Request $request)
     {
-        $query = ChatMensagem::with(['remetente', 'destinatario']);
+        $query = ChatMensagem::with(['remetente', 'destinatario', 'media']);
 
         if ($request->has('chat_id')) {
             $query->where('chat_id', $request->chat_id);
@@ -45,8 +45,9 @@ class ChatMensagemController extends Controller
             'chat_id' => 'required|string|max:100',
             'remetente_id' => 'required|exists:users,id',
             'destinatario_id' => 'required|exists:users,id|different:remetente_id',
-            'tipo' => 'required|in:texto,imagem,audio,video',
-            'conteudo' => 'required|string',
+            'tipo' => 'required|in:texto,media',
+            'conteudo' => 'nullable|string',
+            'media_id' => 'nullable|exists:media,id',
         ]);
 
         $mensagem = ChatMensagem::create($validated);

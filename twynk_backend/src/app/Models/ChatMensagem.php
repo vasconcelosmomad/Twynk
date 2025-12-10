@@ -18,6 +18,7 @@ class ChatMensagem extends Model
         'destinatario_id',
         'tipo',
         'conteudo',
+        'media_id',
         'data_envio',
     ];
 
@@ -39,6 +40,14 @@ class ChatMensagem extends Model
     public function destinatario(): BelongsTo
     {
         return $this->belongsTo(User::class, 'destinatario_id');
+    }
+
+    /**
+     * Relacionamento com mídia associada (quando tipo = 'media').
+     */
+    public function media(): BelongsTo
+    {
+        return $this->belongsTo(Media::class, 'media_id');
     }
 }
 

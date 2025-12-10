@@ -2,85 +2,147 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Traits\ApiResponse;
 use App\Models\Provincia;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
 class ProvinciaController extends Controller
 {
+    use ApiResponse;
     /**
-     * Display a listing of the resource.
+     * Listagem de províncias com filtros e paginação
+     * 
+     * @param Request $request
+     * @return JsonResponse
      */
-    public function index(Request $request)
+    public function index(Request $request): JsonResponse
     {
-        $query = Provincia::with('pais');
+        try {
+            $query = Provincia::with('pais');
 
-        if ($request->has('nome')) {
-            $query->where('nome', 'like', '%' . $request->get('nome') . '%');
+            // Filtro por nome
+            if ($request->filled('nome')) {
+                $query->where('nome', 'like', '%' . $request->nome . '%');
+            }
+
+            // Filtro por país
+            if ($request->filled('pais_id')) {
+                $query->where('pais_id', $request->pais_id);
+            }
+
+            $perPage = $request->integer('per_page', 15);
+
+            return $this->success(
+                $query->orderBy('nome')->paginate($perPage),
+                'Províncias listadas com sucesso'
+            );
+        } catch (\Exception $e) {
+            return $this->serverError('Erro ao listar províncias');
         }
+    }
 
-        if ($request->has('pais_id')) {
-            $query->where('pais_id', $request->get('pais_id'));
+    /**
+     * Criar nova província
+     * 
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function store(Request $request): JsonResponse
+    {
+        try {
+            $validated = $request->validate([
+                'nome'     => 'required|string|max:100',
+                'pais_id'  => 'required|integer|exists:pais,id',
+            ]);
+
+            $provincia = Provincia::create($validated);
+
+            return $this->created(
+                $provincia->load('pais'),
+                'Província criada com sucesso'
+            );
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return $this->validationError($e->errors());
+        } catch (\Exception $e) {
+            return $this->serverError('Erro ao criar província');
         }
-
-        $perPage = (int) $request->get('per_page', 15);
-        return response()->json($query->orderBy('nome')->paginate($perPage));
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Exibir província específica usando Route Model Binding
+     * 
+     * @param Provincia $provincia
+     * @return JsonResponse
      */
-    public function store(Request $request)
+    public function show(Provincia $provincia): JsonResponse
     {
-        $validated = $request->validate([
-            'nome' => 'required|string|max:100',
-            'pais_id' => 'required|integer|exists:pais,id',
-        ]);
+        try {
+            $provincia->load(['pais', 'cidades']);
 
-        $provincia = Provincia::create($validated);
-        return response()->json($provincia->load('pais'), 201);
+            return $this->success(
+                $provincia,
+                'Província encontrada com sucesso'
+            );
+        } catch (\Exception $e) {
+            return $this->serverError('Erro ao buscar província');
+        }
     }
 
     /**
-     * Display the specified resource.
+     * Atualizar província usando Route Model Binding
+     * 
+     * @param Request $request
+     * @param Provincia $provincia
+     * @return JsonResponse
      */
-    public function show($id)
+    public function update(Request $request, Provincia $provincia): JsonResponse
     {
-        $provincia = Provincia::with(['pais', 'cidades'])->findOrFail($id);
-        return response()->json($provincia);
+        try {
+            $validated = $request->validate([
+                'nome' => [
+                    'sometimes',
+                    'string',
+                    'max:100',
+                ],
+                'pais_id' => [
+                    'sometimes',
+                    'integer',
+                    'exists:pais,id',
+                ],
+            ]);
+
+            $provincia->update($validated);
+
+            return $this->success(
+                $provincia->load('pais'),
+                'Província atualizada com sucesso'
+            );
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return $this->validationError($e->errors());
+        } catch (\Exception $e) {
+            return $this->serverError('Erro ao atualizar província');
+        }
     }
 
     /**
-     * Update the specified resource in storage.
+     * Remover província usando Route Model Binding
+     * 
+     * @param Provincia $provincia
+     * @return JsonResponse
      */
-    public function update(Request $request, $id)
+    public function destroy(Provincia $provincia): JsonResponse
     {
-        $provincia = Provincia::findOrFail($id);
+        try {
+            $provincia->delete();
 
-        $validated = $request->validate([
-            'nome' => [
-                'sometimes',
-                'string',
-                'max:100',
-            ],
-            'pais_id' => [
-                'sometimes',
-                'integer',
-                'exists:pais,id',
-            ],
-        ]);
-
-        $provincia->update($validated);
-        return response()->json($provincia->load('pais'));
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy($id)
-    {
-        $provincia = Provincia::findOrFail($id);
-        $provincia->delete();
-        return response()->json(['message' => 'Província removida com sucesso']);
+            return $this->success(
+                null,
+                'Província removida com sucesso'
+            );
+        } catch (\Exception $e) {
+            return $this->serverError('Erro ao remover província');
+        }
     }
 }

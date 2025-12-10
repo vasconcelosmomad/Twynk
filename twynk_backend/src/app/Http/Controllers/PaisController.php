@@ -2,76 +2,138 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Traits\ApiResponse;
 use App\Models\Pais;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
 class PaisController extends Controller
 {
+    use ApiResponse;
     /**
-     * Display a listing of the resource.
+     * Listagem de países com paginação e filtros
+     * 
+     * @param Request $request
+     * @return JsonResponse
      */
-    public function index(Request $request)
+    public function index(Request $request): JsonResponse
     {
-        $query = Pais::query();
+        try {
+            $query = Pais::query();
 
-        if ($request->has('nome')) {
-            $query->where('nome', 'like', '%' . $request->get('nome') . '%');
+            // Filtro por nome
+            if ($request->filled('nome')) {
+                $query->where('nome', 'like', '%' . $request->nome . '%');
+            }
+
+            // Paginação (default 15)
+            $perPage = $request->integer('per_page', 15);
+
+            return $this->success(
+                $query->orderBy('nome')->paginate($perPage),
+                'Países listados com sucesso'
+            );
+        } catch (\Exception $e) {
+            return $this->serverError('Erro ao listar países');
         }
-
-        $perPage = (int) $request->get('per_page', 15);
-        return response()->json($query->orderBy('nome')->paginate($perPage));
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Criar um novo país
+     * 
+     * @param Request $request
+     * @return JsonResponse
      */
-    public function store(Request $request)
+    public function store(Request $request): JsonResponse
     {
-        $validated = $request->validate([
-            'nome' => 'required|string|max:100|unique:pais,nome',
-        ]);
+        try {
+            $validated = $request->validate([
+                'nome' => 'required|string|max:100|unique:pais,nome',
+            ]);
 
-        $pais = Pais::create($validated);
-        return response()->json($pais, 201);
+            $pais = Pais::create($validated);
+
+            return $this->created(
+                $pais,
+                'País criado com sucesso'
+            );
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return $this->validationError($e->errors());
+        } catch (\Exception $e) {
+            return $this->serverError('Erro ao criar país');
+        }
     }
 
     /**
-     * Display the specified resource.
+     * Exibir país específico usando Route Model Binding
+     * 
+     * @param Pais $pais
+     * @return JsonResponse
      */
-    public function show($id)
+    public function show(Pais $pais): JsonResponse
     {
-        $pais = Pais::with('provincias')->findOrFail($id);
-        return response()->json($pais);
+        try {
+            $pais->load('provincias');
+
+            return $this->success(
+                $pais,
+                'País encontrado com sucesso'
+            );
+        } catch (\Exception $e) {
+            return $this->serverError('Erro ao buscar país');
+        }
     }
 
     /**
-     * Update the specified resource in storage.
+     * Atualizar país usando Route Model Binding
+     * 
+     * @param Request $request
+     * @param Pais $pais
+     * @return JsonResponse
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Pais $pais): JsonResponse
     {
-        $pais = Pais::findOrFail($id);
+        try {
+            $validated = $request->validate([
+                'nome' => [
+                    'sometimes',
+                    'string',
+                    'max:100',
+                    Rule::unique('pais', 'nome')->ignore($pais->id),
+                ],
+            ]);
 
-        $validated = $request->validate([
-            'nome' => [
-                'sometimes',
-                'string',
-                'max:100',
-                Rule::unique('pais', 'nome')->ignore($pais->id),
-            ],
-        ]);
+            $pais->update($validated);
 
-        $pais->update($validated);
-        return response()->json($pais);
+            return $this->success(
+                $pais,
+                'País atualizado com sucesso'
+            );
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return $this->validationError($e->errors());
+        } catch (\Exception $e) {
+            return $this->serverError('Erro ao atualizar país');
+        }
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remover país usando Route Model Binding
+     * 
+     * @param Pais $pais
+     * @return JsonResponse
      */
-    public function destroy($id)
+    public function destroy(Pais $pais): JsonResponse
     {
-        $pais = Pais::findOrFail($id);
-        $pais->delete();
-        return response()->json(['message' => 'País removido com sucesso']);
+        try {
+            $pais->delete();
+
+            return $this->success(
+                null,
+                'País removido com sucesso'
+            );
+        } catch (\Exception $e) {
+            return $this->serverError('Erro ao remover país');
+        }
     }
 }

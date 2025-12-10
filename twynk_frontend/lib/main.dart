@@ -1,14 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:provider/provider.dart';
+import 'dart:convert';
 import 'package:twynk_frontend/l10n/app_localizations.dart';
-import 'pages/welcome.dart';
-import 'pages/proflie.dart';
-import 'themes/app_theme.dart';
-import 'services/api_client.dart';
-import 'services/language_controller.dart';
+import 'package:twynk_frontend/pages/welcome.dart';
+import 'package:twynk_frontend/pages/proflie.dart';
+import 'package:twynk_frontend/themes/app_theme.dart';
+import 'package:twynk_frontend/services/api_client.dart';
+import 'package:twynk_frontend/services/language_controller.dart';
+import 'package:twynk_frontend/providers/app_provider.dart';
+import 'package:twynk_frontend/models/user.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (_) => AppProvider(),
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatefulWidget {
@@ -34,6 +43,28 @@ class _MyAppState extends State<MyApp> {
     final token = prefs.getString('auth_token');
     if (token != null && token.isNotEmpty) {
       ApiClient.instance.setToken(token);
+      
+      // Inicializar AppProvider e buscar dados do usuário
+      if (mounted) {
+        final appProvider = Provider.of<AppProvider>(context, listen: false);
+
+        // Primeiro, tentar restaurar usuário salvo localmente (para evitar piscar como "Usuário")
+        final cachedUserJson = prefs.getString('current_user');
+        if (cachedUserJson != null) {
+          try {
+            final Map<String, dynamic> userMap =
+                jsonDecode(cachedUserJson) as Map<String, dynamic>;
+            final user = User.fromJson(userMap);
+            await appProvider.login(user);
+          } catch (_) {
+            // Se der erro ao decodificar, ignoramos e seguimos com initialize()
+          }
+        }
+
+        // Ainda assim chamamos initialize() para atualizar dados a partir da API
+        await appProvider.initialize();
+      }
+      
       setState(() {
         _loggedIn = true;
         _initialized = true;

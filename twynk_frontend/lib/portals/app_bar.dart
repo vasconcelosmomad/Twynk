@@ -1,25 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:twynk_frontend/pages/channel_panel.dart';
-import 'package:twynk_frontend/pages/login.dart';
-import 'package:twynk_frontend/pages/plans.dart';
-import 'package:twynk_frontend/pages/proflie.dart';
-import '../services/api_client.dart';
-
-// O widget _TwoBarMenuIcon foi removido pois não é mais necessário.
+import '../services/language_controller.dart';
 
 class NomirroAppBar extends StatefulWidget implements PreferredSizeWidget {
   final bool isMobile;
-  final bool? drawerOpen;
-  final bool showCreateAction;
-  final bool enableSearch;
+  final bool drawerOpen;
 
   const NomirroAppBar({
     super.key,
     required this.isMobile,
-    this.drawerOpen = false,
-    this.showCreateAction = true,
-    this.enableSearch = false,
+    required this.drawerOpen,
   });
 
   @override
@@ -30,49 +19,27 @@ class NomirroAppBar extends StatefulWidget implements PreferredSizeWidget {
 }
 
 class _NomirroAppBarState extends State<NomirroAppBar> {
-  bool _isMobileSearchActive = false;
-
-  Future<void> _logout() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove('auth_token');
-    ApiClient.instance.clearToken();
-    if (!mounted) return;
-    Navigator.of(context).pushAndRemoveUntil(
-      MaterialPageRoute(builder: (_) => const LoginPage()),
-      (route) => false,
-    );
-  }
+  bool _searchActive = false;
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-    final Color baseForegroundColor = colorScheme.onSurface;
-
     return AppBar(
-      backgroundColor: theme.scaffoldBackgroundColor,
-      foregroundColor: baseForegroundColor,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       surfaceTintColor: Colors.transparent,
       elevation: 0,
       automaticallyImplyLeading: false,
-      titleSpacing: 4.0,
-      // MOBILE: quando a busca está ativa, mostramos o botão de voltar.
-      // Caso contrário, mostramos o ícone de menu para abrir o Drawer,
-      // usando a cor definida pelo tema.
+      titleSpacing: 0,
       leading: widget.isMobile
-          ? (widget.enableSearch && _isMobileSearchActive
-              ? IconButton(
-                  icon: Icon(
-                    Icons.arrow_back,
-                    color: colorScheme.secondary,
-                  ),
-                  onPressed: () {
-                    setState(() {
-                      _isMobileSearchActive = false;
-                    });
-                  },
-                )
-              : null)
+          ? IconButton(
+              icon: const Icon(Icons.menu),
+              onPressed: () {
+                if (widget.drawerOpen) {
+                  Navigator.of(context).pop();
+                } else {
+                  Scaffold.of(context).openDrawer();
+                }
+              },
+            )
           : null,
       title: _buildTitle(context),
       actions: _buildActions(context),
@@ -80,194 +47,208 @@ class _NomirroAppBarState extends State<NomirroAppBar> {
   }
 
   Widget _buildTitle(BuildContext context) {
-    // O logo é mantido no título para ambas as visualizações.
-    // Com o `leading` null, ele se alinha à esquerda no mobile.
-    final Widget logo =
-        Image.asset('assets/icons/logo_02.png', height: 48);
-
-    // MOBILE: quando a busca está habilitada, o título vira o campo de busca.
-    if (widget.isMobile) {
-      if (widget.enableSearch && _isMobileSearchActive) {
-        return const SearchFormFlutter();
-      }
-      return logo;
+    // MOBILE
+    if (widget.isMobile && _searchActive) {
+      return const SizedBox(
+        height: 40,
+        child: SearchFormFlutter(),
+      );
     }
 
-    // DESKTOP/TABLET: o campo de busca fica nas actions, não no título.
+    if (widget.isMobile) {
+      return Image.asset('assets/icons/logo_02.png', height: 42);
+    }
+
+    // DESKTOP
     return Row(
       children: [
         const SizedBox(width: 8.0),
-        logo,
+        Image.asset('assets/icons/logo_02.png', height: 32),
         const SizedBox(width: 8.0),
         const Spacer(),
+        SizedBox(
+          width: MediaQuery.of(context).size.width * 0.4,
+          height: 40,
+          child: const SearchFormFlutter(),
+        ),
       ],
     );
   }
 
   List<Widget> _buildActions(BuildContext context) {
     final ColorScheme colorScheme = Theme.of(context).colorScheme;
-    final double mobileSpacing = 4.0;
-    final double desktopSpacing = 8.0;
-
-    if (widget.enableSearch && widget.isMobile && _isMobileSearchActive) {
-      return const <Widget>[];
+    if (widget.isMobile && _searchActive) {
+      return [
+        IconButton(
+          icon: const Icon(Icons.close),
+          onPressed: () => setState(() => _searchActive = false),
+        ),
+      ];
     }
 
     return [
-      SizedBox(width: widget.isMobile ? mobileSpacing : desktopSpacing),
-      if (widget.showCreateAction)
-        if (widget.isMobile)
-          IconButton.filledTonal(
-            onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (_) => const ExplorerPage(openUploadOnStart: true),
-                ),
-              );
-            },
-            icon: Icon(
-              Icons.add_outlined,
-              color: colorScheme.primary,
-            ),
-            tooltip: 'Criar',
-            style: IconButton.styleFrom(
-              backgroundColor: colorScheme.primary.withValues(alpha: 0.12),
-              foregroundColor: colorScheme.primary,
-              padding: const EdgeInsets.all(6.0),
-              minimumSize: const Size(36, 36),
-              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-            ),
-          )
-        else
-          Center(
-            child: TextButton.icon(
-              onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (_) => const ExplorerPage(openUploadOnStart: true),
-                  ),
-                );
-              },
-              icon: Icon(Icons.add_outlined, color: colorScheme.primary),
-              label: const Text('Criar'),
-              style: TextButton.styleFrom(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                foregroundColor: colorScheme.primary,
-                backgroundColor: colorScheme.primary.withValues(alpha: 0.12),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30.0),
-                ),
+      if (widget.isMobile)
+        IconButton(
+          icon: const Icon(Icons.search),
+          padding: EdgeInsets.zero,
+          constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
+          onPressed: () => setState(() => _searchActive = true),
+        ),
+      const SizedBox(width: 16.0),
+      if (widget.isMobile)
+        IconButton.filledTonal(
+          onPressed: () {},
+          icon: const Icon(Icons.add),
+          tooltip: 'Criar',
+          style: IconButton.styleFrom(
+            backgroundColor: colorScheme.primary.withValues(alpha: 0.12),
+            foregroundColor: colorScheme.primary,
+            padding: EdgeInsets.zero,
+            minimumSize: const Size(36, 36),
+            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          ),
+        )
+      else
+        Center(
+          child: TextButton.icon(
+            onPressed: () {},
+            icon: const Icon(Icons.add_circle_outline),
+            label: const Text('Criar'),
+            style: TextButton.styleFrom(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+              foregroundColor: colorScheme.onPrimary,
+              backgroundColor: colorScheme.primary,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(30.0),
               ),
             ),
           ),
-      if (widget.showCreateAction)
-        SizedBox(width: widget.isMobile ? mobileSpacing : desktopSpacing),
-      // DESKTOP/TABLET: quando habilitado, o campo de busca fica nas actions.
-      if (widget.enableSearch && !widget.isMobile) ...[
-        Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 360),
-            child: const SearchFormFlutter(),
-          ),
         ),
-        SizedBox(width: desktopSpacing),
-      ],
-      if (widget.enableSearch && widget.isMobile) ...[
-        Center(
-          child: IconButton(
-            onPressed: () {
-              setState(() {
-                _isMobileSearchActive = true;
-              });
-            },
-            icon: Icon(
-              Icons.search,
-              color: colorScheme.secondary,
+      const SizedBox(width: 8.0),
+      // Use a Builder to get the context of the button for positioning the menu.
+      Center(
+        child: Builder(
+          builder: (context) {
+            return Tooltip(
+            message: 'Idioma / Language',
+            child: InkWell(
+              customBorder: const CircleBorder(),
+              onTap: () {
+                final RenderBox button = context.findRenderObject() as RenderBox;
+                final RenderBox overlay = Overlay.of(context).context.findRenderObject() as RenderBox;
+                final RelativeRect position = RelativeRect.fromRect(
+                  Rect.fromPoints(
+                    button.localToGlobal(const Offset(0, 0), ancestor: overlay),
+                    button.localToGlobal(button.size.bottomRight(Offset.zero), ancestor: overlay),
+                  ),
+                  Offset.zero & overlay.size,
+                );
+
+                showMenu<String>(
+                  context: context,
+                  position: position.shift(const Offset(0, 44)), // Adjust offset as needed
+                  items: const [
+                    PopupMenuItem<String>(
+                      value: 'pt',
+                      child: Text('Português'),
+                    ),
+                    PopupMenuItem<String>(
+                      value: 'en',
+                      child: Text('English'),
+                    ),
+                  ],
+                ).then((value) {
+                  if (value == null) return; // Menu dismissed
+                  final lang = value == 'en' ? AppLanguage.en : AppLanguage.pt;
+                  LanguageController.instance.setLanguage(lang);
+                });
+              },
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Icon(Icons.language, color: colorScheme.secondary),
+              ),
             ),
-            tooltip: 'Buscar',
-          ),
-        ),
-        SizedBox(width: widget.isMobile ? mobileSpacing : desktopSpacing),
-      ],
+          );
+        },
+      )),
+      const SizedBox(width: 16.0),
       _buildUserMenu(context),
-      SizedBox(width: widget.isMobile ? mobileSpacing : desktopSpacing),
+      const SizedBox(width: 16.0),
     ];
   }
 
   Widget _buildUserMenu(BuildContext context) {
     final ColorScheme colorScheme = Theme.of(context).colorScheme;
-    return PopupMenuButton<String>(
-      itemBuilder: (context) => [
-        PopupMenuItem<String>(
-          value: 'name',
-          enabled: false,
-          child: Row(
-            children: [
-              Icon(Icons.person, size: 20, color: colorScheme.onSurface),
-              const SizedBox(width: 8),
-              const Text('Usuário logado'),
-            ],
-          ),
-        ),
-        PopupMenuItem<String>(
-          value: 'profile',
-          child: Row(
-            children: [
-              Icon(Icons.person_outline, size: 20, color: colorScheme.onSurface),
-              const SizedBox(width: 8),
-              const Text('Profile'),
-            ],
-          ),
-        ),
-        PopupMenuItem<String>(
-          value: 'plans',
-          child: Row(
-            children: [
-              Icon(Icons.workspace_premium_outlined, size: 20, color: colorScheme.secondary),
-              const SizedBox(width: 8),
-              const Text('Planos'),
-            ],
-          ),
-        ),
-        PopupMenuItem<String>(
-          value: 'logout',
-          child: Row(
-            children: [
-              Icon(Icons.logout, size: 20, color: colorScheme.error),
-              const SizedBox(width: 8),
-              const Text('Logout'),
-            ],
-          ),
-        ),
-      ],
-      position: PopupMenuPosition.under,
-      onSelected: (value) {
-        if (value == 'profile') {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (_) => const PainelAssinantePage(),
+    // Use a Builder to get the context of the button for positioning the menu.
+    return Center(
+      child: Builder(
+        builder: (context) {
+          return Tooltip(
+            message: 'User Menu',
+            child: InkWell(
+              customBorder: const CircleBorder(),
+              onTap: () {
+                final RenderBox button = context.findRenderObject() as RenderBox;
+                final RenderBox overlay = Overlay.of(context).context.findRenderObject() as RenderBox;
+                final RelativeRect position = RelativeRect.fromRect(
+                  Rect.fromPoints(
+                    button.localToGlobal(const Offset(0, 0), ancestor: overlay),
+                    button.localToGlobal(button.size.bottomRight(Offset.zero), ancestor: overlay),
+                  ),
+                  Offset.zero & overlay.size,
+                );
+
+                showMenu<String>(
+                  context: context,
+                  position: position.shift(const Offset(0, 44)), // Adjust offset as needed
+                  items: [
+                    PopupMenuItem<String>(
+                      value: 'name',
+                      child: Row(
+                        children: [
+                          Icon(Icons.person, size: 18),
+                          SizedBox(width: 8),
+                          Text('Nome'),
+                        ],
+                      ),
+                    ),
+                    PopupMenuItem<String>(
+                      value: 'profile',
+                      child: Row(
+                        children: [
+                          Icon(Icons.settings, size: 18),
+                          SizedBox(width: 8),
+                          Text('Profile'),
+                        ],
+                      ),
+                    ),
+                    PopupMenuItem<String>(
+                      value: 'update_plan',
+                      child: Row(
+                        children: [
+                          Icon(Icons.workspace_premium_outlined, size: 18, color: colorScheme.secondary),
+                          SizedBox(width: 8),
+                          Text('Update plan'),
+                        ],
+                      ),
+                    ),
+                  ],
+                ).then((value) {
+                  if (value == null) return; // Menu dismissed
+                  // Handle selection
+                });
+              },
+              child: const Padding(
+                padding: EdgeInsets.all(8.0),
+                child: CircleAvatar(
+                  radius: 16,
+                  backgroundColor: Colors.grey,
+                  child: Icon(Icons.person, size: 18, color: Colors.white),
+                ),
+              ),
             ),
           );
-        } else if (value == 'plans') {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (_) => const PlansPage(),
-            ),
-          );
-        } else if (value == 'logout') {
-          _logout();
-        }
-      },
-      child: Row(
-        children: [
-          CircleAvatar(
-            radius: 17,
-            backgroundColor: colorScheme.primary.withValues(alpha: 0.16),
-            child: const Icon(Icons.person, size: 20, color: Colors.white),
-          ),
-          const SizedBox(width: 4),
-          Icon(Icons.more_vert, color: colorScheme.onSurface),
-        ],
+        },
       ),
     );
   }
@@ -293,7 +274,7 @@ class _SearchFormFlutterState extends State<SearchFormFlutter> {
           controller: _searchController,
           decoration: InputDecoration(
             contentPadding:
-                const EdgeInsets.symmetric(vertical: 10, horizontal: 40),
+                const EdgeInsets.symmetric(vertical: 8, horizontal: 40),
             hintText: 'Search',
             hintStyle: TextStyle(color: Colors.grey[600]),
             filled: true,
@@ -304,6 +285,7 @@ class _SearchFormFlutterState extends State<SearchFormFlutter> {
               borderRadius: BorderRadius.circular(20),
               borderSide: BorderSide.none,
             ),
+            // No borders on enabled/focused as requested
           ),
         ),
         Positioned(
@@ -320,8 +302,9 @@ class _SearchFormFlutterState extends State<SearchFormFlutter> {
                 foregroundColor: theme.brightness == Brightness.dark
                     ? Colors.white
                     : colorScheme.secondary,
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16),
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                minimumSize: const Size(40, 32),
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                 shape: const RoundedRectangleBorder(
                   borderRadius: BorderRadius.only(
                     topRight: Radius.circular(20),

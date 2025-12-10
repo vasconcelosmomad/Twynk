@@ -22,36 +22,67 @@ class User extends Authenticatable implements JWTSubject
     const UPDATED_AT = 'updated_at';
 
     protected $fillable = [
+        // Dados básicos
         'nome',
+        'apelido',
         'genero',
+        'sexualidade',
         'interesse',
+        'estado_civil',
         'data_nascimento',
+        'signo',
         'email',
         'password',
         'google_id',
-        'foto_perfil',
-        'foto_galeria',
-        'bio',
-        'localizacao',
-        'latitude',
-        'longitude',
-        'status',
-        'plano_id',
-        'plano_expira_em',
-        'limite_solicitacoes',
         'is_verified',
+        'is_banned',
+        'motivo_banamento',
+        'ultimo_login',
         'role',
+        
+        // Preferências de relacionamento / busca
         'tipo_relacionamento',
         'busca_genero',
         'busca_idade_min',
         'busca_idade_max',
         'busca_distancia',
+        
+        // Dados pessoais adicionais
+        'filhos',
+        'escolaridade',
+        'profissao',
+        'religiao',
+        'humor',
+        
+        // Localização normalizada (chaves estrangeiras)
+        'pais_id',
+        'provincia_id',
+        'cidade_id',
+        'mora_com',
+        
+        // Aparência física
+        'cor_pele',
+        'cor_olhos',
+        'cor_cabelos',
         'altura',
         'peso',
-        'estado_civil',
-        'is_banned',
-        'motivo_banimento',
-        'ultimo_login',
+        
+        // Hábitos e estilo de vida
+        'pratica_esporte',
+        'fuma',
+        'bebe',
+        'como_me_considero_fisicamente',
+        
+        // Coordenadas de GPS
+        'latitude',
+        'longitude',
+        
+        'status',
+        
+        // Plano e limites
+        'plano_id',
+        'plano_expira_em',
+        'limite_solicitacoes',
     ];
 
     protected $hidden = [
@@ -63,8 +94,20 @@ class User extends Authenticatable implements JWTSubject
         'data_nascimento' => 'date',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
+        'ultimo_login' => 'datetime',
+        'plano_expira_em' => 'datetime',
         'password' => 'hashed',
         'is_verified' => 'boolean',
+        'is_banned' => 'boolean',
+        'latitude' => 'decimal:7',
+        'longitude' => 'decimal:7',
+        'altura' => 'float',
+        'peso' => 'float',
+        'filhos' => 'integer',
+        'busca_idade_min' => 'integer',
+        'busca_idade_max' => 'integer',
+        'busca_distancia' => 'integer',
+        'limite_solicitacoes' => 'integer',
     ];
 
     /**
@@ -106,10 +149,33 @@ class User extends Authenticatable implements JWTSubject
                 ? $assinaturaAtiva->data_fim->timestamp 
                 : null,
             'role' => $this->role ?? 'user',
-            'profile_photo' => $this->foto_perfil,
             'is_verified' => $this->is_verified ?? false,
             'credits' => $this->creditos ? (float) $this->creditos->saldo : 0.0,
         ];
+    }
+
+    /**
+     * Relacionamento com país
+     */
+    public function pais(): BelongsTo
+    {
+        return $this->belongsTo(Pais::class, 'pais_id');
+    }
+
+    /**
+     * Relacionamento com província
+     */
+    public function provincia(): BelongsTo
+    {
+        return $this->belongsTo(Provincia::class, 'provincia_id');
+    }
+
+    /**
+     * Relacionamento com cidade
+     */
+    public function cidade(): BelongsTo
+    {
+        return $this->belongsTo(Cidade::class, 'cidade_id');
     }
 
     /**
@@ -209,11 +275,11 @@ class User extends Authenticatable implements JWTSubject
     }
 
     /**
-     * Fotos do usuário
+     * Mídias do usuário
      */
-    public function fotos(): HasMany
+    public function medias(): HasMany
     {
-        return $this->hasMany(Foto::class, 'usuario_id');
+        return $this->hasMany(Media::class, 'user_uid', 'uid');
     }
 
     /**

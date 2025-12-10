@@ -2,85 +2,146 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Traits\ApiResponse;
 use App\Models\Cidade;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 
 class CidadeController extends Controller
 {
+    use ApiResponse;
     /**
-     * Display a listing of the resource.
+     * Listagem de cidades com filtros e paginação
+     * 
+     * @param Request $request
+     * @return JsonResponse
      */
-    public function index(Request $request)
+    public function index(Request $request): JsonResponse
     {
-        $query = Cidade::with('provincia');
+        try {
+            $query = Cidade::with('provincia');
 
-        if ($request->has('nome')) {
-            $query->where('nome', 'like', '%' . $request->get('nome') . '%');
+            // Filtro por nome
+            if ($request->filled('nome')) {
+                $query->where('nome', 'like', '%' . $request->nome . '%');
+            }
+
+            // Filtro por província
+            if ($request->filled('provincia_id')) {
+                $query->where('provincia_id', $request->provincia_id);
+            }
+
+            $perPage = $request->integer('per_page', 15);
+
+            return $this->success(
+                $query->orderBy('nome')->paginate($perPage),
+                'Cidades listadas com sucesso'
+            );
+        } catch (\Exception $e) {
+            return $this->serverError('Erro ao listar cidades');
         }
+    }
 
-        if ($request->has('provincia_id')) {
-            $query->where('provincia_id', $request->get('provincia_id'));
+    /**
+     * Criar nova cidade
+     * 
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function store(Request $request): JsonResponse
+    {
+        try {
+            $validated = $request->validate([
+                'nome'          => 'required|string|max:100',
+                'provincia_id'  => 'required|integer|exists:provincia,id',
+            ]);
+
+            $cidade = Cidade::create($validated);
+
+            return $this->created(
+                $cidade->load('provincia'),
+                'Cidade criada com sucesso'
+            );
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return $this->validationError($e->errors());
+        } catch (\Exception $e) {
+            return $this->serverError('Erro ao criar cidade');
         }
-
-        $perPage = (int) $request->get('per_page', 15);
-        return response()->json($query->orderBy('nome')->paginate($perPage));
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Exibir uma cidade específica usando Route Model Binding
+     * 
+     * @param Cidade $cidade
+     * @return JsonResponse
      */
-    public function store(Request $request)
+    public function show(Cidade $cidade): JsonResponse
     {
-        $validated = $request->validate([
-            'nome' => 'required|string|max:100',
-            'provincia_id' => 'required|integer|exists:provincia,id',
-        ]);
+        try {
+            $cidade->load('provincia');
 
-        $cidade = Cidade::create($validated);
-        return response()->json($cidade->load('provincia'), 201);
+            return $this->success(
+                $cidade,
+                'Cidade encontrada com sucesso'
+            );
+        } catch (\Exception $e) {
+            return $this->serverError('Erro ao buscar cidade');
+        }
     }
 
     /**
-     * Display the specified resource.
+     * Atualizar cidade usando Route Model Binding
+     * 
+     * @param Request $request
+     * @param Cidade $cidade
+     * @return JsonResponse
      */
-    public function show($id)
+    public function update(Request $request, Cidade $cidade): JsonResponse
     {
-        $cidade = Cidade::with('provincia')->findOrFail($id);
-        return response()->json($cidade);
+        try {
+            $validated = $request->validate([
+                'nome' => [
+                    'sometimes',
+                    'string',
+                    'max:100',
+                ],
+                'provincia_id' => [
+                    'sometimes',
+                    'integer',
+                    'exists:provincia,id',
+                ],
+            ]);
+
+            $cidade->update($validated);
+
+            return $this->success(
+                $cidade->load('provincia'),
+                'Cidade atualizada com sucesso'
+            );
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return $this->validationError($e->errors());
+        } catch (\Exception $e) {
+            return $this->serverError('Erro ao atualizar cidade');
+        }
     }
 
     /**
-     * Update the specified resource in storage.
+     * Remover cidade usando Route Model Binding
+     * 
+     * @param Cidade $cidade
+     * @return JsonResponse
      */
-    public function update(Request $request, $id)
+    public function destroy(Cidade $cidade): JsonResponse
     {
-        $cidade = Cidade::findOrFail($id);
+        try {
+            $cidade->delete();
 
-        $validated = $request->validate([
-            'nome' => [
-                'sometimes',
-                'string',
-                'max:100',
-            ],
-            'provincia_id' => [
-                'sometimes',
-                'integer',
-                'exists:provincia,id',
-            ],
-        ]);
-
-        $cidade->update($validated);
-        return response()->json($cidade->load('provincia'));
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy($id)
-    {
-        $cidade = Cidade::findOrFail($id);
-        $cidade->delete();
-        return response()->json(['message' => 'Cidade removida com sucesso']);
+            return $this->success(
+                null,
+                'Cidade removida com sucesso'
+            );
+        } catch (\Exception $e) {
+            return $this->serverError('Erro ao remover cidade');
+        }
     }
 }

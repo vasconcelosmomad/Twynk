@@ -8,30 +8,31 @@ use App\Http\Controllers\ProvinciaController;
 use App\Http\Controllers\CidadeController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\OtpController;
+use App\Http\Controllers\MediaController;
 
 /*
 |--------------------------------------------------------------------------
-| Rotas Públicas
+| Rotas Públicas (Sem Autenticação)
 |--------------------------------------------------------------------------
 */
 
-// Rotas de autenticação públicas
-Route::post('login', [AuthController::class, 'login']);
-Route::post('register', [AuthController::class, 'register']);
-Route::post('login/google', [AuthController::class, 'loginGoogle']);
+// Autenticação
+Route::post('/login', [AuthController::class, 'login']);
+Route::post('/register', [AuthController::class, 'register']);
+Route::post('/login/google', [AuthController::class, 'loginGoogle']);
 
 // OTP
 Route::post('/otp/send', [OtpController::class, 'gerarOtp']);
 Route::post('/otp/verify', [OtpController::class, 'verificarOtp']);
 
-// Recursos públicos (apenas leitura)
-Route::apiResource('paises', PaisController::class)->only(['index','show']);
-Route::apiResource('provincias', ProvinciaController::class)->only(['index','show']);
-Route::apiResource('cidades', CidadeController::class)->only(['index','show']);
+// Listagem pública dos recursos
+Route::apiResource('paises', PaisController::class)->only(['index', 'show']);
+Route::apiResource('provincias', ProvinciaController::class)->only(['index', 'show']);
+Route::apiResource('cidades', CidadeController::class)->only(['index', 'show']);
 
-// Dropdown dependentes
-Route::get('paises/{pais_id}/provincias', [LocationController::class, 'getProvincias']);
-Route::get('provincias/{provincia_id}/cidades', [LocationController::class, 'getCidades']);
+// Relacionamentos (RESTful)
+Route::get('/paises/{pais}/provincias', [LocationController::class, 'getProvincias']);
+Route::get('/provincias/{provincia}/cidades', [LocationController::class, 'getCidades']);
 
 /*
 |--------------------------------------------------------------------------
@@ -41,20 +42,33 @@ Route::get('provincias/{provincia_id}/cidades', [LocationController::class, 'get
 
 Route::middleware('auth:api')->group(function () {
 
-    // Usuário logado
-    Route::get('/user', function (Request $request) {
-        return response()->json([
-            'success' => true,
-            'data' => $request->user()
-        ]);
-    });
+    // Informações do usuário autenticado
+    Route::get('/user', fn(Request $request) => response()->json([
+        'success' => true,
+        'data' => $request->user()
+    ]));
 
     // Perfil e logout
-    Route::get('profile', [AuthController::class, 'profile']);
-    Route::post('logout', [AuthController::class, 'logout']);
+    Route::get('/profile', [AuthController::class, 'profile']);
+    Route::post('/logout', [AuthController::class, 'logout']);
 
-    // CRUD protegido de paises, provincias e cidades
+    // CRUD protegido completo para paises / provincias / cidades
     Route::apiResource('paises', PaisController::class)->except(['index','show']);
     Route::apiResource('provincias', ProvinciaController::class)->except(['index','show']);
     Route::apiResource('cidades', CidadeController::class)->except(['index','show']);
+});
+
+// Rotas protegidas por Firebase (UID via middleware firebase.auth)
+Route::middleware('firebase.auth')->group(function () {
+    // Upload via URL presignada
+    Route::post('/media/presign', [MediaController::class, 'presign']);
+    Route::post('/media/upload-url', [MediaController::class, 'presign']); // alias compatível com Flutter
+
+    // Registro e gestão de mídias
+    Route::post('/media/register', [MediaController::class, 'register']);
+    Route::get('/media', [MediaController::class, 'index']);
+    Route::delete('/media/{id}', [MediaController::class, 'destroy']);
+
+    // URL temporária para visualização
+    Route::get('/media/view-url', [MediaController::class, 'generateViewUrl']);
 });

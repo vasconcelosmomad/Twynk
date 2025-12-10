@@ -3,6 +3,11 @@ import 'package:flutter/gestures.dart';
 import 'register.dart';
 import 'proflie.dart';
 import '../services/auth_service.dart';
+import 'package:provider/provider.dart';
+import '../providers/app_provider.dart';
+import '../models/user.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
 
 // ----------------------------------------------------
 // 2. Componente de Página de Login (Theme-Aware e Responsivo)
@@ -51,8 +56,19 @@ class _LoginPageState extends State<LoginPage> {
       return;
     }
 
+    final appProvider = Provider.of<AppProvider>(context, listen: false);
+
     final result = await AuthService.instance.login(email: email, password: password);
     if (result['success'] == true) {
+      final userData = result['user'];
+      if (userData is Map<String, dynamic>) {
+        final user = User.fromJson(userData);
+        await appProvider.login(user);
+
+        // Persist raw user JSON para restaurar após hot restart / reload
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('current_user', jsonEncode(userData));
+      }
       _showMessage('Login efetuado com sucesso!', 'success');
       if (!mounted) return;
       Navigator.of(context).pushReplacement(
