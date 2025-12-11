@@ -8,7 +8,7 @@ import 'package:twynk_frontend/pages/ping.dart';
 import 'package:twynk_frontend/pages/plans.dart';
 import 'package:twynk_frontend/portals/footer.dart';
 import 'package:twynk_frontend/portals/app_bar.dart';
-import 'package:twynk_frontend/portals/drawer.dart';
+import 'package:twynk_frontend/portals/sidebar_menu.dart';
 import 'package:twynk_frontend/services/api_client.dart';
 
 final List<UserModel> _encounterUsers = [
@@ -102,7 +102,6 @@ class HomeYouTubeStyleFlutter extends StatefulWidget {
 }
 
 class _HomeYouTubeStyleFlutterState extends State<HomeYouTubeStyleFlutter> {
-  bool _drawerOpen = false;
   int _selectedIndex = 0;
   int _chatInviteToken = 0;
 
@@ -407,18 +406,19 @@ class _HomeYouTubeStyleFlutterState extends State<HomeYouTubeStyleFlutter> {
         context,
         MaterialPageRoute(builder: (context) => const ChatPage()),
       );
+      return;
     } else if (index == 4) {
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => const PlansPage()),
       );
+      return;
     } else if (index == 5) {
       Navigator.push(
         context,
         MaterialPageRoute(builder: (_) => const PlansPage()),
       );
-    } else if (MediaQuery.of(context).size.width < 1024) {
-      Navigator.of(context).pop();
+      return;
     }
   }
 
@@ -881,29 +881,14 @@ class _HomeYouTubeStyleFlutterState extends State<HomeYouTubeStyleFlutter> {
 
   @override
   Widget build(BuildContext context) {
-    final isMobile = MediaQuery.of(context).size.width < 1024;
+    final bool isMobile = MediaQuery.of(context).size.width < 1024;
 
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      drawerScrimColor: Colors.transparent,
-      onDrawerChanged: (open) => setState(() => _drawerOpen = open),
-
       appBar: NomirroAppBar(
         isMobile: isMobile,
-        drawerOpen: _drawerOpen,
         showCreateAction: false,
-        enableSearch: true,
       ),
-
-      drawer: !isMobile
-          ? null
-          : Drawer(
-              child: SidebarMenu(
-              compact: false,
-              showDrawerHeader: true,
-              selectedIndex: _selectedIndex,
-              onItemSelected: _onItemTapped,
-            )),
       body: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

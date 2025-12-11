@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../portals/app_bar.dart';
-import '../portals/drawer.dart';
+import '../portals/sidebar_menu.dart';
 import '../portals/footer.dart';
 import '../services/api_client.dart';
 import 'package:twynk_frontend/pages/encounters.dart';
@@ -47,7 +47,6 @@ class _ChatPageState extends State<ChatPage> {
 
   bool isChatListVisible = true;
   int selectedDrawerIndex = 3;
-  bool _drawerOpen = false;
 
   @override
   void initState() {
@@ -200,11 +199,9 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   void _onBottomNavTap(int index) {
-    final isMobile = MediaQuery.of(context).size.width < 1024;
     setState(() => selectedDrawerIndex = index);
 
     if (index == 0) {
-      if (isMobile && _drawerOpen) Navigator.pop(context);
       Navigator.push(
         context,
         MaterialPageRoute(builder: (_) => const HomeYouTubeStyleFlutter()),
@@ -213,7 +210,6 @@ class _ChatPageState extends State<ChatPage> {
     }
 
     if (index == 1) {
-      if (isMobile && _drawerOpen) Navigator.pop(context);
       Navigator.push(
         context,
         MaterialPageRoute(builder: (_) => const HomePage()),
@@ -222,7 +218,6 @@ class _ChatPageState extends State<ChatPage> {
     }
 
     if (index == 4) {
-      if (isMobile && _drawerOpen) Navigator.pop(context);
       Navigator.push(
         context,
         MaterialPageRoute(builder: (_) => const PlansPage()),
@@ -231,7 +226,6 @@ class _ChatPageState extends State<ChatPage> {
     }
 
     if (index == 5) {
-      if (isMobile && _drawerOpen) Navigator.pop(context);
       Navigator.push(
         context,
         MaterialPageRoute(builder: (_) => const PlansPage()),
@@ -240,7 +234,6 @@ class _ChatPageState extends State<ChatPage> {
     }
 
     if (index == 6) {
-      if (isMobile && _drawerOpen) Navigator.pop(context);
       _logout();
       return;
     }
@@ -418,20 +411,7 @@ class _ChatPageState extends State<ChatPage> {
       appBar: (!isMobile || isChatListVisible)
           ? NomirroAppBar(
               isMobile: isMobile,
-              drawerOpen: _drawerOpen,
               showCreateAction: false,
-            )
-          : null,
-      onDrawerChanged: (open) => setState(() => _drawerOpen = open),
-      drawer: isMobile
-          ? Drawer(
-              backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-              child: SidebarMenu(
-                compact: false,
-                showDrawerHeader: true,
-                selectedIndex: selectedDrawerIndex,
-                onItemSelected: _onBottomNavTap,
-              ),
             )
           : null,
       body: Row(

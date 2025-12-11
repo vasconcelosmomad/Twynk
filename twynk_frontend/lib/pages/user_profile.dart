@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:twynk_frontend/portals/drawer.dart';
+import 'package:twynk_frontend/portals/sidebar_menu.dart';
 import 'package:twynk_frontend/portals/footer.dart';
 import 'package:twynk_frontend/pages/ping.dart';
 import 'package:twynk_frontend/pages/snaps.dart';
@@ -254,17 +254,6 @@ class _ProfilePageState extends State<ProfilePage> with TickerProviderStateMixin
           const SizedBox(width: 12),
         ],
       ),
-      drawer: isMobile
-          ? Drawer(
-              backgroundColor: theme.scaffoldBackgroundColor,
-              child: SidebarMenu(
-                compact: false,
-                showDrawerHeader: true,
-                selectedIndex: _selectedIndex,
-                onItemSelected: _onItemTapped,
-              ),
-            )
-          : null,
       body: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

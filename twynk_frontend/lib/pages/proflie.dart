@@ -4,7 +4,7 @@ import 'package:twynk_frontend/pages/encounters.dart';
 import 'package:twynk_frontend/pages/ping.dart';
 import '../services/api_client.dart';
 import '../portals/app_bar.dart';
-import '../portals/drawer.dart';
+import '../portals/sidebar_menu.dart';
 import '../portals/footer.dart';
 import 'snaps.dart';
 import 'chat.dart';
@@ -67,7 +67,6 @@ class _PhotoMasterAppState extends State<PhotoMasterApp> {
   List<Photo> _photos = initialPhotos;
   late String _currentView; // 'dashboard' ou 'edit-photos'
   int _selectedDrawerIndex = 4;
-  bool _drawerOpen = false;
 
   @override
   void initState() {
@@ -134,11 +133,9 @@ class _PhotoMasterAppState extends State<PhotoMasterApp> {
   }
 
   void _onBottomNavTap(int index) {
-    final isMobile = MediaQuery.of(context).size.width < 1024;
     setState(() => _selectedDrawerIndex = index);
 
     if (index == 0) {
-      if (isMobile && _drawerOpen) Navigator.of(context).pop();
       Navigator.push(
         context,
         MaterialPageRoute(builder: (_) => const HomeYouTubeStyleFlutter()),
@@ -147,7 +144,6 @@ class _PhotoMasterAppState extends State<PhotoMasterApp> {
     }
 
     if (index == 1) {
-      if (isMobile && _drawerOpen) Navigator.of(context).pop();
       Navigator.push(
         context,
         MaterialPageRoute(builder: (_) => const HomePage()),
@@ -155,17 +151,14 @@ class _PhotoMasterAppState extends State<PhotoMasterApp> {
       return;
     }
     if (index == 2) {
-      if (isMobile && _drawerOpen) Navigator.of(context).pop();
       Navigator.push(context, MaterialPageRoute(builder: (context) => const SnapsPage()));
       return;
     }
     if (index == 3) {
-      if (isMobile && _drawerOpen) Navigator.of(context).pop();
       Navigator.push(context, MaterialPageRoute(builder: (context) => const ChatPage()));
       return;
     }
     if (index == 4) {
-      if (isMobile && _drawerOpen) Navigator.of(context).pop();
       Navigator.push(
         context,
         MaterialPageRoute(builder: (_) => const PlansPage()),
@@ -173,7 +166,6 @@ class _PhotoMasterAppState extends State<PhotoMasterApp> {
       return;
     }
     if (index == 5) {
-      if (isMobile && _drawerOpen) Navigator.of(context).pop();
       // Já estamos em perfil, mas índice 5 ainda pode ser usado via menu lateral para planos.
       Navigator.push(
         context,
@@ -182,11 +174,9 @@ class _PhotoMasterAppState extends State<PhotoMasterApp> {
       return;
     }
     if (index == 6) {
-      if (isMobile && _drawerOpen) Navigator.of(context).pop();
       _logout();
       return;
     }
-    if (isMobile && _drawerOpen) Navigator.of(context).pop();
   }
 
   @override
@@ -195,28 +185,10 @@ class _PhotoMasterAppState extends State<PhotoMasterApp> {
 
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      drawerScrimColor: Colors.transparent,
       appBar: NomirroAppBar(
         isMobile: isMobile,
-        drawerOpen: _drawerOpen,
         showCreateAction: false,
       ),
-      onDrawerChanged: (open) => setState(() => _drawerOpen = open),
-      drawer: isMobile
-          ? Drawer(
-              backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-              child: SidebarMenu(
-                compact: false,
-                showDrawerHeader: true,
-                selectedIndex: _selectedDrawerIndex,
-                onItemSelected: (index) {
-                  setState(() => _selectedDrawerIndex = index);
-                  Navigator.of(context).pop();
-                  _onBottomNavTap(index);
-                },
-              ),
-            )
-          : null,
       body: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

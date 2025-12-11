@@ -4,7 +4,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:twynk_frontend/portals/app_bar.dart';
-import 'package:twynk_frontend/portals/drawer.dart';
+import 'package:twynk_frontend/portals/sidebar_menu.dart';
 import 'package:twynk_frontend/portals/footer.dart';
 import 'package:twynk_frontend/pages/encounters.dart';
 import 'package:twynk_frontend/pages/snaps.dart';
@@ -90,7 +90,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   List<MessageModel> get _msgsReceived => _messages.where((m) => m.type == 'received').toList();
   List<MessageModel> get _msgsSent => _messages.where((m) => m.type == 'sent').toList();
 
-  bool _drawerOpen = false;
   int _selectedIndex = 1;
 
   late final TabController _tabController;
@@ -121,22 +120,14 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   }
 
   void _onItemTapped(int index) {
-    final bool isMobile = MediaQuery.of(context).size.width < 1024;
-
     setState(() => _selectedIndex = index);
 
     if (index == 6) {
-      if (isMobile && _drawerOpen) {
-        Navigator.of(context).pop();
-      }
       _logout();
       return;
     }
 
     if (index == 0) {
-      if (isMobile && _drawerOpen) {
-        Navigator.of(context).pop();
-      }
       Navigator.push(
         context,
         MaterialPageRoute(builder: (_) => const HomeYouTubeStyleFlutter()),
@@ -145,16 +136,10 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     }
 
     if (index == 1) {
-      if (isMobile && _drawerOpen) {
-        Navigator.of(context).pop();
-      }
       return;
     }
 
     if (index == 2) {
-      if (isMobile && _drawerOpen) {
-        Navigator.of(context).pop();
-      }
       Navigator.push(
         context,
         MaterialPageRoute(builder: (_) => const SnapsPage()),
@@ -163,9 +148,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     }
 
     if (index == 3) {
-      if (isMobile && _drawerOpen) {
-        Navigator.of(context).pop();
-      }
       Navigator.push(
         context,
         MaterialPageRoute(builder: (_) => const ChatPage()),
@@ -174,18 +156,11 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     }
 
     if (index == 4) {
-      if (isMobile && _drawerOpen) {
-        Navigator.of(context).pop();
-      }
       Navigator.push(
         context,
         MaterialPageRoute(builder: (_) => const PlansPage()),
       );
       return;
-    }
-
-    if (isMobile && _drawerOpen) {
-      Navigator.of(context).pop();
     }
   }
 
@@ -195,24 +170,10 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      drawerScrimColor: Colors.transparent,
-      onDrawerChanged: (open) => setState(() => _drawerOpen = open),
       appBar: NomirroAppBar(
         isMobile: isMobile,
-        drawerOpen: _drawerOpen,
         showCreateAction: false,
       ),
-      drawer: isMobile
-          ? Drawer(
-              backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-              child: SidebarMenu(
-                compact: false,
-                showDrawerHeader: true,
-                selectedIndex: _selectedIndex,
-                onItemSelected: _onItemTapped,
-              ),
-            )
-          : null,
       body: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

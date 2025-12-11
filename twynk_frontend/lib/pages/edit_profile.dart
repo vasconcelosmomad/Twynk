@@ -5,7 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import '../providers/app_provider.dart';
+import '../providers/location_provider.dart';
 import '../models/user.dart';
+import '../models/pais.dart';
+import '../models/provincia.dart';
+import '../models/cidade.dart';
 import 'package:twynk_frontend/services/upload_service.dart';
 
 class EditProfilePage extends StatefulWidget {
@@ -41,6 +45,13 @@ class _EditProfilePageState extends State<EditProfilePage> {
   late String _provincia;
   late String _cidade;
   late String _moraCom;
+
+  List<Pais> _paisesDisponiveis = [];
+  List<Provincia> _provinciasDisponiveis = [];
+  String? _paisIdSelecionado;
+  String? _provinciaIdSelecionada;
+  List<Cidade> _cidadesDisponiveis = [];
+  String? _cidadeIdSelecionada;
 
   // Aparência
   late String _corPele;
@@ -80,15 +91,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
   static const List<String> humores = [
     'Amigável', 'Sério', 'Extrovertido', 'Introvertido', 'Romântico', 'Aventureiro',
     'Calmo', 'Animado', 'Tímido', 'Confiante', 'Não responder'
-  ];
-
-  static const List<String> paises = [
-    'Moçambique', 'Brasil', 'Portugal', 'Angola', 'África do Sul', 'Outro'
-  ];
-
-  static const List<String> provinciasMocambique = [
-    'Maputo Cidade', 'Maputo Província', 'Gaza', 'Inhambane', 'Manica',
-    'Sofala', 'Tete', 'Zambézia', 'Nampula', 'Niassa', 'Cabo Delgado'
   ];
 
   static const List<String> coresOlhos = [
@@ -185,8 +187,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
       _humor = ensureInOptions(user.humor, humores, humores.last);
 
       // Localização: por enquanto usamos valores padrão, pois o backend expõe apenas IDs
-      _pais = paises.first;
-      _provincia = provinciasMocambique.first;
+      _pais = '';
+      _provincia = '';
       _cidade = '';
       _moraCom = user.moraCom ?? '';
 
@@ -245,6 +247,86 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
       _comoMeConsideroFisicamente = 'Atraente e simpático.';
     }
+
+    _loadLocationData(user);
+  }
+
+  Future<void> _loadLocationData(User? user) async {
+    final locationProvider = Provider.of<LocationProvider>(context, listen: false);
+    try {
+      await locationProvider.fetchPaises();
+      final paisesCarregados = locationProvider.paises;
+      String? paisIdSelecionado = _paisIdSelecionado;
+      if (user?.paisId != null && paisesCarregados.isNotEmpty) {
+        final correspondentes = paisesCarregados.where((p) => p.id == user!.paisId!.toString()).toList();
+        if (correspondentes.isNotEmpty) {
+          paisIdSelecionado = correspondentes.first.id;
+        }
+      }
+      paisIdSelecionado ??= paisesCarregados.isNotEmpty ? paisesCarregados.first.id : null;
+
+      List<Provincia> provinciasCarregadas = [];
+      if (paisIdSelecionado != null) {
+        await locationProvider.fetchProvincias(paisId: paisIdSelecionado);
+        provinciasCarregadas = locationProvider.provincias;
+      }
+
+      String? provinciaIdSelecionada = _provinciaIdSelecionada;
+      if (user?.provinciaId != null && provinciasCarregadas.isNotEmpty) {
+        final correspondentesProv = provinciasCarregadas.where((p) => p.id == user!.provinciaId!.toString()).toList();
+        if (correspondentesProv.isNotEmpty) {
+          provinciaIdSelecionada = correspondentesProv.first.id;
+        }
+      }
+      provinciaIdSelecionada ??= provinciasCarregadas.isNotEmpty ? provinciasCarregadas.first.id : null;
+
+      List<Cidade> cidadesCarregadas = [];
+      String? cidadeIdSelecionada = _cidadeIdSelecionada;
+      if (provinciaIdSelecionada != null) {
+        await locationProvider.fetchCidades(provinciaId: provinciaIdSelecionada);
+        cidadesCarregadas = locationProvider.cidades;
+        if (user?.cidadeId != null && cidadesCarregadas.isNotEmpty) {
+          final correspondentesCidade = cidadesCarregadas
+              .where((c) => c.id == user!.cidadeId!.toString())
+              .toList();
+          if (correspondentesCidade.isNotEmpty) {
+            cidadeIdSelecionada = correspondentesCidade.first.id;
+          }
+        }
+      }
+      cidadeIdSelecionada ??= cidadesCarregadas.isNotEmpty ? cidadesCarregadas.first.id : null;
+
+      if (!mounted) return;
+      setState(() {
+        _paisesDisponiveis = paisesCarregados;
+        _provinciasDisponiveis = provinciasCarregadas;
+        _paisIdSelecionado = paisIdSelecionado;
+        _provinciaIdSelecionada = provinciaIdSelecionada;
+        _cidadesDisponiveis = cidadesCarregadas;
+        _cidadeIdSelecionada = cidadeIdSelecionada;
+        if (paisIdSelecionado != null && paisesCarregados.isNotEmpty) {
+          final paisSelecionado = paisesCarregados.firstWhere(
+            (p) => p.id == paisIdSelecionado,
+            orElse: () => paisesCarregados.first,
+          );
+          _pais = paisSelecionado.nome;
+        }
+        if (provinciaIdSelecionada != null && provinciasCarregadas.isNotEmpty) {
+          final provinciaSelecionada = provinciasCarregadas.firstWhere(
+            (p) => p.id == provinciaIdSelecionada,
+            orElse: () => provinciasCarregadas.first,
+          );
+          _provincia = provinciaSelecionada.nome;
+        }
+        if (cidadeIdSelecionada != null && cidadesCarregadas.isNotEmpty) {
+          final cidadeSelecionada = cidadesCarregadas.firstWhere(
+            (c) => c.id == cidadeIdSelecionada,
+            orElse: () => cidadesCarregadas.first,
+          );
+          _cidade = cidadeSelecionada.nome;
+        }
+      });
+    } catch (_) {}
   }
 
   @override
@@ -258,6 +340,17 @@ class _EditProfilePageState extends State<EditProfilePage> {
     final double maxFormWidth = isDesktop
         ? 900
         : (isTablet ? 720 : double.infinity);
+
+    final List<String> paisOptions =
+        _paisesDisponiveis.map((p) => p.nome).toList();
+    final List<String> provinciaOptions =
+        _provinciasDisponiveis.map((p) => p.nome).toList();
+    final List<String> cidadeOptions = _cidadesDisponiveis.isNotEmpty
+        ? _cidadesDisponiveis.map((c) => c.nome).toList()
+        : (_cidade.isNotEmpty ? [_cidade] : []);
+    final bool hasPaisOptions = paisOptions.isNotEmpty;
+    final bool hasProvinciaOptions = provinciaOptions.isNotEmpty;
+    final bool hasCidadeOptions = cidadeOptions.isNotEmpty;
 
     return Scaffold(
       appBar: AppBar(
@@ -360,26 +453,103 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     _buildSectionTitle('Localização'),
                     _buildResponsiveRow(
                       !isMobile,
-                      _buildSelectField(
-                        label: 'País',
-                        value: _pais,
-                        options: paises,
-                        onChanged: (v) => _pais = v ?? _pais,
-                      ),
-                      _buildSelectField(
-                        label: 'Província/Estado',
-                        value: _provincia,
-                        options: provinciasMocambique,
-                        onChanged: (v) => _provincia = v ?? _provincia,
-                      ),
+                      hasPaisOptions
+                          ? _buildSelectField(
+                              label: 'País',
+                              value: _pais,
+                              options: paisOptions,
+                              onChanged: (v) async {
+                                if (v == null) return;
+                                setState(() {
+                                  _pais = v;
+                                });
+                                if (_paisesDisponiveis.isEmpty) return;
+                                final selecionado = _paisesDisponiveis.firstWhere(
+                                  (p) => p.nome == v,
+                                  orElse: () => _paisesDisponiveis.first,
+                                );
+                                _paisIdSelecionado = selecionado.id;
+                                final locationProvider = Provider.of<LocationProvider>(context, listen: false);
+                                await locationProvider.fetchProvincias(paisId: _paisIdSelecionado);
+                                final provinciasAtualizadas = locationProvider.provincias;
+                                if (!mounted) return;
+                                setState(() {
+                                  _provinciasDisponiveis = provinciasAtualizadas;
+                                  if (provinciasAtualizadas.isNotEmpty) {
+                                    _provinciaIdSelecionada = provinciasAtualizadas.first.id;
+                                    _provincia = provinciasAtualizadas.first.nome;
+                                  }
+                                });
+                              },
+                            )
+                          : _buildTextField(
+                              label: 'País',
+                              initialValue: _pais,
+                              onSaved: (v) => _pais = v ?? '',
+                            ),
+                      hasProvinciaOptions
+                          ? _buildSelectField(
+                              label: 'Província/Estado',
+                              value: _provincia,
+                              options: provinciaOptions,
+                              onChanged: (v) {
+                                if (v == null) return;
+                                setState(() {
+                                  _provincia = v;
+                                });
+                                if (_provinciasDisponiveis.isEmpty) return;
+                                final selecionada = _provinciasDisponiveis.firstWhere(
+                                  (p) => p.nome == v,
+                                  orElse: () => _provinciasDisponiveis.first,
+                                );
+                                _provinciaIdSelecionada = selecionada.id;
+                                // Ao mudar a província, recarrega cidades
+                                () async {
+                                  final locationProvider = Provider.of<LocationProvider>(context, listen: false);
+                                  await locationProvider.fetchCidades(provinciaId: _provinciaIdSelecionada);
+                                  final cidadesAtualizadas = locationProvider.cidades;
+                                  if (!mounted) return;
+                                  setState(() {
+                                    _cidadesDisponiveis = cidadesAtualizadas;
+                                    if (cidadesAtualizadas.isNotEmpty) {
+                                      _cidadeIdSelecionada = cidadesAtualizadas.first.id;
+                                      _cidade = cidadesAtualizadas.first.nome;
+                                    }
+                                  });
+                                }();
+                              },
+                            )
+                          : _buildTextField(
+                              label: 'Província/Estado',
+                              initialValue: _provincia,
+                              onSaved: (v) => _provincia = v ?? '',
+                            ),
                     ),
                     _buildResponsiveRow(
                       !isMobile,
-                      _buildTextField(
-                        label: 'Cidade',
-                        initialValue: _cidade,
-                        onSaved: (v) => _cidade = v ?? '',
-                      ),
+                      hasCidadeOptions
+                          ? _buildSelectField(
+                              label: 'Cidade',
+                              value: _cidade,
+                              options: cidadeOptions,
+                              onChanged: (v) {
+                                if (v == null) return;
+                                setState(() {
+                                  _cidade = v;
+                                });
+                                if (_cidadesDisponiveis.isEmpty) return;
+                                final selecionadaCidade = _cidadesDisponiveis.firstWhere(
+                                  (c) => c.nome == v,
+                                  orElse: () => _cidadesDisponiveis.first,
+                                );
+                                _cidadeIdSelecionada = selecionadaCidade.id;
+                              },
+                            )
+                          : _buildTextField(
+                              label: 'Cidade',
+                              initialValue: _cidade,
+                              onSaved: (v) => _cidade = v ?? '',
+                            ),
                       _buildTextField(
                         label: 'Mora com',
                         initialValue: _moraCom,

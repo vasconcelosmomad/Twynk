@@ -9,12 +9,16 @@ import 'package:twynk_frontend/themes/app_theme.dart';
 import 'package:twynk_frontend/services/api_client.dart';
 import 'package:twynk_frontend/services/language_controller.dart';
 import 'package:twynk_frontend/providers/app_provider.dart';
+import 'package:twynk_frontend/providers/location_provider.dart';
 import 'package:twynk_frontend/models/user.dart';
 
 void main() {
   runApp(
-    ChangeNotifierProvider(
-      create: (_) => AppProvider(),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => AppProvider()),
+        ChangeNotifierProvider(create: (_) => LocationProvider()),
+      ],
       child: const MyApp(),
     ),
   );

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:twynk_frontend/portals/app_bar.dart';
-import 'package:twynk_frontend/portals/drawer.dart';
+import 'package:twynk_frontend/portals/sidebar_menu.dart';
 import 'package:twynk_frontend/portals/footer.dart';
 import 'package:twynk_frontend/pages/encounters.dart';
 import 'package:twynk_frontend/pages/ping.dart';
@@ -198,7 +198,6 @@ class PlansPage extends StatefulWidget {
 }
 
 class _PlansPageState extends State<PlansPage> {
-  bool _drawerOpen = false;
   int _selectedDrawerIndex = 5;
 
   Future<void> _logout() async {
@@ -215,11 +214,9 @@ class _PlansPageState extends State<PlansPage> {
   }
 
   void _onBottomNavTap(int index) {
-    final isMobile = MediaQuery.of(context).size.width < 1024;
     setState(() => _selectedDrawerIndex = index);
 
     if (index == 0) {
-      if (isMobile && _drawerOpen) Navigator.of(context).pop();
       Navigator.push(
         context,
         MaterialPageRoute(builder: (_) => const HomeYouTubeStyleFlutter()),
@@ -228,7 +225,6 @@ class _PlansPageState extends State<PlansPage> {
     }
 
     if (index == 1) {
-      if (isMobile && _drawerOpen) Navigator.of(context).pop();
       Navigator.push(
         context,
         MaterialPageRoute(builder: (_) => const HomePage()),
@@ -237,7 +233,6 @@ class _PlansPageState extends State<PlansPage> {
     }
 
     if (index == 2) {
-      if (isMobile && _drawerOpen) Navigator.of(context).pop();
       Navigator.push(
         context,
         MaterialPageRoute(builder: (_) => const SnapsPage()),
@@ -246,7 +241,6 @@ class _PlansPageState extends State<PlansPage> {
     }
 
     if (index == 3) {
-      if (isMobile && _drawerOpen) Navigator.of(context).pop();
       Navigator.push(
         context,
         MaterialPageRoute(builder: (_) => const ChatPage()),
@@ -255,23 +249,18 @@ class _PlansPageState extends State<PlansPage> {
     }
 
     if (index == 4) {
-      if (isMobile && _drawerOpen) Navigator.of(context).pop();
       return;
     }
 
     if (index == 5) {
-      if (isMobile && _drawerOpen) Navigator.of(context).pop();
       // Já estamos na página de planos.
       return;
     }
 
     if (index == 6) {
-      if (isMobile && _drawerOpen) Navigator.of(context).pop();
       _logout();
       return;
     }
-
-    if (isMobile && _drawerOpen) Navigator.of(context).pop();
   }
 
   @override
@@ -280,28 +269,10 @@ class _PlansPageState extends State<PlansPage> {
 
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      drawerScrimColor: Colors.transparent,
       appBar: NomirroAppBar(
         isMobile: isMobile,
-        drawerOpen: _drawerOpen,
         showCreateAction: false,
       ),
-      onDrawerChanged: (open) => setState(() => _drawerOpen = open),
-      drawer: isMobile
-          ? Drawer(
-              backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-              child: SidebarMenu(
-                compact: false,
-                showDrawerHeader: true,
-                selectedIndex: _selectedDrawerIndex,
-                onItemSelected: (index) {
-                  setState(() => _selectedDrawerIndex = index);
-                  Navigator.of(context).pop();
-                  _onBottomNavTap(index);
-                },
-              ),
-            )
-          : null,
       body: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

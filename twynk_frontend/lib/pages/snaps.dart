@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:twynk_frontend/portals/app_bar.dart';
-import 'package:twynk_frontend/portals/drawer.dart';
+import 'package:twynk_frontend/portals/sidebar_menu.dart';
 import 'package:twynk_frontend/portals/footer.dart';
 import 'package:twynk_frontend/pages/login.dart';
 import 'package:twynk_frontend/pages/chat.dart';

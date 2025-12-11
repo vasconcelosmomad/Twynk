@@ -1,14 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:provider/provider.dart';
 import '../services/language_controller.dart';
+import '../services/api_client.dart';
+import '../pages/login.dart';
+import '../pages/channel_panel.dart';
+import '../pages/proflie.dart';
+import '../providers/app_provider.dart';
 
 class NomirroAppBar extends StatefulWidget implements PreferredSizeWidget {
   final bool isMobile;
   final bool drawerOpen;
+  final bool showCreateAction;
+  final bool enableSearch;
 
   const NomirroAppBar({
     super.key,
     required this.isMobile,
-    required this.drawerOpen,
+    this.drawerOpen = false,
+    this.showCreateAction = true,
+    this.enableSearch = true,
   });
 
   @override
@@ -21,6 +32,17 @@ class NomirroAppBar extends StatefulWidget implements PreferredSizeWidget {
 class _NomirroAppBarState extends State<NomirroAppBar> {
   bool _searchActive = false;
 
+  Future<void> _handleLogout() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('auth_token');
+    ApiClient.instance.clearToken();
+    if (!mounted) return;
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(builder: (_) => const LoginPage()),
+      (route) => false,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return AppBar(
@@ -29,18 +51,7 @@ class _NomirroAppBarState extends State<NomirroAppBar> {
       elevation: 0,
       automaticallyImplyLeading: false,
       titleSpacing: 0,
-      leading: widget.isMobile
-          ? IconButton(
-              icon: const Icon(Icons.menu),
-              onPressed: () {
-                if (widget.drawerOpen) {
-                  Navigator.of(context).pop();
-                } else {
-                  Scaffold.of(context).openDrawer();
-                }
-              },
-            )
-          : null,
+      leading: null,
       title: _buildTitle(context),
       actions: _buildActions(context),
     );
@@ -48,7 +59,7 @@ class _NomirroAppBarState extends State<NomirroAppBar> {
 
   Widget _buildTitle(BuildContext context) {
     // MOBILE
-    if (widget.isMobile && _searchActive) {
+    if (widget.isMobile && widget.enableSearch && _searchActive) {
       return const SizedBox(
         height: 40,
         child: SearchFormFlutter(),
@@ -66,17 +77,21 @@ class _NomirroAppBarState extends State<NomirroAppBar> {
         Image.asset('assets/icons/logo_02.png', height: 32),
         const SizedBox(width: 8.0),
         const Spacer(),
-        SizedBox(
-          width: MediaQuery.of(context).size.width * 0.4,
-          height: 40,
-          child: const SearchFormFlutter(),
-        ),
+        if (widget.enableSearch)
+          SizedBox(
+            width: MediaQuery.of(context).size.width * 0.4,
+            height: 40,
+            child: const SearchFormFlutter(),
+          ),
       ],
     );
   }
 
   List<Widget> _buildActions(BuildContext context) {
-    final ColorScheme colorScheme = Theme.of(context).colorScheme;
+    final theme = Theme.of(context);
+    final ColorScheme colorScheme = theme.colorScheme;
+    final Color textColor =
+        theme.textTheme.bodyMedium?.color ?? colorScheme.onSurface;
     if (widget.isMobile && _searchActive) {
       return [
         IconButton(
@@ -87,7 +102,7 @@ class _NomirroAppBarState extends State<NomirroAppBar> {
     }
 
     return [
-      if (widget.isMobile)
+      if (widget.isMobile && widget.enableSearch)
         IconButton(
           icon: const Icon(Icons.search),
           padding: EdgeInsets.zero,
@@ -95,35 +110,50 @@ class _NomirroAppBarState extends State<NomirroAppBar> {
           onPressed: () => setState(() => _searchActive = true),
         ),
       const SizedBox(width: 16.0),
-      if (widget.isMobile)
-        IconButton.filledTonal(
-          onPressed: () {},
-          icon: const Icon(Icons.add),
-          tooltip: 'Criar',
-          style: IconButton.styleFrom(
-            backgroundColor: colorScheme.primary.withValues(alpha: 0.12),
-            foregroundColor: colorScheme.primary,
+      if (widget.showCreateAction)
+        if (widget.isMobile)
+          IconButton(
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => const ExplorerPage(openUploadOnStart: true),
+                ),
+              );
+            },
+            icon: Icon(
+              Icons.add,
+              size: 22,
+              color: textColor,
+            ),
+            tooltip: 'Criar',
             padding: EdgeInsets.zero,
-            minimumSize: const Size(36, 36),
-            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-          ),
-        )
-      else
-        Center(
-          child: TextButton.icon(
-            onPressed: () {},
-            icon: const Icon(Icons.add_circle_outline),
-            label: const Text('Criar'),
-            style: TextButton.styleFrom(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-              foregroundColor: colorScheme.onPrimary,
-              backgroundColor: colorScheme.primary,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(30.0),
+            constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
+          )
+        else
+          Center(
+            child: TextButton.icon(
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => const ExplorerPage(openUploadOnStart: true),
+                  ),
+                );
+              },
+              icon: Icon(
+                Icons.add,
+                color: colorScheme.onPrimary,
+              ),
+              label: const Text('Criar'),
+              style: TextButton.styleFrom(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                foregroundColor: colorScheme.onPrimary,
+                backgroundColor: colorScheme.primary,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30.0),
+                ),
               ),
             ),
           ),
-        ),
       const SizedBox(width: 8.0),
       // Use a Builder to get the context of the button for positioning the menu.
       Center(
@@ -183,6 +213,18 @@ class _NomirroAppBarState extends State<NomirroAppBar> {
     return Center(
       child: Builder(
         builder: (context) {
+          final appProvider = Provider.of<AppProvider>(context, listen: false);
+          final user = appProvider.currentUser;
+          final String userName;
+          if (user == null) {
+            userName = 'Conta';
+          } else if ((user.apelido ?? '').isNotEmpty) {
+            userName = user.apelido!;
+          } else if (user.nome.isNotEmpty) {
+            userName = user.nome;
+          } else {
+            userName = user.email;
+          }
           return Tooltip(
             message: 'User Menu',
             child: InkWell(
@@ -198,6 +240,8 @@ class _NomirroAppBarState extends State<NomirroAppBar> {
                   Offset.zero & overlay.size,
                 );
 
+                final navigator = Navigator.of(context);
+
                 showMenu<String>(
                   context: context,
                   position: position.shift(const Offset(0, 44)), // Adjust offset as needed
@@ -206,9 +250,9 @@ class _NomirroAppBarState extends State<NomirroAppBar> {
                       value: 'name',
                       child: Row(
                         children: [
-                          Icon(Icons.person, size: 18),
+                          Icon(Icons.person, size: 18, color: colorScheme.onSurface),
                           SizedBox(width: 8),
-                          Text('Nome'),
+                          Text(userName),
                         ],
                       ),
                     ),
@@ -216,7 +260,7 @@ class _NomirroAppBarState extends State<NomirroAppBar> {
                       value: 'profile',
                       child: Row(
                         children: [
-                          Icon(Icons.settings, size: 18),
+                          Icon(Icons.settings, size: 18, color: colorScheme.onSurface),
                           SizedBox(width: 8),
                           Text('Profile'),
                         ],
@@ -232,10 +276,33 @@ class _NomirroAppBarState extends State<NomirroAppBar> {
                         ],
                       ),
                     ),
+                    const PopupMenuDivider(),
+                    PopupMenuItem<String>(
+                      value: 'logout',
+                      child: Row(
+                        children: [
+                          Icon(Icons.logout, size: 18, color: colorScheme.error),
+                          SizedBox(width: 8),
+                          Text('Logout'),
+                        ],
+                      ),
+                    ),
                   ],
                 ).then((value) {
                   if (value == null) return; // Menu dismissed
-                  // Handle selection
+                  if (value == 'logout') {
+                    _handleLogout();
+                    return;
+                  }
+                  if (value == 'profile') {
+                    navigator.push(
+                      MaterialPageRoute(
+                        builder: (_) => const PainelAssinantePage(),
+                      ),
+                    );
+                    return;
+                  }
+                  // Handle other selections if needed
                 });
               },
               child: const Padding(
