@@ -86,18 +86,77 @@ class UserController extends Controller
         $usuario = User::findOrFail($id);
 
         $validated = $request->validate([
-            'nome' => 'sometimes|string|max:100',
-            'genero' => 'sometimes|in:masculino,feminino,outro',
-            'interesse' => 'sometimes|in:masculino,feminino,ambos',
-            'data_nascimento' => 'nullable|date',
-            'email' => ['sometimes', 'email', Rule::unique('users')->ignore($usuario->id), 'max:150'],
-            'google_id' => ['nullable', 'string', 'max:255', Rule::unique('users')->ignore($usuario->id)],
-            'password' => 'sometimes|string|min:6',
-            'foto_perfil' => 'nullable|string|max:255',
-            'bio' => 'nullable|string',
-            'localizacao' => 'nullable|string|max:255',
-            'status' => 'sometimes|in:ativo,inativo,banido',
-            'plano_id' => 'nullable|exists:planos,id',
+            // Dados básicos
+            'nome'          => 'sometimes|string|max:100',
+            'apelido'       => 'sometimes|nullable|string|max:100',
+            'genero'        => 'sometimes|in:masculino,feminino,outro',
+            'sexualidade'   => 'sometimes|nullable|string|max:50',
+            'interesse'     => 'sometimes|in:masculino,feminino,ambos',
+            'estado_civil'  => 'sometimes|nullable|string|max:50',
+            'data_nascimento' => 'sometimes|nullable|date',
+            'signo'         => 'sometimes|nullable|string|max:50',
+            'email' => [
+                'sometimes',
+                'email',
+                'max:150',
+                Rule::unique('users', 'email')->ignore($usuario->id),
+            ],
+            'google_id' => [
+                'sometimes',
+                'nullable',
+                'string',
+                'max:255',
+                Rule::unique('users', 'google_id')->ignore($usuario->id),
+            ],
+            'password'      => 'sometimes|nullable|string|min:6',
+
+            // Preferências de relacionamento / busca
+            'tipo_relacionamento' => 'sometimes|nullable|string|max:50',
+            'busca_genero'        => 'sometimes|nullable|string|max:50',
+            'busca_idade_min'     => 'sometimes|nullable|integer|min:0',
+            'busca_idade_max'     => 'sometimes|nullable|integer|min:0',
+            'busca_distancia'     => 'sometimes|nullable|integer|min:0',
+
+            // Dados pessoais adicionais
+            'filhos'        => 'sometimes|nullable|integer|min:0',
+            'escolaridade'  => 'sometimes|nullable|string|max:100',
+            'profissao'     => 'sometimes|nullable|string|max:150',
+            'religiao'      => 'sometimes|nullable|string|max:100',
+            'humor'         => 'sometimes|nullable|string|max:100',
+
+            // Localização normalizada
+            'pais_id'       => 'sometimes|nullable|exists:pais,id',
+            'provincia_id'  => 'sometimes|nullable|exists:provincia,id',
+            'cidade_id'     => 'sometimes|nullable|exists:cidade,id',
+            'mora_com'      => 'sometimes|nullable|string|max:100',
+
+            // Aparência física
+            'cor_pele'      => 'sometimes|nullable|string|max:50',
+            'cor_olhos'     => 'sometimes|nullable|string|max:50',
+            'cor_cabelos'   => 'sometimes|nullable|string|max:50',
+            'altura'        => 'sometimes|nullable|numeric',
+            'peso'          => 'sometimes|nullable|numeric',
+
+            // Hábitos e estilo de vida
+            'pratica_esporte' => 'sometimes|nullable|boolean',
+            'fuma'            => 'sometimes|nullable|boolean',
+            'bebe'            => 'sometimes|nullable|boolean',
+            'como_me_considero_fisicamente' => 'sometimes|nullable|string',
+
+            // Coordenadas de GPS
+            'latitude'      => 'sometimes|nullable|numeric',
+            'longitude'     => 'sometimes|nullable|numeric',
+
+            // Status e plano
+            'status'        => 'sometimes|in:ativo,inativo,banido',
+            'plano_id'      => 'sometimes|nullable|exists:planos,id',
+            'plano_expira_em' => 'sometimes|nullable|date',
+            'limite_solicitacoes' => 'sometimes|nullable|integer|min:0',
+
+            // Campos legados opcionais (caso ainda existam na tabela)
+            'foto_perfil'   => 'sometimes|nullable|string|max:255',
+            'bio'           => 'sometimes|nullable|string',
+            'localizacao'   => 'sometimes|nullable|string|max:255',
         ]);
 
         if (isset($validated['password'])) {
@@ -107,6 +166,24 @@ class UserController extends Controller
         $usuario->update($validated);
 
         return response()->json($usuario);
+    }
+
+    /**
+     * Update the profile of the currently authenticated user.
+     *
+     * This is a convenience wrapper around the generic update method,
+     * allowing the frontend to call PUT /api/profile without needing
+     * to know the user ID explicitly.
+     */
+    public function updateProfile(Request $request)
+    {
+        $user = $request->user();
+
+        if (!$user) {
+            return response()->json(['message' => 'Não autenticado'], 401);
+        }
+
+        return $this->update($request, $user->id);
     }
 
     /**

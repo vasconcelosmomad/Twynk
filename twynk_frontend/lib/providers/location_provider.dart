@@ -20,6 +20,32 @@ class LocationProvider extends ChangeNotifier {
   bool get isLoading => _isLoading;
   String? get error => _error;
 
+  List<dynamic> _extractList(dynamic data, String key) {
+    if (data is List) {
+      return data;
+    }
+    if (data is Map<String, dynamic>) {
+      final dynamic fromData = data['data'];
+      // Caso 1: data: [ ... ]
+      if (fromData is List) {
+        return fromData;
+      }
+      // Caso 2: data: { current_page: 1, data: [ ... ] } (Laravel paginator)
+      if (fromData is Map<String, dynamic>) {
+        final dynamic innerData = fromData['data'];
+        if (innerData is List) {
+          return innerData;
+        }
+      }
+      // Caso 3: lista sob uma chave específica (por exemplo, 'paises', 'provincias', 'cidades')
+      final dynamic fromKey = data[key];
+      if (fromKey is List) {
+        return fromKey;
+      }
+    }
+    return const <dynamic>[];
+  }
+
   void _setLoading(bool value) {
     _isLoading = value;
     notifyListeners();
@@ -34,11 +60,12 @@ class LocationProvider extends ChangeNotifier {
     _setLoading(true);
     _setError(null);
     try {
-      final response = await _apiClient.dio.get('/paises');
-      final data = response.data;
-      final List<dynamic> items =
-          data is Map<String, dynamic> ? (data['data'] as List<dynamic>) : (data as List<dynamic>);
-      _paises = items.map((e) => Pais.fromJson(e as Map<String, dynamic>)).toList();
+      final response = await _apiClient.dio.get('/api/paises');
+      final List<dynamic> items = _extractList(response.data, 'paises');
+      _paises = items
+          .whereType<Map<String, dynamic>>()
+          .map((e) => Pais.fromJson(e))
+          .toList();
     } catch (e) {
       _setError('Erro ao carregar países: $e');
     } finally {
@@ -47,17 +74,21 @@ class LocationProvider extends ChangeNotifier {
   }
 
   Future<void> fetchProvincias({String? paisId}) async {
+    if (paisId == null || paisId.isEmpty) {
+      _provincias = [];
+      notifyListeners();
+      return;
+    }
     _setLoading(true);
     _setError(null);
     try {
-      final response = await _apiClient.dio.get(
-        '/provincias',
-        queryParameters: paisId != null ? {'pais_id': paisId} : null,
-      );
-      final data = response.data;
-      final List<dynamic> items =
-          data is Map<String, dynamic> ? (data['data'] as List<dynamic>) : (data as List<dynamic>);
-      _provincias = items.map((e) => Provincia.fromJson(e as Map<String, dynamic>)).toList();
+      // Usa a rota de relacionamento: /api/paises/{pais}/provincias
+      final response = await _apiClient.dio.get('/api/paises/$paisId/provincias');
+      final List<dynamic> items = _extractList(response.data, 'provincias');
+      _provincias = items
+          .whereType<Map<String, dynamic>>()
+          .map((e) => Provincia.fromJson(e))
+          .toList();
     } catch (e) {
       _setError('Erro ao carregar províncias: $e');
     } finally {
@@ -66,17 +97,21 @@ class LocationProvider extends ChangeNotifier {
   }
 
   Future<void> fetchCidades({String? provinciaId}) async {
+    if (provinciaId == null || provinciaId.isEmpty) {
+      _cidades = [];
+      notifyListeners();
+      return;
+    }
     _setLoading(true);
     _setError(null);
     try {
-      final response = await _apiClient.dio.get(
-        '/cidades',
-        queryParameters: provinciaId != null ? {'provincia_id': provinciaId} : null,
-      );
-      final data = response.data;
-      final List<dynamic> items =
-          data is Map<String, dynamic> ? (data['data'] as List<dynamic>) : (data as List<dynamic>);
-      _cidades = items.map((e) => Cidade.fromJson(e as Map<String, dynamic>)).toList();
+      // Usa a rota de relacionamento: /api/provincias/{provincia}/cidades
+      final response = await _apiClient.dio.get('/api/provincias/$provinciaId/cidades');
+      final List<dynamic> items = _extractList(response.data, 'cidades');
+      _cidades = items
+          .whereType<Map<String, dynamic>>()
+          .map((e) => Cidade.fromJson(e))
+          .toList();
     } catch (e) {
       _setError('Erro ao carregar cidades: $e');
     } finally {

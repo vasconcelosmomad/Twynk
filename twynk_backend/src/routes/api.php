@@ -9,6 +9,7 @@ use App\Http\Controllers\CidadeController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\OtpController;
 use App\Http\Controllers\MediaController;
+use App\Http\Controllers\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -50,6 +51,7 @@ Route::middleware('auth:api')->group(function () {
 
     // Perfil e logout
     Route::get('/profile', [AuthController::class, 'profile']);
+    Route::put('/profile', [UserController::class, 'updateProfile']);
     Route::post('/logout', [AuthController::class, 'logout']);
 
     // CRUD protegido completo para paises / provincias / cidades

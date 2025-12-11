@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import '../providers/app_provider.dart';
@@ -101,14 +102,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
     'Preto', 'Castanho', 'Loiro', 'Ruivo', 'Grisalho', 'Careca', 'Não responder'
   ];
 
-  static const List<String> pesos = [
-    'Abaixo do peso', 'Peso normal', 'Acima do peso', 'Não responder'
-  ];
-
-  static const List<String> alturas = [
-    'Baixo', 'Médio', 'Alto', 'Não responder'
-  ];
-
   static const List<String> praticaEsporte = [
     'Sim, regularmente', 'Sim, ocasionalmente', 'Não pratico', 'Não responder'
   ];
@@ -196,8 +189,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
       _corPele = user.corPele ?? '';
       _corOlhos = ensureInOptions(user.corOlhos, coresOlhos, coresOlhos.last);
       _corCabelos = ensureInOptions(user.corCabelos, coresCabelos, coresCabelos.last);
-      _peso = pesos.last;
-      _altura = alturas.last;
+      _peso = user.peso?.toString() ?? '';
+      _altura = user.altura?.toString() ?? '';
 
       // Hábitos
       _praticaEsporte = ensureInOptions(
@@ -238,8 +231,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
       _corPele = 'Negra';
       _corOlhos = 'Não responder';
       _corCabelos = 'Não responder';
-      _peso = 'Não responder';
-      _altura = 'Não responder';
+      _peso = '';
+      _altura = '';
 
       _praticaEsporte = 'Não responder';
       _fuma = 'Não';
@@ -247,8 +240,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
       _comoMeConsideroFisicamente = 'Atraente e simpático.';
     }
-
-    _loadLocationData(user);
+    // Carrega dados de localização após o primeiro frame para evitar setState durante o build
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadLocationData(user);
+    });
   }
 
   Future<void> _loadLocationData(User? user) async {
@@ -399,10 +394,11 @@ class _EditProfilePageState extends State<EditProfilePage> {
                         value: _dataNascimento,
                         onSaved: (v) => _dataNascimento = v ?? '',
                       ),
-                      _buildTextField(
+                      _buildSelectField(
                         label: 'Eu sou',
-                        initialValue: _euSou,
-                        onSaved: (v) => _euSou = v ?? '',
+                        value: _euSou,
+                        options: const ['Homem', 'Mulher', 'Outro'],
+                        onChanged: (v) => _euSou = v ?? _euSou,
                       ),
                     ),
                     _buildResponsiveRow(
@@ -581,20 +577,18 @@ class _EditProfilePageState extends State<EditProfilePage> {
                         options: coresCabelos,
                         onChanged: (v) => _corCabelos = v ?? _corCabelos,
                       ),
-                      _buildSelectField(
-                        label: 'Peso',
-                        value: _peso,
-                        options: pesos,
-                        onChanged: (v) => _peso = v ?? _peso,
+                      _buildNumberField(
+                        label: 'Peso (kg)',
+                        initialValue: _peso,
+                        onSaved: (v) => _peso = v?.trim() ?? '',
                       ),
                     ),
                     _buildResponsiveRow(
                       !isMobile,
-                      _buildSelectField(
-                        label: 'Altura',
-                        value: _altura,
-                        options: alturas,
-                        onChanged: (v) => _altura = v ?? _altura,
+                      _buildNumberField(
+                        label: 'Altura (cm)',
+                        initialValue: _altura,
+                        onSaved: (v) => _altura = v?.trim() ?? '',
                       ),
                     ),
 
@@ -837,17 +831,179 @@ class _EditProfilePageState extends State<EditProfilePage> {
     );
   }
 
-  void _handleSave() {
-    if (_formKey.currentState?.validate() ?? false) {
-      _formKey.currentState?.save();
+  Future<void> _handleSave() async {
+    if (!(_formKey.currentState?.validate() ?? false)) {
+      return;
+    }
 
+    _formKey.currentState?.save();
+
+    DateTime? parseBirthDate(String value) {
+      final trimmed = value.trim();
+      if (trimmed.isEmpty) return null;
+      try {
+        final parts = trimmed.split('/');
+        if (parts.length == 3) {
+          final d = int.parse(parts[0]);
+          final m = int.parse(parts[1]);
+          final y = int.parse(parts[2]);
+          return DateTime(y, m, d);
+        }
+      } catch (_) {}
+      return null;
+    }
+
+    String? mapDescricaoToGenero(String value) {
+      switch (value) {
+        case 'Homem':
+          return 'masculino';
+        case 'Mulher':
+          return 'feminino';
+        case 'Outro':
+          return 'outro';
+        default:
+          return null;
+      }
+    }
+
+    int? parseIntOrNull(String value) {
+      final trimmed = value.trim();
+      if (trimmed.isEmpty) return null;
+      return int.tryParse(trimmed);
+    }
+
+    double? parseDoubleOrNull(String value) {
+      final trimmed = value.trim();
+      if (trimmed.isEmpty) return null;
+      return double.tryParse(trimmed.replaceAll(',', '.'));
+    }
+
+    bool? parsePraticaEsporte(String value) {
+      switch (value) {
+        case 'Sim, regularmente':
+          return true;
+        case 'Não pratico':
+          return false;
+        default:
+          return null;
+      }
+    }
+
+    bool? parseSimNao(String value) {
+      switch (value) {
+        case 'Sim':
+        case 'Sim, regularmente':
+          return true;
+        case 'Não':
+        case 'Não bebo':
+          return false;
+        default:
+          return null;
+      }
+    }
+
+    final Map<String, dynamic> data = {};
+
+    // Dados pessoais básicos
+    data['apelido'] = _apelido;
+    data['signo'] = _signo;
+    data['sexualidade'] = _sexualidade;
+    data['estado_civil'] = _estadoCivil;
+
+    final generoBackend = mapDescricaoToGenero(_euSou);
+    if (generoBackend != null) {
+      data['genero'] = generoBackend;
+    }
+
+    final filhosInt = parseIntOrNull(_filhos);
+    if (filhosInt != null) {
+      data['filhos'] = filhosInt;
+    }
+
+    data['escolaridade'] = _escolaridade;
+    data['profissao'] = _profissao;
+    data['humor'] = _humor;
+
+    final dataNascimento = parseBirthDate(_dataNascimento);
+    if (dataNascimento != null) {
+      final yyyyMmDd =
+          '${dataNascimento.year.toString().padLeft(4, '0')}-'
+          '${dataNascimento.month.toString().padLeft(2, '0')}-'
+          '${dataNascimento.day.toString().padLeft(2, '0')}';
+      data['data_nascimento'] = yyyyMmDd;
+    }
+
+    // Localização (IDs e texto livre)
+    final paisId = _paisIdSelecionado != null
+        ? int.tryParse(_paisIdSelecionado!)
+        : null;
+    final provinciaId = _provinciaIdSelecionada != null
+        ? int.tryParse(_provinciaIdSelecionada!)
+        : null;
+    final cidadeId = _cidadeIdSelecionada != null
+        ? int.tryParse(_cidadeIdSelecionada!)
+        : null;
+
+    if (paisId != null) data['pais_id'] = paisId;
+    if (provinciaId != null) data['provincia_id'] = provinciaId;
+    if (cidadeId != null) data['cidade_id'] = cidadeId;
+
+    data['mora_com'] = _moraCom;
+
+    // Aparência
+    data['cor_pele'] = _corPele;
+    data['cor_olhos'] = _corOlhos;
+    data['cor_cabelos'] = _corCabelos;
+
+    final pesoDouble = parseDoubleOrNull(_peso);
+    if (pesoDouble != null) {
+      data['peso'] = pesoDouble;
+    }
+
+    final alturaDouble = parseDoubleOrNull(_altura);
+    if (alturaDouble != null) {
+      data['altura'] = alturaDouble;
+    }
+
+    // Hábitos
+    final praticaEsporteBool = parsePraticaEsporte(_praticaEsporte);
+    final fumaBool = parseSimNao(_fuma);
+    final bebeBool = parseSimNao(_bebe);
+
+    if (praticaEsporteBool != null) {
+      data['pratica_esporte'] = praticaEsporteBool;
+    }
+    if (fumaBool != null) {
+      data['fuma'] = fumaBool;
+    }
+    if (bebeBool != null) {
+      data['bebe'] = bebeBool;
+    }
+
+    data['como_me_considero_fisicamente'] = _comoMeConsideroFisicamente;
+
+    final appProvider = Provider.of<AppProvider>(context, listen: false);
+    final userProvider = appProvider.userProvider;
+
+    final success = await userProvider.updateProfile(data);
+
+    if (!mounted) return;
+
+    if (success) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Dados de perfil salvos (simulação).'),
+          content: Text('Dados de perfil salvos com sucesso.'),
         ),
       );
-
       Navigator.of(context).pop();
+    } else {
+      final errorMessage =
+          userProvider.error ?? 'Erro ao salvar os dados de perfil.';
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(errorMessage),
+        ),
+      );
     }
   }
 
@@ -949,6 +1105,49 @@ class _EditProfilePageState extends State<EditProfilePage> {
           labelText: label,
           border: const OutlineInputBorder(),
         ),
+        onSaved: onSaved,
+      ),
+    );
+  }
+
+  Widget _buildNumberField({
+    required String label,
+    required String initialValue,
+    required void Function(String?) onSaved,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: TextFormField(
+        initialValue: initialValue,
+        keyboardType: const TextInputType.numberWithOptions(decimal: true),
+        inputFormatters: [
+          FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]')),
+        ],
+        decoration: InputDecoration(
+          labelText: label,
+          border: const OutlineInputBorder(),
+        ),
+        validator: (value) {
+          final text = (value ?? '').trim();
+          if (text.isEmpty) {
+            return null; // campo opcional
+          }
+
+          final parsed = double.tryParse(text.replaceAll(',', '.'));
+          if (parsed == null) {
+            return 'Informe um número válido';
+          }
+
+          if (label.contains('Peso') && (parsed < 30 || parsed > 300)) {
+            return 'Informe um peso entre 30 e 300 kg';
+          }
+
+          if (label.contains('Altura') && (parsed < 100 || parsed > 250)) {
+            return 'Informe uma altura entre 100 e 250 cm';
+          }
+
+          return null;
+        },
         onSaved: onSaved,
       ),
     );

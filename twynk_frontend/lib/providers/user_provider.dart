@@ -43,7 +43,7 @@ class UserProvider extends ChangeNotifier {
     _clearError();
 
     try {
-      final response = await _apiClient.dio.get('/user/profile');
+      final response = await _apiClient.dio.get('/api/profile');
       
       if (response.statusCode == 200) {
         _currentUser = User.fromJson(response.data);
@@ -64,7 +64,7 @@ class UserProvider extends ChangeNotifier {
     _clearError();
 
     try {
-      final response = await _apiClient.dio.put('/user/profile', data: userData);
+      final response = await _apiClient.dio.put('/api/profile', data: userData);
       
       if (response.statusCode == 200) {
         if (_currentUser != null) {
