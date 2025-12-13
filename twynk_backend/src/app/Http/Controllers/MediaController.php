@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Media;
-use App\Services\PresignService;
+use App\Services\GCSService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -12,94 +12,76 @@ class MediaController extends Controller
     /**
      * Serviço responsável por gerar URLs presignadas.
      */
-    protected PresignService $presign;
+    protected GCSService $gcs;
 
-    public function __construct(PresignService $presign)
+    public function __construct(GCSService $gcs)
     {
-        $this->presign = $presign;
+        $this->gcs = $gcs;
     }
 
     /**
-     * 1) Gera presigned URL para upload.
-     *
-     * Organiza os arquivos em pastas por tipo:
-     * - profile: users/{uid}/profile/
-     * - image  : users/{uid}/images/
-     * - video  : users/{uid}/videos/
-     * - chat   : users/{uid}/chats/
+     * Upload direto via backend (híbrido seguro).
      */
-    public function presign(Request $request)
+    public function upload(Request $request)
     {
         $request->validate([
-            'filename' => 'required|string',
-            'contentType' => 'required|string',
+            'file' => 'required|file|max:10240',
             'type' => 'required|in:image,video,profile,chat',
         ]);
 
-        $uid = $request->get('user_uid'); // definido pelo middleware firebase.auth
+        $mimeRules = [
+            'image' => ['image/jpeg', 'image/png', 'image/webp'],
+            'profile' => ['image/jpeg', 'image/png', 'image/webp'],
+            'video' => ['video/mp4', 'video/webm'],
+            'chat' => ['image/jpeg', 'image/png', 'video/mp4'],
+        ];
 
-        $type = $request->input('type');
-        $ext = pathinfo($request->input('filename'), PATHINFO_EXTENSION);
+        $file = $request->file('file');
+        $mimeType = $file->getMimeType();
+        if (!in_array($mimeType, $mimeRules[$request->type])) {
+            return response()->json(['message' => 'Tipo de ficheiro não permitido'], 422);
+        }
 
-        // Mapeia o tipo lógico para a pasta física no bucket
-        $folder = match ($type) {
+        $user = $request->user();
+        $uid = $user->uid;
+
+        $ext = $file->getClientOriginalExtension();
+        $folder = match ($request->type) {
             'profile' => "users/{$uid}/profile/",
             'image'   => "users/{$uid}/images/",
             'video'   => "users/{$uid}/videos/",
             'chat'    => "users/{$uid}/chats/",
-            default   => "users/{$uid}/others/",
         };
 
-        $filename = time() . '-' . Str::uuid() . ($ext ? ".{$ext}" : '');
+        $filename = now()->timestamp . '-' . Str::uuid() . '.' . $ext;
         $key = $folder . $filename;
 
-        $url = $this->presign->getPresignedPutUrl(
-            $key,
-            $request->input('contentType')
-        );
-
-        return response()->json([
-            'uploadUrl' => $url,
-            'key' => $key,
-            'path' => $key,
-            'expires_in' => 300,
-        ]);
-    }
-
-    /**
-     * 2) Registrar metadados após upload.
-     */
-    public function register(Request $request)
-    {
-        $request->validate([
-            'key' => 'required|string',
-            'filename' => 'nullable|string',
-            'size' => 'nullable|integer',
-            'type' => 'required|string',
-        ]);
-
-        $uid = $request->get('user_uid');
+        $this->gcs->uploadFile($file->getPathname(), $key, $mimeType);
 
         $media = Media::create([
             'user_uid' => $uid,
-            'type' => $request->input('type'),
-            'filename' => $request->input('filename'),
-            'path' => $request->input('key'),
-            'url' => null,
-            'size' => $request->input('size'),
+            'type' => $request->type,
+            'filename' => $file->getClientOriginalName(),
+            'path' => $key,
+            'size' => $file->getSize(),
         ]);
 
-        return response()->json($media, 201);
+        $url = $this->gcs->getPresignedGetUrl($key, 3600);
+
+        return response()->json([
+            'media' => $media,
+            'url' => $url,
+        ], 201);
     }
 
     /**
-     * 3) Listar mídias do usuário autenticado (Firebase).
+     * 3) Listar mídias do usuário autenticado (JWT).
      */
     public function index(Request $request)
     {
-        $uid = $request->get('user_uid');
+        $user = $request->user();
 
-        $items = Media::where('user_uid', $uid)
+        $items = Media::where('user_uid', $user->uid)
             ->orderBy('created_at', 'desc')
             ->get();
 
@@ -107,14 +89,13 @@ class MediaController extends Controller
     }
 
     /**
-     * 4) Deletar mídia pertencente ao usuário.
+     * 4) Deletar mídia pertencente ao usuário autenticado (JWT).
      */
     public function destroy(Request $request, $id)
     {
-        $uid = $request->get('user_uid');
-
+        $user = $request->user();
         $media = Media::where('id', $id)
-            ->where('user_uid', $uid)
+            ->where('user_uid', $user->uid)
             ->firstOrFail();
 
         // O arquivo físico será removido pelo evento deleting em Media::deleteStorage()
@@ -132,13 +113,14 @@ class MediaController extends Controller
             'path' => 'required|string',
         ]);
 
-        $url = $this->presign->getPresignedGetUrl(
-            $request->input('path'),
-            3600 // 1 hora
-        );
+        $user = $request->user();
+
+        if (!str_starts_with($request->path, "users/{$user->uid}/")) {
+            abort(403);
+        }
 
         return response()->json([
-            'url' => $url,
+            'url' => $this->gcs->getPresignedGetUrl($request->path, 3600),
         ]);
     }
 }

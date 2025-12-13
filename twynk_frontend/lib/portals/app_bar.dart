@@ -212,8 +212,8 @@ class _NomirroAppBarState extends State<NomirroAppBar> {
     // Use a Builder to get the context of the button for positioning the menu.
     return Center(
       child: Builder(
-        builder: (context) {
-          final appProvider = Provider.of<AppProvider>(context, listen: false);
+      builder: (context) {
+          final appProvider = Provider.of<AppProvider>(context);
           final user = appProvider.currentUser;
           final String userName;
           if (user == null) {
@@ -225,6 +225,20 @@ class _NomirroAppBarState extends State<NomirroAppBar> {
           } else {
             userName = user.email;
           }
+          // Resolve latest profile media URL, if any
+          String? profileUrl;
+          final mediaList = appProvider.userMedia;
+          if (mediaList.isNotEmpty) {
+            final profileMedias = mediaList
+                .where((m) => m.isProfile && (m.url).isNotEmpty)
+                .toList();
+            if (profileMedias.isNotEmpty) {
+              // Backend returns media ordered by created_at desc,
+              // so first item is the mais recente.
+              profileUrl = profileMedias.first.url;
+            }
+          }
+
           return Tooltip(
             message: 'User Menu',
             child: InkWell(
@@ -305,12 +319,16 @@ class _NomirroAppBarState extends State<NomirroAppBar> {
                   // Handle other selections if needed
                 });
               },
-              child: const Padding(
-                padding: EdgeInsets.all(8.0),
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
                 child: CircleAvatar(
                   radius: 16,
                   backgroundColor: Colors.grey,
-                  child: Icon(Icons.person, size: 18, color: Colors.white),
+                  backgroundImage:
+                      profileUrl != null ? NetworkImage(profileUrl) : null,
+                  child: profileUrl == null
+                      ? const Icon(Icons.person, size: 18, color: Colors.white)
+                      : null,
                 ),
               ),
             ),

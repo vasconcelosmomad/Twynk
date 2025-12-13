@@ -11,10 +11,17 @@ import '../models/user.dart';
 import '../models/pais.dart';
 import '../models/provincia.dart';
 import '../models/cidade.dart';
-import 'package:twynk_frontend/services/upload_service.dart';
+import '../models/media.dart';
 
 class EditProfilePage extends StatefulWidget {
-  const EditProfilePage({super.key});
+  final bool embedded;
+  final VoidCallback? onClose;
+
+  const EditProfilePage({
+    super.key,
+    this.embedded = false,
+    this.onClose,
+  });
 
   @override
   State<EditProfilePage> createState() => _EditProfilePageState();
@@ -22,8 +29,6 @@ class EditProfilePage extends StatefulWidget {
 
 class _EditProfilePageState extends State<EditProfilePage> {
   final _formKey = GlobalKey<FormState>();
-
-  final UploadService _uploadService = UploadService();
   final ImagePicker _imagePicker = ImagePicker();
   File? _localProfileImage;
   bool _uploadingProfile = false;
@@ -332,6 +337,12 @@ class _EditProfilePageState extends State<EditProfilePage> {
     final bool isTablet = width >= 768 && width < 1024;
     final bool isDesktop = width >= 1024;
 
+    final bool isDark = theme.brightness == Brightness.dark;
+    final Color secondaryTextColor = isDark
+        ? Colors.white70
+        : theme.textTheme.bodyMedium?.color?.withValues(alpha: 0.7) ??
+            Colors.black54;
+
     final double maxFormWidth = isDesktop
         ? 900
         : (isTablet ? 720 : double.infinity);
@@ -346,6 +357,321 @@ class _EditProfilePageState extends State<EditProfilePage> {
     final bool hasPaisOptions = paisOptions.isNotEmpty;
     final bool hasProvinciaOptions = provinciaOptions.isNotEmpty;
     final bool hasCidadeOptions = cidadeOptions.isNotEmpty;
+    final formContent = SafeArea(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Center(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(maxWidth: maxFormWidth),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Wrap(
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    spacing: 16,
+                    children: [
+                      IconButton(
+                        onPressed: _handleBack,
+                        icon: const Icon(Icons.arrow_back, size: 24),
+                        padding: EdgeInsets.zero,
+                        color: secondaryTextColor,
+                        splashRadius: 24,
+                      ),
+                      const Text(
+                        'Editar Perfil',
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF1E293B),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  _buildProfilePhotoSection(isMobile),
+                  const SizedBox(height: 24),
+                  _buildSectionTitle('Dados Pessoais'),
+                  _buildResponsiveRow(
+                    !isMobile,
+                    _buildTextField(
+                      label: 'Apelido',
+                      initialValue: _apelido,
+                      onSaved: (v) => _apelido = v ?? '',
+                    ),
+                    _buildSelectField(
+                      label: 'Signo',
+                      value: _signo,
+                      options: signos,
+                      onChanged: (v) => _signo = v ?? _signo,
+                    ),
+                  ),
+                  _buildResponsiveRow(
+                    !isMobile,
+                    _buildDateField(
+                      label: 'Data de Nascimento',
+                      value: _dataNascimento,
+                      onSaved: (v) => _dataNascimento = v ?? '',
+                    ),
+                    _buildSelectField(
+                      label: 'Eu sou',
+                      value: _euSou,
+                      options: const ['Homem', 'Mulher', 'Outro'],
+                      onChanged: (v) => _euSou = v ?? _euSou,
+                    ),
+                  ),
+                  _buildResponsiveRow(
+                    !isMobile,
+                    _buildSelectField(
+                      label: 'Sexualidade',
+                      value: _sexualidade,
+                      options: sexualidades,
+                      onChanged: (v) => _sexualidade = v ?? _sexualidade,
+                    ),
+                    _buildSelectField(
+                      label: 'Estado Civil',
+                      value: _estadoCivil,
+                      options: estadosCivis,
+                      onChanged: (v) => _estadoCivil = v ?? _estadoCivil,
+                    ),
+                  ),
+                  _buildResponsiveRow(
+                    !isMobile,
+                    _buildTextField(
+                      label: 'Filhos',
+                      initialValue: _filhos,
+                      onSaved: (v) => _filhos = v ?? '',
+                    ),
+                    _buildSelectField(
+                      label: 'Escolaridade',
+                      value: _escolaridade,
+                      options: escolaridades,
+                      onChanged: (v) => _escolaridade = v ?? _escolaridade,
+                    ),
+                  ),
+                  _buildResponsiveRow(
+                    !isMobile,
+                    _buildTextField(
+                      label: 'Profissão',
+                      initialValue: _profissao,
+                      onSaved: (v) => _profissao = v ?? '',
+                    ),
+                    _buildSelectField(
+                      label: 'Humor',
+                      value: _humor,
+                      options: humores,
+                      onChanged: (v) => _humor = v ?? _humor,
+                    ),
+                  ),
+
+                  const SizedBox(height: 24),
+                  _buildSectionTitle('Localização'),
+                  _buildResponsiveRow(
+                    !isMobile,
+                    hasPaisOptions
+                        ? _buildSelectField(
+                            label: 'País',
+                            value: _pais,
+                            options: paisOptions,
+                            onChanged: (v) async {
+                              if (v == null) return;
+                              setState(() {
+                                _pais = v;
+                              });
+                              if (_paisesDisponiveis.isEmpty) return;
+                              final selecionado = _paisesDisponiveis.firstWhere(
+                                (p) => p.nome == v,
+                                orElse: () => _paisesDisponiveis.first,
+                              );
+                              _paisIdSelecionado = selecionado.id;
+                              final locationProvider = Provider.of<LocationProvider>(context, listen: false);
+                              await locationProvider.fetchProvincias(paisId: _paisIdSelecionado);
+                              final provinciasAtualizadas = locationProvider.provincias;
+                              if (!mounted) return;
+                              setState(() {
+                                _provinciasDisponiveis = provinciasAtualizadas;
+                                if (provinciasAtualizadas.isNotEmpty) {
+                                  _provinciaIdSelecionada = provinciasAtualizadas.first.id;
+                                  _provincia = provinciasAtualizadas.first.nome;
+                                }
+                              });
+                            },
+                          )
+                        : _buildTextField(
+                            label: 'País',
+                            initialValue: _pais,
+                            onSaved: (v) => _pais = v ?? '',
+                          ),
+                    hasProvinciaOptions
+                        ? _buildSelectField(
+                            label: 'Província/Estado',
+                            value: _provincia,
+                            options: provinciaOptions,
+                            onChanged: (v) {
+                              if (v == null) return;
+                              setState(() {
+                                _provincia = v;
+                              });
+                              if (_provinciasDisponiveis.isEmpty) return;
+                              final selecionada = _provinciasDisponiveis.firstWhere(
+                                (p) => p.nome == v,
+                                orElse: () => _provinciasDisponiveis.first,
+                              );
+                              _provinciaIdSelecionada = selecionada.id;
+                              // Ao mudar a província, recarrega cidades
+                              () async {
+                                final locationProvider = Provider.of<LocationProvider>(context, listen: false);
+                                await locationProvider.fetchCidades(provinciaId: _provinciaIdSelecionada);
+                                final cidadesAtualizadas = locationProvider.cidades;
+                                if (!mounted) return;
+                                setState(() {
+                                  _cidadesDisponiveis = cidadesAtualizadas;
+                                  if (cidadesAtualizadas.isNotEmpty) {
+                                    _cidadeIdSelecionada = cidadesAtualizadas.first.id;
+                                    _cidade = cidadesAtualizadas.first.nome;
+                                  }
+                                });
+                              }();
+                            },
+                          )
+                        : _buildTextField(
+                            label: 'Província/Estado',
+                            initialValue: _provincia,
+                            onSaved: (v) => _provincia = v ?? '',
+                          ),
+                  ),
+                  _buildResponsiveRow(
+                    !isMobile,
+                    hasCidadeOptions
+                        ? _buildSelectField(
+                            label: 'Cidade',
+                            value: _cidade,
+                            options: cidadeOptions,
+                            onChanged: (v) {
+                              if (v == null) return;
+                              setState(() {
+                                _cidade = v;
+                              });
+                              if (_cidadesDisponiveis.isEmpty) return;
+                              final selecionadaCidade = _cidadesDisponiveis.firstWhere(
+                                (c) => c.nome == v,
+                                orElse: () => _cidadesDisponiveis.first,
+                              );
+                              _cidadeIdSelecionada = selecionadaCidade.id;
+                            },
+                          )
+                        : _buildTextField(
+                            label: 'Cidade',
+                            initialValue: _cidade,
+                            onSaved: (v) => _cidade = v ?? '',
+                          ),
+                    _buildTextField(
+                      label: 'Mora com',
+                      initialValue: _moraCom,
+                      onSaved: (v) => _moraCom = v ?? '',
+                    ),
+                  ),
+
+                  const SizedBox(height: 24),
+                  _buildSectionTitle('Aparência'),
+                  _buildResponsiveRow(
+                    !isMobile,
+                    _buildTextField(
+                      label: 'Cor da Pele',
+                      initialValue: _corPele,
+                      onSaved: (v) => _corPele = v ?? '',
+                    ),
+                    _buildSelectField(
+                      label: 'Cor dos Olhos',
+                      value: _corOlhos,
+                      options: coresOlhos,
+                      onChanged: (v) => _corOlhos = v ?? _corOlhos,
+                    ),
+                  ),
+                  _buildResponsiveRow(
+                    !isMobile,
+                    _buildSelectField(
+                      label: 'Cor dos Cabelos',
+                      value: _corCabelos,
+                      options: coresCabelos,
+                      onChanged: (v) => _corCabelos = v ?? _corCabelos,
+                    ),
+                    _buildNumberField(
+                      label: 'Peso (kg)',
+                      initialValue: _peso,
+                      onSaved: (v) => _peso = v?.trim() ?? '',
+                    ),
+                  ),
+                  _buildResponsiveRow(
+                    !isMobile,
+                    _buildNumberField(
+                      label: 'Altura (cm)',
+                      initialValue: _altura,
+                      onSaved: (v) => _altura = v?.trim() ?? '',
+                    ),
+                  ),
+
+                  const SizedBox(height: 24),
+                  _buildSectionTitle('Hábitos'),
+                  _buildResponsiveRow(
+                    !isMobile,
+                    _buildSelectField(
+                      label: 'Pratica Esporte',
+                      value: _praticaEsporte,
+                      options: praticaEsporte,
+                      onChanged: (v) => _praticaEsporte = v ?? _praticaEsporte,
+                    ),
+                    _buildSelectField(
+                      label: 'Fuma',
+                      value: _fuma,
+                      options: fuma,
+                      onChanged: (v) => _fuma = v ?? _fuma,
+                    ),
+                  ),
+                  _buildResponsiveRow(
+                    !isMobile,
+                    _buildSelectField(
+                      label: 'Bebe',
+                      value: _bebe,
+                      options: bebe,
+                      onChanged: (v) => _bebe = v ?? _bebe,
+                    ),
+                  ),
+
+                  const SizedBox(height: 24),
+                  _buildSectionTitle('Como me considero fisicamente'),
+                  _buildResponsiveRow(
+                    !isMobile,
+                    _buildTextField(
+                      label: 'Descrição',
+                      initialValue: _comoMeConsideroFisicamente,
+                      onSaved: (v) => _comoMeConsideroFisicamente = v ?? '',
+                      maxLines: 3,
+                    ),
+                  ),
+
+                  const SizedBox(height: 32),
+                  Align(
+                    alignment:
+                        isMobile ? Alignment.center : Alignment.centerRight,
+                    child: ElevatedButton.icon(
+                      onPressed: _handleSave,
+                      icon: const Icon(Icons.save),
+                      label: const Text('Salvar alterações'),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    if (widget.embedded) {
+      return formContent;
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -356,299 +682,19 @@ class _EditProfilePageState extends State<EditProfilePage> {
         backgroundColor: theme.scaffoldBackgroundColor,
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: theme.iconTheme.color),
-          onPressed: () => Navigator.pop(context),
+          onPressed: _handleBack,
         ),
       ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
-          child: Center(
-            child: ConstrainedBox(
-              constraints: BoxConstraints(maxWidth: maxFormWidth),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _buildProfilePhotoSection(isMobile),
-                    const SizedBox(height: 24),
-                    _buildSectionTitle('Dados Pessoais'),
-                    _buildResponsiveRow(
-                      !isMobile,
-                      _buildTextField(
-                        label: 'Apelido',
-                        initialValue: _apelido,
-                        onSaved: (v) => _apelido = v ?? '',
-                      ),
-                      _buildSelectField(
-                        label: 'Signo',
-                        value: _signo,
-                        options: signos,
-                        onChanged: (v) => _signo = v ?? _signo,
-                      ),
-                    ),
-                    _buildResponsiveRow(
-                      !isMobile,
-                      _buildDateField(
-                        label: 'Data de Nascimento',
-                        value: _dataNascimento,
-                        onSaved: (v) => _dataNascimento = v ?? '',
-                      ),
-                      _buildSelectField(
-                        label: 'Eu sou',
-                        value: _euSou,
-                        options: const ['Homem', 'Mulher', 'Outro'],
-                        onChanged: (v) => _euSou = v ?? _euSou,
-                      ),
-                    ),
-                    _buildResponsiveRow(
-                      !isMobile,
-                      _buildSelectField(
-                        label: 'Sexualidade',
-                        value: _sexualidade,
-                        options: sexualidades,
-                        onChanged: (v) => _sexualidade = v ?? _sexualidade,
-                      ),
-                      _buildSelectField(
-                        label: 'Estado Civil',
-                        value: _estadoCivil,
-                        options: estadosCivis,
-                        onChanged: (v) => _estadoCivil = v ?? _estadoCivil,
-                      ),
-                    ),
-                    _buildResponsiveRow(
-                      !isMobile,
-                      _buildTextField(
-                        label: 'Filhos',
-                        initialValue: _filhos,
-                        onSaved: (v) => _filhos = v ?? '',
-                      ),
-                      _buildSelectField(
-                        label: 'Escolaridade',
-                        value: _escolaridade,
-                        options: escolaridades,
-                        onChanged: (v) => _escolaridade = v ?? _escolaridade,
-                      ),
-                    ),
-                    _buildResponsiveRow(
-                      !isMobile,
-                      _buildTextField(
-                        label: 'Profissão',
-                        initialValue: _profissao,
-                        onSaved: (v) => _profissao = v ?? '',
-                      ),
-                      _buildSelectField(
-                        label: 'Humor',
-                        value: _humor,
-                        options: humores,
-                        onChanged: (v) => _humor = v ?? _humor,
-                      ),
-                    ),
-
-                    const SizedBox(height: 24),
-                    _buildSectionTitle('Localização'),
-                    _buildResponsiveRow(
-                      !isMobile,
-                      hasPaisOptions
-                          ? _buildSelectField(
-                              label: 'País',
-                              value: _pais,
-                              options: paisOptions,
-                              onChanged: (v) async {
-                                if (v == null) return;
-                                setState(() {
-                                  _pais = v;
-                                });
-                                if (_paisesDisponiveis.isEmpty) return;
-                                final selecionado = _paisesDisponiveis.firstWhere(
-                                  (p) => p.nome == v,
-                                  orElse: () => _paisesDisponiveis.first,
-                                );
-                                _paisIdSelecionado = selecionado.id;
-                                final locationProvider = Provider.of<LocationProvider>(context, listen: false);
-                                await locationProvider.fetchProvincias(paisId: _paisIdSelecionado);
-                                final provinciasAtualizadas = locationProvider.provincias;
-                                if (!mounted) return;
-                                setState(() {
-                                  _provinciasDisponiveis = provinciasAtualizadas;
-                                  if (provinciasAtualizadas.isNotEmpty) {
-                                    _provinciaIdSelecionada = provinciasAtualizadas.first.id;
-                                    _provincia = provinciasAtualizadas.first.nome;
-                                  }
-                                });
-                              },
-                            )
-                          : _buildTextField(
-                              label: 'País',
-                              initialValue: _pais,
-                              onSaved: (v) => _pais = v ?? '',
-                            ),
-                      hasProvinciaOptions
-                          ? _buildSelectField(
-                              label: 'Província/Estado',
-                              value: _provincia,
-                              options: provinciaOptions,
-                              onChanged: (v) {
-                                if (v == null) return;
-                                setState(() {
-                                  _provincia = v;
-                                });
-                                if (_provinciasDisponiveis.isEmpty) return;
-                                final selecionada = _provinciasDisponiveis.firstWhere(
-                                  (p) => p.nome == v,
-                                  orElse: () => _provinciasDisponiveis.first,
-                                );
-                                _provinciaIdSelecionada = selecionada.id;
-                                // Ao mudar a província, recarrega cidades
-                                () async {
-                                  final locationProvider = Provider.of<LocationProvider>(context, listen: false);
-                                  await locationProvider.fetchCidades(provinciaId: _provinciaIdSelecionada);
-                                  final cidadesAtualizadas = locationProvider.cidades;
-                                  if (!mounted) return;
-                                  setState(() {
-                                    _cidadesDisponiveis = cidadesAtualizadas;
-                                    if (cidadesAtualizadas.isNotEmpty) {
-                                      _cidadeIdSelecionada = cidadesAtualizadas.first.id;
-                                      _cidade = cidadesAtualizadas.first.nome;
-                                    }
-                                  });
-                                }();
-                              },
-                            )
-                          : _buildTextField(
-                              label: 'Província/Estado',
-                              initialValue: _provincia,
-                              onSaved: (v) => _provincia = v ?? '',
-                            ),
-                    ),
-                    _buildResponsiveRow(
-                      !isMobile,
-                      hasCidadeOptions
-                          ? _buildSelectField(
-                              label: 'Cidade',
-                              value: _cidade,
-                              options: cidadeOptions,
-                              onChanged: (v) {
-                                if (v == null) return;
-                                setState(() {
-                                  _cidade = v;
-                                });
-                                if (_cidadesDisponiveis.isEmpty) return;
-                                final selecionadaCidade = _cidadesDisponiveis.firstWhere(
-                                  (c) => c.nome == v,
-                                  orElse: () => _cidadesDisponiveis.first,
-                                );
-                                _cidadeIdSelecionada = selecionadaCidade.id;
-                              },
-                            )
-                          : _buildTextField(
-                              label: 'Cidade',
-                              initialValue: _cidade,
-                              onSaved: (v) => _cidade = v ?? '',
-                            ),
-                      _buildTextField(
-                        label: 'Mora com',
-                        initialValue: _moraCom,
-                        onSaved: (v) => _moraCom = v ?? '',
-                      ),
-                    ),
-
-                    const SizedBox(height: 24),
-                    _buildSectionTitle('Aparência'),
-                    _buildResponsiveRow(
-                      !isMobile,
-                      _buildTextField(
-                        label: 'Cor da Pele',
-                        initialValue: _corPele,
-                        onSaved: (v) => _corPele = v ?? '',
-                      ),
-                      _buildSelectField(
-                        label: 'Cor dos Olhos',
-                        value: _corOlhos,
-                        options: coresOlhos,
-                        onChanged: (v) => _corOlhos = v ?? _corOlhos,
-                      ),
-                    ),
-                    _buildResponsiveRow(
-                      !isMobile,
-                      _buildSelectField(
-                        label: 'Cor dos Cabelos',
-                        value: _corCabelos,
-                        options: coresCabelos,
-                        onChanged: (v) => _corCabelos = v ?? _corCabelos,
-                      ),
-                      _buildNumberField(
-                        label: 'Peso (kg)',
-                        initialValue: _peso,
-                        onSaved: (v) => _peso = v?.trim() ?? '',
-                      ),
-                    ),
-                    _buildResponsiveRow(
-                      !isMobile,
-                      _buildNumberField(
-                        label: 'Altura (cm)',
-                        initialValue: _altura,
-                        onSaved: (v) => _altura = v?.trim() ?? '',
-                      ),
-                    ),
-
-                    const SizedBox(height: 24),
-                    _buildSectionTitle('Hábitos'),
-                    _buildResponsiveRow(
-                      !isMobile,
-                      _buildSelectField(
-                        label: 'Pratica Esporte',
-                        value: _praticaEsporte,
-                        options: praticaEsporte,
-                        onChanged: (v) => _praticaEsporte = v ?? _praticaEsporte,
-                      ),
-                      _buildSelectField(
-                        label: 'Fuma',
-                        value: _fuma,
-                        options: fuma,
-                        onChanged: (v) => _fuma = v ?? _fuma,
-                      ),
-                    ),
-                    _buildResponsiveRow(
-                      !isMobile,
-                      _buildSelectField(
-                        label: 'Bebe',
-                        value: _bebe,
-                        options: bebe,
-                        onChanged: (v) => _bebe = v ?? _bebe,
-                      ),
-                    ),
-
-                    const SizedBox(height: 24),
-                    _buildSectionTitle('Como me considero fisicamente'),
-                    _buildResponsiveRow(
-                      !isMobile,
-                      _buildTextField(
-                        label: 'Descrição',
-                        initialValue: _comoMeConsideroFisicamente,
-                        onSaved: (v) => _comoMeConsideroFisicamente = v ?? '',
-                        maxLines: 3,
-                      ),
-                    ),
-
-                    const SizedBox(height: 32),
-                    Align(
-                      alignment:
-                          isMobile ? Alignment.center : Alignment.centerRight,
-                      child: ElevatedButton.icon(
-                        onPressed: _handleSave,
-                        icon: const Icon(Icons.save),
-                        label: const Text('Salvar alterações'),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
+      body: formContent,
     );
+  }
+
+  void _handleBack() {
+    if (widget.embedded) {
+      widget.onClose?.call();
+    } else {
+      Navigator.of(context).pop();
+    }
   }
 
   Future<void> _handleChangeProfilePhoto() async {
@@ -660,9 +706,14 @@ class _EditProfilePageState extends State<EditProfilePage> {
   }
 
   Future<void> _handleChangeProfilePhotoWeb() async {
+    // Captura o AppProvider antes de qualquer await para evitar uso de context
+    // após gaps assíncronos.
+    final appProvider =
+        Provider.of<AppProvider>(context, listen: false);
+    final mediaProvider = appProvider.mediaProvider;
+
     try {
-      final picker = ImagePicker();
-      final picked = await picker.pickImage(
+      final picked = await _imagePicker.pickImage(
         source: ImageSource.gallery,
         maxWidth: 1024,
         imageQuality: 85,
@@ -674,20 +725,59 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
       final bytes = await picked.readAsBytes();
 
+      if (!mounted) return;
+
       setState(() {
         _webProfileBytes = bytes;
         _localProfileImage = null;
+        _uploadingProfile = true;
       });
+
+      final filename = picked.name;
+
+      final media = await mediaProvider.uploadMediaFromBytes(
+        bytes,
+        filename,
+        type: MediaType.profile,
+      );
+
+      if (!mounted) return;
+
+      if (media != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Foto de perfil atualizada com sucesso.'),
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Erro ao atualizar foto de perfil.'),
+          ),
+        );
+      }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Erro ao selecionar foto: $e')),
+          SnackBar(content: Text('Erro ao atualizar foto de perfil: $e')),
         );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _uploadingProfile = false;
+        });
       }
     }
   }
 
   Future<void> _handleChangeProfilePhotoNative() async {
+    // Captura o AppProvider antes de qualquer await para evitar uso de context
+    // após gaps assíncronos.
+    final appProvider =
+        Provider.of<AppProvider>(context, listen: false);
+    final mediaProvider = appProvider.mediaProvider;
+
     try {
       final picked = await _imagePicker.pickImage(
         source: ImageSource.gallery,
@@ -701,47 +791,49 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
       final file = File(picked.path);
 
+      if (!mounted) return;
+
       setState(() {
         _localProfileImage = file;
+      });
+
+      setState(() {
         _uploadingProfile = true;
       });
 
-      // Usa o fluxo de presign -> upload -> register para tipo "profile"
-      final presign = await _uploadService.getPresignedUrl(file, 'profile');
-
-      await _uploadService.uploadFileToPresignedUrl(
-        file,
-        presign['uploadUrl'] as String,
-        'application/octet-stream',
+      final media = await mediaProvider.uploadMedia(
+        file.path,
+        type: MediaType.profile,
       );
 
-      await _uploadService.registerMedia(
-        presign['key'] as String,
-        file,
-        'profile',
-      );
+      if (!mounted) return;
 
-      setState(() {
-        _uploadingProfile = false;
-      });
-
-      if (mounted) {
+      if (media != null) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Foto de perfil atualizada com sucesso.'),
           ),
         );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Erro ao atualizar foto de perfil.'),
+          ),
+        );
       }
     } catch (e) {
       if (mounted) {
-        setState(() {
-          _uploadingProfile = false;
-        });
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Erro ao atualizar foto de perfil: $e'),
           ),
         );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _uploadingProfile = false;
+        });
       }
     }
   }
@@ -749,6 +841,23 @@ class _EditProfilePageState extends State<EditProfilePage> {
   Widget _buildProfilePhotoSection(bool isMobile) {
     final theme = Theme.of(context);
     final double avatarSize = isMobile ? 96 : 112;
+
+    // Resolve latest profile media URL from AppProvider, if any
+    String? profileUrl;
+    try {
+      final appProvider = Provider.of<AppProvider>(context, listen: true);
+      final mediaList = appProvider.userMedia;
+      if (mediaList.isNotEmpty) {
+        final profileMedias = mediaList
+            .where((m) => m.isProfile && (m.url).isNotEmpty)
+            .toList();
+        if (profileMedias.isNotEmpty) {
+          profileUrl = profileMedias.first.url;
+        }
+      }
+    } catch (_) {
+      // Se o AppProvider não estiver disponível neste contexto, ignoramos
+    }
 
     Widget avatarChild;
     if (kIsWeb && _webProfileBytes != null) {
@@ -762,6 +871,13 @@ class _EditProfilePageState extends State<EditProfilePage> {
       avatarChild = ClipOval(
         child: Image.file(
           _localProfileImage!,
+          fit: BoxFit.cover,
+        ),
+      );
+    } else if (profileUrl != null) {
+      avatarChild = ClipOval(
+        child: Image.network(
+          profileUrl,
           fit: BoxFit.cover,
         ),
       );
@@ -995,7 +1111,12 @@ class _EditProfilePageState extends State<EditProfilePage> {
           content: Text('Dados de perfil salvos com sucesso.'),
         ),
       );
-      Navigator.of(context).pop();
+
+      if (widget.embedded) {
+        widget.onClose?.call();
+      } else {
+        Navigator.of(context).pop();
+      }
     } else {
       final errorMessage =
           userProvider.error ?? 'Erro ao salvar os dados de perfil.';
@@ -1153,4 +1274,3 @@ class _EditProfilePageState extends State<EditProfilePage> {
     );
   }
 }
-

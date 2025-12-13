@@ -10,7 +10,7 @@ import 'snaps.dart';
 import 'chat.dart';
 import 'login.dart';
 import 'plans.dart';
-import 'edit_profile.dart';
+import '../widgets/edit_profile.dart';
 
 // --- MODELO DE DADOS ---
 
@@ -179,6 +179,34 @@ class _PhotoMasterAppState extends State<PhotoMasterApp> {
     }
   }
 
+  Widget _buildCurrentView() {
+    switch (_currentView) {
+      case 'edit-photos':
+        return EditPhotosPage(
+          key: const ValueKey('edit-photos'),
+          navigateTo: _navigateTo,
+          photos: _photos,
+          handleDelete: _handleDelete,
+          togglePrivacy: _togglePrivacy,
+          setProfile: _setProfile,
+          handleAddPhoto: _handleAddPhoto,
+        );
+      case 'edit-profile':
+        return EditProfilePage(
+          key: const ValueKey('edit-profile'),
+          embedded: true,
+          onClose: () => _navigateTo('dashboard'),
+        );
+      case 'dashboard':
+      default:
+        return DashboardPage(
+          key: const ValueKey('dashboard'),
+          navigateTo: _navigateTo,
+          photos: _photos,
+        );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final isMobile = MediaQuery.of(context).size.width < 1024;
@@ -212,21 +240,7 @@ class _PhotoMasterAppState extends State<PhotoMasterApp> {
                 ),
                 child: AnimatedSwitcher(
                   duration: const Duration(milliseconds: 300),
-                  child: _currentView == 'dashboard'
-                      ? DashboardPage(
-                          key: const ValueKey('dashboard'),
-                          navigateTo: _navigateTo,
-                          photos: _photos,
-                        )
-                      : EditPhotosPage(
-                          key: const ValueKey('edit-photos'),
-                          navigateTo: _navigateTo,
-                          photos: _photos,
-                          handleDelete: _handleDelete,
-                          togglePrivacy: _togglePrivacy,
-                          setProfile: _setProfile,
-                          handleAddPhoto: _handleAddPhoto,
-                        ),
+                  child: _buildCurrentView(),
                 ),
               ),
             ),
@@ -421,13 +435,7 @@ class DashboardPage extends StatelessWidget {
               runSpacing: 8,
               children: [
                 OutlinedButton.icon(
-                  onPressed: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (_) => const EditProfilePage(),
-                      ),
-                    );
-                  },
+                  onPressed: () => navigateTo('edit-profile'),
                   icon: const Icon(Icons.person, size: 18),
                   label: const Text('Editar Perfil'),
                 ),

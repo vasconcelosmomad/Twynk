@@ -1,11 +1,9 @@
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import '../models/media.dart';
-import '../services/api_client.dart';
 import '../services/upload_service.dart';
 
 class MediaProvider extends ChangeNotifier {
-  final ApiClient _apiClient = ApiClient.instance;
   final UploadService _uploadService = UploadService();
   
   List<Media> _mediaList = [];
@@ -23,24 +21,19 @@ class MediaProvider extends ChangeNotifier {
   String? get error => _error;
   double get uploadProgress => _uploadProgress;
 
-  // Fetch all media (for admin)
+  // Fetch all media for current Firebase user (admin view could filter client-side)
   Future<void> fetchAllMedia({int page = 1, int limit = 20}) async {
     _setLoading(true);
     _clearError();
 
     try {
-      final response = await _apiClient.dio.get('/media', queryParameters: {
-        'page': page,
-        'limit': limit,
-      });
-      
-      if (response.statusCode == 200) {
-        final List<dynamic> mediaJson = response.data['data'];
-        _mediaList = mediaJson.map((json) => Media.fromJson(json)).toList();
-        notifyListeners();
-      } else {
-        _setError('Failed to fetch media');
-      }
+      final items = await _uploadService.listMedia();
+
+      _mediaList = items
+          .whereType<Map<String, dynamic>>()
+          .map((json) => Media.fromJson(json))
+          .toList();
+      notifyListeners();
     } catch (e) {
       _setError('Error fetching media: $e');
     } finally {
@@ -48,26 +41,25 @@ class MediaProvider extends ChangeNotifier {
     }
   }
 
-  // Fetch user's media
+  // Fetch current user's media
   Future<void> fetchUserMedia(String userId, {MediaType? type}) async {
     _setLoading(true);
     _clearError();
 
     try {
-      final queryParams = <String, dynamic>{};
+      final items = await _uploadService.listMedia();
+
+      var list = items
+          .whereType<Map<String, dynamic>>()
+          .map((json) => Media.fromJson(json))
+          .toList();
+
       if (type != null) {
-        queryParams['type'] = type.value;
+        list = list.where((m) => m.type == type).toList();
       }
 
-      final response = await _apiClient.dio.get('/media/user/$userId', queryParameters: queryParams);
-      
-      if (response.statusCode == 200) {
-        final List<dynamic> mediaJson = response.data['data'];
-        _userMedia = mediaJson.map((json) => Media.fromJson(json)).toList();
-        notifyListeners();
-      } else {
-        _setError('Failed to fetch user media');
-      }
+      _userMedia = list;
+      notifyListeners();
     } catch (e) {
       _setError('Error fetching user media: $e');
     } finally {
@@ -88,36 +80,13 @@ class MediaProvider extends ChangeNotifier {
 
     try {
       final file = File(filePath);
-      
-      // Get presigned URL
-      final presignResponse = await _uploadService.getPresignedUrl(file, type.value);
 
-      // Upload file
-      await _uploadService.uploadFileToPresignedUrl(
-        file,
-        presignResponse['uploadUrl'] as String,
-        presignResponse['contentType'] as String,
-      );
+      final response =
+          await _uploadService.uploadMediaFile(file, type.value);
 
-      // Register media
-      await _uploadService.registerMedia(
-        presignResponse['key'] as String,
-        file,
-        type.value,
-      );
+      final mediaJson = _buildMediaJsonFromUploadResponse(response);
 
-      // Create media object (simplified - in real implementation, you'd get this from backend)
-      final media = Media(
-        id: DateTime.now().millisecondsSinceEpoch.toString(), // temporary
-        userUid: '', // should get from current user
-        type: type,
-        filename: filename ?? filePath.split('/').last,
-        path: presignResponse['key'] as String,
-        url: '', // would get from backend
-        size: await file.length(),
-        createdAt: DateTime.now(),
-        updatedAt: DateTime.now(),
-      );
+      final media = Media.fromJson(mediaJson);
 
       _userMedia.add(media);
       notifyListeners();
@@ -145,39 +114,16 @@ class MediaProvider extends ChangeNotifier {
     _uploadProgress = 0.0;
 
     try {
-      // Get upload URL for bytes
-      final uploadResponse = await _uploadService.getUploadUrl(
-        type.value,
-        filename.split('.').last,
-      );
-
-      // Upload bytes
-      await _uploadService.uploadBytesToPresignedUrl(
+      final uploadResponse = await _uploadService.uploadMediaBytes(
         bytes,
-        uploadResponse['uploadUrl'] as String,
-        uploadResponse['contentType'] as String,
-      );
-
-      // Register media from metadata
-      await _uploadService.registerMediaFromMeta(
-        uploadResponse['key'] as String,
         filename,
-        bytes.length,
         type.value,
       );
 
-      // Create media object (simplified)
-      final media = Media(
-        id: DateTime.now().millisecondsSinceEpoch.toString(), // temporary
-        userUid: '', // should get from current user
-        type: type,
-        filename: filename,
-        path: uploadResponse['key'] as String,
-        url: '', // would get from backend
-        size: bytes.length,
-        createdAt: DateTime.now(),
-        updatedAt: DateTime.now(),
-      );
+      final mediaJson =
+          _buildMediaJsonFromUploadResponse(uploadResponse);
+
+      final media = Media.fromJson(mediaJson);
 
       _userMedia.add(media);
       notifyListeners();
@@ -198,16 +144,45 @@ class MediaProvider extends ChangeNotifier {
     _clearError();
 
     try {
-      final response = await _apiClient.dio.get('/media/$mediaId');
-      
-      if (response.statusCode == 200) {
-        _currentMedia = Media.fromJson(response.data);
+      // Try from local cache first
+      final existing = _userMedia.firstWhere(
+        (m) => m.id == mediaId,
+        orElse: () => _mediaList.firstWhere(
+          (m) => m.id == mediaId,
+          orElse: () => Media(
+            id: '',
+            userUid: '',
+            type: MediaType.image,
+            filename: '',
+            path: '',
+            url: '',
+            size: 0,
+            createdAt: DateTime.fromMillisecondsSinceEpoch(0),
+            updatedAt: DateTime.fromMillisecondsSinceEpoch(0),
+          ),
+        ),
+      );
+
+      if (existing.id.isNotEmpty) {
+        _currentMedia = existing;
         notifyListeners();
         return _currentMedia;
-      } else {
-        _setError('Failed to get media');
-        return null;
       }
+
+      // Fallback: reload list and search
+      final items = await _uploadService.listMedia();
+      final list = items
+          .whereType<Map<String, dynamic>>()
+          .map((json) => Media.fromJson(json))
+          .toList();
+
+      _userMedia = list;
+      _currentMedia = list.firstWhere(
+        (m) => m.id == mediaId,
+        orElse: () => _currentMedia ?? list.first,
+      );
+      notifyListeners();
+      return _currentMedia;
     } catch (e) {
       _setError('Error getting media: $e');
       return null;
@@ -220,17 +195,12 @@ class MediaProvider extends ChangeNotifier {
     _clearError();
 
     try {
-      final response = await _apiClient.dio.delete('/media/$mediaId');
-      
-      if (response.statusCode == 200) {
-        _userMedia.removeWhere((media) => media.id == mediaId);
-        _mediaList.removeWhere((media) => media.id == mediaId);
-        notifyListeners();
-        return true;
-      } else {
-        _setError('Failed to delete media');
-        return false;
-      }
+      await _uploadService.deleteMedia(mediaId);
+
+      _userMedia.removeWhere((media) => media.id == mediaId);
+      _mediaList.removeWhere((media) => media.id == mediaId);
+      notifyListeners();
+      return true;
     } catch (e) {
       _setError('Error deleting media: $e');
       return false;
@@ -260,6 +230,26 @@ class MediaProvider extends ChangeNotifier {
   }
 
   // Private helper methods
+  Map<String, dynamic> _buildMediaJsonFromUploadResponse(
+    Map<String, dynamic> response,
+  ) {
+    Map<String, dynamic> base;
+
+    final mediaValue = response['media'];
+    if (mediaValue is Map) {
+      base = Map<String, dynamic>.from(mediaValue);
+    } else {
+      base = Map<String, dynamic>.from(response);
+    }
+
+    final urlValue = response['url'];
+    if (urlValue is String) {
+      base['url'] = urlValue;
+    }
+
+    return base;
+  }
+
   void _setLoading(bool loading) {
     _isLoading = loading;
     notifyListeners();

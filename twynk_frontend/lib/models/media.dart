@@ -94,6 +94,31 @@ class Media {
     );
   }
 
+  bool get isImage => type == MediaType.image;
+
+  bool get isVideo => type == MediaType.video;
+
+  bool get isProfile => type == MediaType.profile;
+
+  bool get isChat => type == MediaType.chat;
+
+  String get formattedSize {
+    if (size <= 0) {
+      return 'Unknown';
+    }
+
+    const units = ['B', 'KB', 'MB', 'GB'];
+    double value = size.toDouble();
+    int unitIndex = 0;
+
+    while (value > 1024 && unitIndex < units.length - 1) {
+      value /= 1024;
+      unitIndex++;
+    }
+
+    return '${value.toStringAsFixed(2)} ${units[unitIndex]}';
+  }
+
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;

@@ -41,6 +41,11 @@ Route::get('/provincias/{provincia}/cidades', [LocationController::class, 'getCi
 |--------------------------------------------------------------------------
 */
 
+Route::get('/cors-test', function () {
+    return response()->json(['ok' => true]);
+});
+
+
 Route::middleware('auth:api')->group(function () {
 
     // Informações do usuário autenticado
@@ -58,16 +63,9 @@ Route::middleware('auth:api')->group(function () {
     Route::apiResource('paises', PaisController::class)->except(['index','show']);
     Route::apiResource('provincias', ProvinciaController::class)->except(['index','show']);
     Route::apiResource('cidades', CidadeController::class)->except(['index','show']);
-});
 
-// Rotas protegidas por Firebase (UID via middleware firebase.auth)
-Route::middleware('firebase.auth')->group(function () {
-    // Upload via URL presignada
-    Route::post('/media/presign', [MediaController::class, 'presign']);
-    Route::post('/media/upload-url', [MediaController::class, 'presign']); // alias compatível com Flutter
-
-    // Registro e gestão de mídias
-    Route::post('/media/register', [MediaController::class, 'register']);
+    // Rotas de mídia agora também usam JWT (auth:api)
+    Route::post('/upload', [MediaController::class, 'upload']);
     Route::get('/media', [MediaController::class, 'index']);
     Route::delete('/media/{id}', [MediaController::class, 'destroy']);
 

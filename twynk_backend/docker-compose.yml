@@ -9,6 +9,7 @@ services:
     working_dir: /var/www/twynk
     volumes:
       - ./src:/var/www/twynk
+      - ./src/storage/app/gcs-service-account.json:/var/www/twynk/storage/app/gcs-service-account.json:ro
       # Manter node_modules e vendor fora do volume para melhor performance
       - twynk_vendor:/var/www/twynk/vendor
       - twynk_node_modules:/var/www/twynk/node_modules

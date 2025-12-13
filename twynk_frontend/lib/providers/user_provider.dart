@@ -84,34 +84,6 @@ class UserProvider extends ChangeNotifier {
     }
   }
 
-  // Upload profile photo
-  Future<bool> uploadProfilePhoto(String photoUrl) async {
-    _setLoading(true);
-    _clearError();
-
-    try {
-      final response = await _apiClient.dio.post('/user/profile-photo', data: {
-        'photo_url': photoUrl,
-      });
-      
-      if (response.statusCode == 200) {
-        if (_currentUser != null) {
-          _currentUser = User.fromJson(response.data);
-          notifyListeners();
-        }
-        return true;
-      } else {
-        _setError('Failed to upload profile photo');
-        return false;
-      }
-    } catch (e) {
-      _setError('Error uploading profile photo: $e');
-      return false;
-    } finally {
-      _setLoading(false);
-    }
-  }
-
   // Fetch users list (for admin or search purposes)
   Future<void> fetchUsers({int page = 1, int limit = 20}) async {
     _setLoading(true);
