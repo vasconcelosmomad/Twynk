@@ -1,0 +1,36 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        // Remove a tabela antiga de OTPs, caso ainda exista
+        Schema::dropIfExists('otps');
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        // Restaura a estrutura original da tabela otps, se for feito rollback
+        Schema::create('otps', function (Blueprint $table) {
+            $table->bigIncrements('id');
+            $table->string('email', 255);
+            $table->string('otp', 10);
+            $table->dateTime('expire_date');
+            $table->tinyInteger('status')->default(0);
+            $table->timestamp('created_at')->useCurrent();
+
+            $table->index('email');
+            $table->index(['email', 'otp']);
+        });
+    }
+};

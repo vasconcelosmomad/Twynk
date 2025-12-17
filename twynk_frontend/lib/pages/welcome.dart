@@ -1,7 +1,10 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:twynk_frontend/themes/app_theme.dart';
+import 'package:provider/provider.dart';
+import '../providers/location_provider.dart';
 import 'login.dart';
+import 'register.dart';
 
 class WelcomePage extends StatefulWidget {
   const WelcomePage({super.key});
@@ -20,8 +23,8 @@ class _WelcomePageState extends State<WelcomePage> {
   void initState() {
     super.initState();
 
-    // Troca das imagens (grid + card flutuante) a cada 2 segundos.
-    _imageTimer = Timer.periodic(const Duration(seconds: 2), (_) {
+    // Troca das imagens (grid + card flutuante) a cada 3 segundos.
+    _imageTimer = Timer.periodic(const Duration(seconds: 3), (_) {
       if (!mounted) return;
       setState(() {
         _useAltImages = !_useAltImages;
@@ -178,7 +181,17 @@ class _WelcomePageState extends State<WelcomePage> {
                             ),
                             const SizedBox(height: 32),
                             ElevatedButton.icon(
-                              onPressed: () {},
+                              onPressed: () {
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => ChangeNotifierProvider(
+                                      create: (_) => LocationProvider()..fetchPaises(),
+                                      child: const RegisterPage(),
+                                    ),
+                                  ),
+                                );
+                              },
                               icon: const Icon(Icons.favorite_border),
                               label: const Text('Criar Conta Gratuita'),
                               style: ElevatedButton.styleFrom(
@@ -278,7 +291,17 @@ class _WelcomePageState extends State<WelcomePage> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   ElevatedButton.icon(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => ChangeNotifierProvider(
+                            create: (_) => LocationProvider()..fetchPaises(),
+                            child: const RegisterPage(),
+                          ),
+                        ),
+                      );
+                    },
                     icon: const Icon(Icons.favorite_border),
                     label: const Text('Criar Conta Gratuita'),
                     style: ElevatedButton.styleFrom(

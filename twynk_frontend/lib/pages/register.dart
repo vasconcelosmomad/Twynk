@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:twynk_frontend/themes/app_theme.dart';
+import 'welcome.dart';
+import 'package:provider/provider.dart';
+import '../providers/location_provider.dart';
+import '../services/auth_service.dart';
 
 // --- DADOS E CONSTANTES ---
 
@@ -94,6 +99,7 @@ class RegisterPage extends StatefulWidget {
 class _RegisterPageState extends State<RegisterPage> {
   // Controllers para campos de texto
   final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _lastNameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _otpController = TextEditingController();
@@ -115,11 +121,13 @@ class _RegisterPageState extends State<RegisterPage> {
 
   // Computed Properties (Getters)
   List<String> get _provinces {
+    // Mantido apenas por compatibilidade; dropdowns agora usam LocationProvider.
     if (_country == null || !kLocations.containsKey(_country)) return [];
     return kLocations[_country]!.keys.toList();
   }
 
   List<String> get _cities {
+    // Mantido apenas por compatibilidade; dropdowns agora usam LocationProvider.
     if (_country == null || _province == null) return [];
     return kLocations[_country]?[_province] ?? [];
   }
@@ -132,6 +140,10 @@ class _RegisterPageState extends State<RegisterPage> {
       _city = null;
       _errors.remove('country');
     });
+    final location = Provider.of<LocationProvider>(context, listen: false);
+    final selected = location.paises.where((p) => p.nome == value).toList();
+    final String? paisId = selected.isNotEmpty ? selected.first.id : null;
+    location.fetchProvincias(paisId: paisId);
   }
 
   void _handleChangeProvince(String? value) {
@@ -140,6 +152,10 @@ class _RegisterPageState extends State<RegisterPage> {
       _city = null;
       _errors.remove('province');
     });
+    final location = Provider.of<LocationProvider>(context, listen: false);
+    final selected = location.provincias.where((p) => p.nome == value).toList();
+    final String? provinciaId = selected.isNotEmpty ? selected.first.id : null;
+    location.fetchCidades(provinciaId: provinciaId);
   }
 
   Future<void> _pickBirthDate() async {
@@ -243,7 +259,7 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
-  void _handleVerifyOTP() {
+  void _handleVerifyOTP() async {
     final emailRegex = RegExp(r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$");
     if (_emailController.text.isEmpty || !emailRegex.hasMatch(_emailController.text)) {
       _showSnackBar('Informe um e-mail válido primeiro.', isError: true);
@@ -252,24 +268,129 @@ class _RegisterPageState extends State<RegisterPage> {
       });
       return;
     }
-    _showSnackBar('Código OTP enviado para ${_emailController.text} (demo)', isInfo: true);
+    final email = _emailController.text.trim();
+
+    final result = await AuthService.instance.sendOtp(email: email);
+    if (result['success'] == true) {
+      final msg = (result['message'] as String?) ?? 'Código OTP enviado para $email';
+      _showSnackBar(msg, isInfo: true);
+    } else {
+      final msg = (result['error'] as String?) ?? 'Erro ao enviar código OTP.';
+      _showSnackBar(msg, isError: true);
+    }
   }
 
-  void _handleSubmit() {
-    if (_validate()) {
-      _showSnackBar('Cadastro realizado com sucesso!');
-      // Imprimir dados no console (apenas debug)
-      debugPrint({
-        'name': _nameController.text,
-        'email': _emailController.text,
-        'gender': _gender,
-        'lookingFor': _lookingFor,
-        'country': _country,
-        'province': _province,
-        'city': _city,
-      }.toString());
-    } else {
+  Future<void> _handleSubmit() async {
+    if (!_validate()) {
       _showSnackBar('Verifique os campos obrigatórios.', isError: true);
+      return;
+    }
+
+    final email = _emailController.text.trim();
+    final otp = _otpController.text.trim();
+
+    final otpResult = await AuthService.instance.verifyOtp(
+      email: email,
+      otp: otp,
+    );
+
+    if (otpResult['success'] != true) {
+      final msg = (otpResult['error'] as String?) ?? 'Código OTP inválido ou expirado.';
+      _showSnackBar(msg, isError: true);
+      setState(() {
+        _errors['otp'] = 'Código OTP inválido ou expirado.';
+      });
+      return;
+    }
+
+    final location = Provider.of<LocationProvider>(context, listen: false);
+
+    final paisList =
+        location.paises.where((p) => p.nome == _country).toList(growable: false);
+    final provinciaList = location.provincias
+        .where((p) => p.nome == _province)
+        .toList(growable: false);
+    final cidadeList =
+        location.cidades.where((c) => c.nome == _city).toList(growable: false);
+
+    final String? paisId = paisList.isNotEmpty ? paisList.first.id : null;
+    final String? provinciaId =
+        provinciaList.isNotEmpty ? provinciaList.first.id : null;
+    final String? cidadeId = cidadeList.isNotEmpty ? cidadeList.first.id : null;
+
+    String? mapGenero(String? value) {
+      switch (value) {
+        case 'Homem':
+          return 'masculino';
+        case 'Mulher':
+          return 'feminino';
+        case 'Outro':
+          return 'outro';
+        default:
+          return null;
+      }
+    }
+
+    String? mapInteresse(String? value) {
+      switch (value) {
+        case 'Homem':
+          return 'masculino';
+        case 'Mulher':
+          return 'feminino';
+        case 'Homem ou Mulher':
+        case 'Mulher ou Homem':
+          return 'ambos';
+        default:
+          return null;
+      }
+    }
+
+    String? formatDate(DateTime? date) {
+      if (date == null) return null;
+      final year = date.year.toString().padLeft(4, '0');
+      final month = date.month.toString().padLeft(2, '0');
+      final day = date.day.toString().padLeft(2, '0');
+      return '$year-$month-$day';
+    }
+
+    String? buildLocalizacao() {
+      final parts = <String>[];
+      if (_city != null && _city!.isNotEmpty) parts.add(_city!);
+      if (_province != null && _province!.isNotEmpty) parts.add(_province!);
+      if (_country != null && _country!.isNotEmpty) parts.add(_country!);
+      if (parts.isEmpty) return null;
+      return parts.join(', ');
+    }
+
+    final Map<String, dynamic> data = {
+      'nome': _nameController.text.trim(),
+      'apelido': _lastNameController.text.trim().isEmpty
+          ? null
+          : _lastNameController.text.trim(),
+      'genero': mapGenero(_gender),
+      'interesse': mapInteresse(_lookingFor),
+      'data_nascimento': formatDate(_birthDate),
+      'email': email,
+      'password': _passwordController.text,
+      // Campos adicionais compatíveis com o backend
+      'cor_pele': _appearance,
+      'escolaridade': _education,
+      'otp': otp,
+      'pais_id': paisId,
+      'provincia_id': provinciaId,
+      'cidade_id': cidadeId,
+    };
+
+    _showSnackBar('Enviando cadastro...', isInfo: true);
+
+    final result = await AuthService.instance.register(data: data);
+    if (result['success'] == true) {
+      _showSnackBar('Cadastro realizado com sucesso! Faça login.', isInfo: true);
+      if (!mounted) return;
+      Navigator.of(context).pop();
+    } else {
+      final msg = (result['error'] as String?) ?? 'Erro ao registar';
+      _showSnackBar(msg, isError: true);
     }
   }
 
@@ -295,6 +416,27 @@ class _RegisterPageState extends State<RegisterPage> {
 
     return Scaffold(
       backgroundColor: scaffoldBackground,
+      appBar: AppBar(
+        backgroundColor: scaffoldBackground,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute(
+                builder: (_) => const WelcomePage(),
+              ),
+            );
+          },
+        ),
+        title: Text(
+          'Criar conta',
+          style: theme.textTheme.titleLarge?.copyWith(
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        centerTitle: false,
+      ),
       body: Center(
         child: SingleChildScrollView(
           padding: EdgeInsets.symmetric(
@@ -316,27 +458,7 @@ class _RegisterPageState extends State<RegisterPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Center(
-                    child: Column(
-                      children: [
-                        Image.asset(
-                          'assets/icons/logo_02.png',
-                          height: 48,
-                          fit: BoxFit.contain,
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          'Crie a sua conta no Nomirro.',
-                          style: TextStyle(
-                            color: theme.colorScheme.onSurface
-                                .withValues(alpha: 0.6),
-                            fontSize: 16,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 16),
                   LayoutBuilder(
                     builder: (context, constraints) {
                       int crossAxisCount = 1;
@@ -381,7 +503,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     SizedBox(
                       width: double.infinity,
                       child: OutlinedButton(
-                        onPressed: _handleSubmit,
+                        onPressed: () async { await _handleSubmit(); },
                         style: OutlinedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 14),
                           minimumSize: const Size.fromHeight(56),
@@ -406,7 +528,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         OutlinedButton(
-                          onPressed: _handleSubmit,
+                          onPressed: () async { await _handleSubmit(); },
                           style: OutlinedButton.styleFrom(
                             padding: const EdgeInsets.symmetric(
                               horizontal: 32,
@@ -473,6 +595,10 @@ class _RegisterPageState extends State<RegisterPage> {
 
   // Retorna a lista de inputs para ser usada no Column ou Wrap
   List<Widget> _buildFormChildren() {
+    final location = Provider.of<LocationProvider>(context);
+    final paises = location.paises;
+    final provincias = location.provincias;
+    final cidades = location.cidades;
     return [
       _buildDropdown(
         label: "Eu sou",
@@ -492,11 +618,19 @@ class _RegisterPageState extends State<RegisterPage> {
       ),
       _buildTextField(
         controller: _nameController,
-        label: "Nome ou Apelido",
-        icon: Icons.sentiment_satisfied_alt,
-        hint: "Como deseja ser chamado",
+        label: "Nome próprio",
+        icon: Icons.badge_outlined,
+        hint: "Seu primeiro nome",
         errorText: _errors['name'],
         onChanged: (_) => setState(() => _errors.remove('name')),
+      ),
+      _buildTextField(
+        controller: _lastNameController,
+        label: "Apelido",
+        icon: Icons.sentiment_satisfied_alt,
+        hint: "Como deseja ser chamado(a)",
+        errorText: _errors['apelido'],
+        onChanged: (_) => setState(() => _errors.remove('apelido')),
       ),
       _buildTextField(
         controller: _birthDateController,
@@ -527,7 +661,7 @@ class _RegisterPageState extends State<RegisterPage> {
         label: "País",
         icon: Icons.public,
         value: _country,
-        items: kCountryOptions,
+        items: paises.map((p) => p.nome).toList(),
         onChanged: _handleChangeCountry,
         errorText: _errors['country'],
       ),
@@ -535,9 +669,9 @@ class _RegisterPageState extends State<RegisterPage> {
         label: "Província",
         icon: Icons.map_outlined,
         value: _province,
-        items: _provinces,
+        items: provincias.map((p) => p.nome).toList(),
         onChanged: _handleChangeProvince,
-        disabled: _country == null,
+        disabled: _country == null || provincias.isEmpty,
         hintText: _country == null ? "Selecione o país primeiro" : "Selecione",
         errorText: _errors['province'],
       ),
@@ -545,9 +679,9 @@ class _RegisterPageState extends State<RegisterPage> {
         label: "Cidade",
         icon: Icons.location_city,
         value: _city,
-        items: _cities,
+        items: cidades.map((c) => c.nome).toList(),
         onChanged: (v) => setState(() { _city = v; _errors.remove('city'); }),
-        disabled: _province == null,
+        disabled: _province == null || cidades.isEmpty,
         hintText: _province == null ? "Selecione a província primeiro" : "Selecione",
         errorText: _errors['city'],
       ),
@@ -610,7 +744,7 @@ class _RegisterPageState extends State<RegisterPage> {
     VoidCallback? onTap,
   }) {
     final theme = Theme.of(context);
-    final primaryColor = theme.colorScheme.primary;
+    final cs = theme.colorScheme;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -626,23 +760,31 @@ class _RegisterPageState extends State<RegisterPage> {
           onTap: onTap,
           style: const TextStyle(fontSize: 16),
           decoration: InputDecoration(
-            contentPadding: const EdgeInsets.symmetric(
-              horizontal: 16,
-              vertical: 14,
-            ),
             labelText: label,
             hintText: hint,
             counterText: "", // esconde o contador quando maxLength é usado
-            prefixIcon: Icon(icon, color: primaryColor),
+            prefixIcon: Icon(icon, color: cs.primary),
+            filled: true,
+            fillColor: cs.surface,
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(AppRadius.md),
+              borderSide: BorderSide.none,
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(AppRadius.md),
+              borderSide: BorderSide(color: cs.outline.withValues(alpha: 0.2)),
             ),
             focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide(
-                color: primaryColor,
-                width: 1.5,
-              ),
+              borderRadius: BorderRadius.circular(AppRadius.md),
+              borderSide: BorderSide(color: cs.primary, width: 2),
+            ),
+            errorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(AppRadius.md),
+              borderSide: BorderSide(color: cs.error),
+            ),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.md,
+              vertical: AppSpacing.md,
             ),
             errorText: errorText,
           ),
@@ -663,7 +805,7 @@ class _RegisterPageState extends State<RegisterPage> {
     String? errorText,
   }) {
     final theme = Theme.of(context);
-    final primaryColor = theme.colorScheme.primary;
+    final cs = theme.colorScheme;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -677,35 +819,42 @@ class _RegisterPageState extends State<RegisterPage> {
           }).toList(),
           onChanged: disabled ? null : onChanged,
           decoration: InputDecoration(
-            contentPadding: const EdgeInsets.symmetric(
-              horizontal: 16,
-              vertical: 14,
-            ),
             labelText: label,
             hintText: hintText,
             prefixIcon: Icon(
               icon,
-              color: disabled ? theme.disabledColor : primaryColor,
+              color: disabled ? theme.disabledColor : cs.primary,
             ),
+            filled: true,
+            fillColor: cs.surface,
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(AppRadius.md),
+              borderSide: BorderSide.none,
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(AppRadius.md),
+              borderSide: BorderSide(color: cs.outline.withValues(alpha: 0.2)),
             ),
             focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide(
-                color: primaryColor,
-                width: 1.5,
-              ),
+              borderRadius: BorderRadius.circular(AppRadius.md),
+              borderSide: BorderSide(color: cs.primary, width: 2),
+            ),
+            errorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(AppRadius.md),
+              borderSide: BorderSide(color: cs.error),
+            ),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.md,
+              vertical: AppSpacing.md,
             ),
             errorText: errorText,
           ),
           icon: Icon(
             Icons.arrow_drop_down_outlined,
-            color:
-                theme.colorScheme.onSurface.withValues(alpha: 0.7),
+            color: cs.onSurface.withValues(alpha: 0.7),
           ),
           style: TextStyle(
-            color: theme.colorScheme.onSurface,
+            color: cs.onSurface,
             fontSize: 16,
           ),
           isExpanded: true,

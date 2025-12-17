@@ -7,6 +7,7 @@ import 'proflie.dart';
 import '../services/auth_service.dart';
 import 'package:provider/provider.dart';
 import '../providers/app_provider.dart';
+import '../providers/location_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 // ----------------------------------------------------
@@ -354,7 +355,10 @@ class _LoginPageState extends State<LoginPage> {
                               ..onTap = () {
                                 Navigator.of(context).push(
                                   MaterialPageRoute(
-                                    builder: (_) => const RegisterPage(),
+                                    builder: (_) => ChangeNotifierProvider(
+                                      create: (_) => LocationProvider()..fetchPaises(),
+                                      child: const RegisterPage(),
+                                    ),
                                   ),
                                 );
                               },

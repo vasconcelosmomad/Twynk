@@ -17,15 +17,15 @@ class UserController extends Controller
         $query = User::with(['plano', 'creditos']);
 
         // Filtros
-        if ($request->has('genero')) {
+        if ($request->filled('genero')) {
             $query->where('genero', $request->genero);
         }
 
-        if ($request->has('interesse')) {
+        if ($request->filled('interesse')) {
             $query->where('interesse', $request->interesse);
         }
 
-        if ($request->has('status')) {
+        if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
 
@@ -40,20 +40,75 @@ class UserController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'nome' => 'required|string|max:100',
-            'genero' => 'required|in:masculino,feminino,outro',
-            'interesse' => 'nullable|in:masculino,feminino,ambos',
-            'data_nascimento' => 'nullable|date',
-            'email' => 'required|email|unique:users,email|max:150',
-            'password' => 'nullable|string|min:6',
-            'foto_perfil' => 'nullable|string|max:255',
-            'bio' => 'nullable|string',
-            'localizacao' => 'nullable|string|max:100',
-            'plano_id' => 'nullable|exists:planos,id',
+            // Dados básicos
+            'nome'              => 'required|string|max:100',
+            'apelido'           => 'nullable|string|max:100',
+            'genero'            => 'required|in:masculino,feminino,outro',
+            'sexualidade'       => 'nullable|string|max:50',
+            'interesse'         => 'nullable|in:masculino,feminino,ambos',
+            'estado_civil'      => 'nullable|string|max:50',
+            'data_nascimento'   => 'required|date',
+            'signo'             => 'nullable|string|max:50',
+            'email'             => 'required|email|unique:users,email|max:150',
+            'password'          => 'nullable|string|min:6',
+            'google_id'         => 'nullable|string|max:255|unique:users,google_id',
+            'is_verified'       => 'nullable|boolean',
+            'is_banned'         => 'nullable|boolean',
+            'motivo_banamento'  => 'nullable|string|max:255',
+            'motivo_banimento'  => 'nullable|string|max:255',
+            'ultimo_login'      => 'nullable|date',
+            'role'              => 'nullable|in:user,admin,support',
+
+            // Preferências de relacionamento / busca
+            'tipo_relacionamento' => 'nullable|string|max:50',
+            'busca_genero'        => 'nullable|string|max:50',
+            'busca_idade_min'     => 'nullable|integer|min:0',
+            'busca_idade_max'     => 'nullable|integer|min:0',
+            'busca_distancia'     => 'nullable|integer|min:0',
+
+            // Dados pessoais adicionais
+            'filhos'        => 'nullable|integer|min:0',
+            'escolaridade'  => 'nullable|string|max:100',
+            'profissao'     => 'nullable|string|max:150',
+            'religiao'      => 'nullable|string|max:100',
+            'humor'         => 'nullable|string|max:100',
+
+            // Localização normalizada
+            'pais_id'       => 'nullable|exists:pais,id',
+            'provincia_id'  => 'nullable|exists:provincia,id',
+            'cidade_id'     => 'nullable|exists:cidade,id',
+            'mora_com'      => 'nullable|string|max:100',
+
+            // Aparência física
+            'cor_pele'      => 'nullable|string|max:50',
+            'cor_olhos'     => 'nullable|string|max:50',
+            'cor_cabelos'   => 'nullable|string|max:50',
+            'altura'        => 'nullable|numeric',
+            'peso'          => 'nullable|numeric',
+
+            // Hábitos e estilo de vida
+            'pratica_esporte' => 'nullable|boolean',
+            'fuma'            => 'nullable|boolean',
+            'bebe'            => 'nullable|boolean',
+            'como_me_considero_fisicamente' => 'nullable|string',
+
+            // Coordenadas de GPS
+            'latitude'      => 'nullable|numeric',
+            'longitude'     => 'nullable|numeric',
+
+            // Status e plano
+            'status'            => 'nullable|in:ativo,inativo,banido',
+            'plano_id'          => 'nullable|exists:planos,id',
+            'plano_expira_em'   => 'nullable|date',
+            'limite_solicitacoes' => 'nullable|integer|min:0',
         ]);
 
-        if (isset($validated['password'])) {
+        if (!empty($validated['password'])) {
             $validated['password'] = Hash::make($validated['password']);
+        }
+
+        if (!empty($validated['motivo_banimento']) && empty($validated['motivo_banamento'])) {
+            $validated['motivo_banamento'] = $validated['motivo_banimento'];
         }
 
         $usuario = User::create($validated);
@@ -95,12 +150,14 @@ class UserController extends Controller
             'estado_civil'  => 'sometimes|nullable|string|max:50',
             'data_nascimento' => 'sometimes|nullable|date',
             'signo'         => 'sometimes|nullable|string|max:50',
+
             'email' => [
                 'sometimes',
                 'email',
                 'max:150',
                 Rule::unique('users', 'email')->ignore($usuario->id),
             ],
+
             'google_id' => [
                 'sometimes',
                 'nullable',
@@ -108,59 +165,66 @@ class UserController extends Controller
                 'max:255',
                 Rule::unique('users', 'google_id')->ignore($usuario->id),
             ],
-            'password'      => 'sometimes|nullable|string|min:6',
 
-            // Preferências de relacionamento / busca
+            'is_verified'   => 'sometimes|boolean',
+            'is_banned'     => 'sometimes|boolean',
+            'motivo_banamento' => 'sometimes|nullable|string|max:255',
+            'motivo_banimento' => 'sometimes|nullable|string|max:255',
+            'ultimo_login'  => 'sometimes|nullable|date',
+            'role'          => 'sometimes|nullable|in:user,admin,support',
+
+            'password' => 'sometimes|nullable|string|min:6',
+
+            // Preferências
             'tipo_relacionamento' => 'sometimes|nullable|string|max:50',
             'busca_genero'        => 'sometimes|nullable|string|max:50',
             'busca_idade_min'     => 'sometimes|nullable|integer|min:0',
             'busca_idade_max'     => 'sometimes|nullable|integer|min:0',
             'busca_distancia'     => 'sometimes|nullable|integer|min:0',
 
-            // Dados pessoais adicionais
+            // Dados pessoais
             'filhos'        => 'sometimes|nullable|integer|min:0',
             'escolaridade'  => 'sometimes|nullable|string|max:100',
             'profissao'     => 'sometimes|nullable|string|max:150',
             'religiao'      => 'sometimes|nullable|string|max:100',
             'humor'         => 'sometimes|nullable|string|max:100',
 
-            // Localização normalizada
+            // Localização
             'pais_id'       => 'sometimes|nullable|exists:pais,id',
             'provincia_id'  => 'sometimes|nullable|exists:provincia,id',
             'cidade_id'     => 'sometimes|nullable|exists:cidade,id',
             'mora_com'      => 'sometimes|nullable|string|max:100',
 
-            // Aparência física
+            // Aparência
             'cor_pele'      => 'sometimes|nullable|string|max:50',
             'cor_olhos'     => 'sometimes|nullable|string|max:50',
             'cor_cabelos'   => 'sometimes|nullable|string|max:50',
             'altura'        => 'sometimes|nullable|numeric',
             'peso'          => 'sometimes|nullable|numeric',
 
-            // Hábitos e estilo de vida
+            // Hábitos
             'pratica_esporte' => 'sometimes|nullable|boolean',
             'fuma'            => 'sometimes|nullable|boolean',
             'bebe'            => 'sometimes|nullable|boolean',
             'como_me_considero_fisicamente' => 'sometimes|nullable|string',
 
-            // Coordenadas de GPS
+            // GPS
             'latitude'      => 'sometimes|nullable|numeric',
             'longitude'     => 'sometimes|nullable|numeric',
 
-            // Status e plano
+            // Status / Plano
             'status'        => 'sometimes|in:ativo,inativo,banido',
             'plano_id'      => 'sometimes|nullable|exists:planos,id',
             'plano_expira_em' => 'sometimes|nullable|date',
             'limite_solicitacoes' => 'sometimes|nullable|integer|min:0',
-
-            // Campos legados opcionais (caso ainda existam na tabela)
-            'foto_perfil'   => 'sometimes|nullable|string|max:255',
-            'bio'           => 'sometimes|nullable|string',
-            'localizacao'   => 'sometimes|nullable|string|max:255',
         ]);
 
-        if (isset($validated['password'])) {
+        if (!empty($validated['password'])) {
             $validated['password'] = Hash::make($validated['password']);
+        }
+
+        if (!empty($validated['motivo_banimento']) && empty($validated['motivo_banamento'])) {
+            $validated['motivo_banamento'] = $validated['motivo_banimento'];
         }
 
         $usuario->update($validated);
@@ -169,11 +233,7 @@ class UserController extends Controller
     }
 
     /**
-     * Update the profile of the currently authenticated user.
-     *
-     * This is a convenience wrapper around the generic update method,
-     * allowing the frontend to call PUT /api/profile without needing
-     * to know the user ID explicitly.
+     * Update profile of authenticated user
      */
     public function updateProfile(Request $request)
     {
@@ -187,14 +247,13 @@ class UserController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove the specified resource.
      */
     public function destroy($id)
     {
         $usuario = User::findOrFail($id);
         $usuario->delete();
 
-        return response()->json(['message' => 'Usuário deletado com sucesso'], 200);
+        return response()->json(['message' => 'Usuário deletado com sucesso']);
     }
 }
-

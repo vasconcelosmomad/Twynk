@@ -28,58 +28,44 @@ class User extends Authenticatable implements JWTSubject
         'genero',
         'sexualidade',
         'interesse',
-        'estado_civil',
         'data_nascimento',
         'signo',
         'email',
-        'password',
-        'google_id',
         'is_verified',
         'is_banned',
         'motivo_banamento',
+        'motivo_banimento',
         'ultimo_login',
         'role',
-        
-        // Preferências de relacionamento / busca
         'tipo_relacionamento',
         'busca_genero',
         'busca_idade_min',
         'busca_idade_max',
         'busca_distancia',
-        
-        // Dados pessoais adicionais
         'filhos',
         'escolaridade',
         'profissao',
         'religiao',
         'humor',
-        
-        // Localização normalizada (chaves estrangeiras)
         'pais_id',
         'provincia_id',
         'cidade_id',
         'mora_com',
-        
-        // Aparência física
         'cor_pele',
         'cor_olhos',
         'cor_cabelos',
         'altura',
         'peso',
-        
-        // Hábitos e estilo de vida
         'pratica_esporte',
         'fuma',
         'bebe',
         'como_me_considero_fisicamente',
-        
-        // Coordenadas de GPS
+        'estado_civil',
+        'password',
+        'google_id',
         'latitude',
         'longitude',
-        
         'status',
-        
-        // Plano e limites
         'plano_id',
         'plano_expira_em',
         'limite_solicitacoes',
@@ -99,6 +85,9 @@ class User extends Authenticatable implements JWTSubject
         'password' => 'hashed',
         'is_verified' => 'boolean',
         'is_banned' => 'boolean',
+        'pratica_esporte' => 'boolean',
+        'fuma' => 'boolean',
+        'bebe' => 'boolean',
         'latitude' => 'decimal:7',
         'longitude' => 'decimal:7',
         'altura' => 'float',

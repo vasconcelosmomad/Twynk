@@ -5,10 +5,13 @@ namespace App\Http\Controllers;
 use App\Models\Otp;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Mail;
 use Carbon\Carbon;
 
 class OtpController extends Controller
 {
+    private int $expirationMinutes = 5;
+
     public function gerarOtp(Request $request)
     {
         $request->validate([
@@ -22,12 +25,21 @@ class OtpController extends Controller
         Otp::create([
             'email' => $request->email,
             'otp' => $codigo,
-            'expires_at' => Carbon::now()->addMinutes(5),
+            'expires_at' => Carbon::now()->addMinutes($this->expirationMinutes),
         ]);
 
+        Mail::raw(
+            "Seu código OTP é {$codigo}. Ele é válido por {$this->expirationMinutes} minutos.",
+            function ($message) use ($request) {
+                $message->to($request->email)
+                    ->subject('Código OTP - Nomirro');
+            }
+        );
+
         return response()->json([
-            'message' => 'OTP gerado com sucesso.',
-            'otp' => $codigo
+            'message' => 'OTP gerado e enviado por email.',
+            'otp' => $codigo,
+            'expires_in_minutes' => $this->expirationMinutes,
         ]);
     }
 
@@ -51,7 +63,8 @@ class OtpController extends Controller
             return response()->json(['message' => 'Código expirado.'], 400);
         }
 
-        $otp->delete();
+        // Não removemos o OTP aqui para permitir que o AuthController::register
+        // faça o consumo definitivo na criação do usuário.
 
         return response()->json(['message' => 'Código verificado com sucesso!'], 200);
     }
