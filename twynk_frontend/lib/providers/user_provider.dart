@@ -11,13 +11,17 @@ class UserProvider extends ChangeNotifier {
   String? _error;
 
   // Getters
-  User? get currentUser => _currentUser;
+  User? get user => _currentUser;
   List<User> get users => _users;
   bool get isLoading => _isLoading;
   String? get error => _error;
 
+  void setToken(String token) {
+    _apiClient.setToken(token);
+  }
+
   // Set current user (usually after login)
-  void setCurrentUser(User user) {
+  void setUser(User? user) {
     _currentUser = user;
     notifyListeners();
   }
@@ -38,7 +42,7 @@ class UserProvider extends ChangeNotifier {
   }
 
   // Fetch current user profile
-  Future<void> fetchCurrentUser() async {
+  Future<void> fetchUser() async {
     _setLoading(true);
     _clearError();
 

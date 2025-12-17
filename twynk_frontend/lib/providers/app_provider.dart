@@ -1,99 +1,82 @@
-import 'package:flutter/foundation.dart';
-import 'user_provider.dart';
-import 'media_provider.dart';
-import 'chat_provider.dart';
-import '../models/user.dart';
-import '../models/media.dart';
-import '../models/chat_mensagem.dart';
+import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:twynk_frontend/models/user.dart';
+import 'package:twynk_frontend/providers/chat_provider.dart';
+import 'package:twynk_frontend/providers/media_provider.dart';
+import 'package:twynk_frontend/providers/user_provider.dart';
 
-class AppProvider extends ChangeNotifier {
-  late final UserProvider userProvider;
-  late final MediaProvider mediaProvider;
-  late final ChatProvider chatProvider;
+class AppProvider with ChangeNotifier {
+  final UserProvider userProvider;
+  final MediaProvider mediaProvider;
+  final ChatProvider chatProvider;
 
-  AppProvider() {
-    userProvider = UserProvider();
-    mediaProvider = MediaProvider();
-    chatProvider = ChatProvider();
+  bool _isInitialized = false;
+  bool get isInitialized => _isInitialized;
 
-    // Listen to changes from child providers
-    userProvider.addListener(_onChildProviderChanged);
-    mediaProvider.addListener(_onChildProviderChanged);
-    chatProvider.addListener(_onChildProviderChanged);
+  ThemeMode _themeMode = ThemeMode.light;
+  ThemeMode get themeMode => _themeMode;
+
+  String? _token;
+
+  AppProvider({
+    required this.userProvider,
+    required this.mediaProvider,
+    required this.chatProvider,
+  }) {
+    initialize();
   }
 
-  // Getters for convenience
-  User? get currentUser => userProvider.currentUser;
-  List<Media> get userMedia => mediaProvider.userMedia;
-  List<ChatMensagem> get messages => chatProvider.messages;
-  bool get isLoading => userProvider.isLoading || mediaProvider.isLoading || chatProvider.isLoading;
-  String? get error => userProvider.error ?? mediaProvider.error ?? chatProvider.error;
+  void toggleTheme() {
+    _themeMode =
+        _themeMode == ThemeMode.light ? ThemeMode.dark : ThemeMode.light;
+    notifyListeners();
+  }
 
-  // Initialize app data
   Future<void> initialize() async {
-    await Future.wait([
-      userProvider.fetchCurrentUser(),
-      // Initialize other providers as needed
-    ]);
-  }
+    final prefs = await SharedPreferences.getInstance();
+    _token = prefs.getString('token');
 
-  // Login flow
-  Future<bool> login(User user) async {
-    try {
-      userProvider.setCurrentUser(user);
-      
-      // Fetch user-specific data
-      await Future.wait([
-        mediaProvider.fetchUserMedia(user.id),
-        // Fetch other user-specific data
-      ]);
-      
-      return true;
-    } catch (e) {
-      debugPrint('Error during login: $e');
-      return false;
+    if (_token != null) {
+      userProvider.setToken(_token!);
+      mediaProvider.setToken(_token!);
+      chatProvider.setToken(_token!);
+      await userProvider.fetchUser();
     }
+
+    _isInitialized = true;
+    notifyListeners();
   }
 
-  // Logout flow
+  bool get isLoggedIn => userProvider.user != null && _token != null;
+
+  Future<void> login(String token) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('token', token);
+    _token = token;
+    userProvider.setToken(token);
+    mediaProvider.setToken(token);
+    chatProvider.setToken(token);
+    await userProvider.fetchUser();
+    notifyListeners();
+  }
+
   Future<void> logout() async {
-    userProvider.clearCurrentUser();
-    mediaProvider.clearUserMedia();
-    chatProvider.clearChatMessages();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('token');
+    _token = null;
+    userProvider.setUser(null);
+    notifyListeners();
   }
 
-  // Refresh all data
-  Future<void> refreshAllData() async {
-    if (currentUser != null) {
-      await Future.wait([
-        userProvider.fetchCurrentUser(),
-        mediaProvider.fetchUserMedia(currentUser!.id),
-        // Refresh other data as needed
-      ]);
+  Future<void> refreshData() async {
+    if (isLoggedIn) {
+      await userProvider.fetchUser();
+      notifyListeners();
     }
   }
 
-  // Clear all errors
-  void clearAllErrors() {
-    userProvider.clearError();
-    mediaProvider.clearError();
-    chatProvider.clearError();
-  }
-
-  @override
-  void dispose() {
-    userProvider.removeListener(_onChildProviderChanged);
-    mediaProvider.removeListener(_onChildProviderChanged);
-    chatProvider.removeListener(_onChildProviderChanged);
-    
-    userProvider.dispose();
-    mediaProvider.dispose();
-    chatProvider.dispose();
-    
-    super.dispose();
-  }
-
-  void _onChildProviderChanged() {
+  void setUser(User? user) {
+    userProvider.setUser(user);
     notifyListeners();
   }
 }

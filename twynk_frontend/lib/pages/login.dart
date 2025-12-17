@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:twynk_frontend/themes/app_theme.dart';
 import 'register.dart';
 import 'proflie.dart';
 import '../services/auth_service.dart';
 import 'package:provider/provider.dart';
 import '../providers/app_provider.dart';
-import '../models/user.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'dart:convert';
 
 // ----------------------------------------------------
 // 2. Componente de Página de Login (Theme-Aware e Responsivo)
@@ -23,6 +23,7 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  bool _obscurePassword = true;
 
   void _showMessage(String message, String type) {
     final theme = Theme.of(context);
@@ -60,14 +61,13 @@ class _LoginPageState extends State<LoginPage> {
 
     final result = await AuthService.instance.login(email: email, password: password);
     if (result['success'] == true) {
-      final userData = result['user'];
-      if (userData is Map<String, dynamic>) {
-        final user = User.fromJson(userData);
-        await appProvider.login(user);
+      final token = result['token'];
+      if (token is String) {
+        await appProvider.login(token);
 
-        // Persist raw user JSON para restaurar após hot restart / reload
+        // Persist token para restaurar após hot restart / reload
         final prefs = await SharedPreferences.getInstance();
-        await prefs.setString('current_user', jsonEncode(userData));
+        await prefs.setString('token', token);
       }
       _showMessage('Login efetuado com sucesso!', 'success');
       if (!mounted) return;
@@ -180,23 +180,33 @@ class _LoginPageState extends State<LoginPage> {
                   // EMAIL
                   TextFormField(
                     controller: _emailController,
-                    style: const TextStyle(fontSize: 16),
+                    keyboardType: TextInputType.emailAddress,
+                    style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w400),
                     decoration: InputDecoration(
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 14,
-                      ),
-                      labelText: 'E-mail',
-                      prefixIcon: Icon(Icons.email_outlined, color: primaryColor),
+                      labelText: 'Email',
+                      hintText: 'seu@email.com',
+                      prefixIcon: Icon(Icons.email_outlined, color: theme.colorScheme.primary),
+                      filled: true,
+                      fillColor: theme.colorScheme.surface,
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: BorderRadius.circular(AppRadius.md),
+                        borderSide: BorderSide.none,
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(AppRadius.md),
+                        borderSide: BorderSide(color: theme.colorScheme.outline.withValues(alpha: 0.2)),
                       ),
                       focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(
-                          color: primaryColor,
-                          width: 1.5,
-                        ),
+                        borderRadius: BorderRadius.circular(AppRadius.md),
+                        borderSide: BorderSide(color: theme.colorScheme.primary, width: 2),
+                      ),
+                      errorBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(AppRadius.md),
+                        borderSide: BorderSide(color: theme.colorScheme.error),
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: AppSpacing.md,
+                        vertical: AppSpacing.md,
                       ),
                     ),
                     validator: (value) {
@@ -211,24 +221,41 @@ class _LoginPageState extends State<LoginPage> {
                   // SENHA
                   TextFormField(
                     controller: _passwordController,
-                    obscureText: true,
-                    style: const TextStyle(fontSize: 16),
+                    obscureText: _obscurePassword,
+                    style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w400),
                     decoration: InputDecoration(
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 14,
-                      ),
                       labelText: 'Senha',
-                      prefixIcon: Icon(Icons.lock_outline, color: primaryColor),
+                      hintText: '••••••••',
+                      prefixIcon: Icon(Icons.lock_outlined, color: theme.colorScheme.primary),
+                      suffixIcon: IconButton(
+                        icon: Icon(_obscurePassword ? Icons.visibility_outlined : Icons.visibility_off_outlined),
+                        onPressed: () {
+                          setState(() {
+                            _obscurePassword = !_obscurePassword;
+                          });
+                        },
+                      ),
+                      filled: true,
+                      fillColor: theme.colorScheme.surface,
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: BorderRadius.circular(AppRadius.md),
+                        borderSide: BorderSide.none,
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(AppRadius.md),
+                        borderSide: BorderSide(color: theme.colorScheme.outline.withValues(alpha: 0.2)),
                       ),
                       focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(
-                          color: primaryColor,
-                          width: 1.5,
-                        ),
+                        borderRadius: BorderRadius.circular(AppRadius.md),
+                        borderSide: BorderSide(color: theme.colorScheme.primary, width: 2),
+                      ),
+                      errorBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(AppRadius.md),
+                        borderSide: BorderSide(color: theme.colorScheme.error),
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: AppSpacing.md,
+                        vertical: AppSpacing.md,
                       ),
                     ),
                     validator: (value) {

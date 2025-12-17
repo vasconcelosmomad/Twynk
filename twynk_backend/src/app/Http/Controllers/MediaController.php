@@ -3,49 +3,51 @@
 namespace App\Http\Controllers;
 
 use App\Models\Media;
-use App\Services\GCSService;
+use App\Services\B2Service;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
 class MediaController extends Controller
 {
-    /**
-     * Serviço responsável por gerar URLs presignadas.
-     */
-    protected GCSService $gcs;
+    protected B2Service $b2;
 
-    public function __construct(GCSService $gcs)
+    public function __construct(B2Service $b2)
     {
-        $this->gcs = $gcs;
+        $this->b2 = $b2;
     }
 
     /**
-     * Upload direto via backend (híbrido seguro).
+     * Upload de arquivo via backend (JWT)
      */
     public function upload(Request $request)
     {
-        $request->validate([
-            'file' => 'required|file|max:10240',
-            'type' => 'required|in:image,video,profile,chat',
+        $maxSize = match ($request->type) {
+            'profile' => 2048,    // 2MB
+            'image'   => 5120,    // 5MB
+            'chat'    => 10240,   // 10MB
+            'video'   => 102400,  // 100MB
+            default   => 0,
+        };
+
+        $request->validate([\n+            'type' => 'required|in:image,video,profile,chat',
+            'file' => "required|file|max:$maxSize",
         ]);
 
         $mimeRules = [
-            'image' => ['image/jpeg', 'image/png', 'image/webp'],
+            'image'   => ['image/jpeg', 'image/png', 'image/webp'],
             'profile' => ['image/jpeg', 'image/png', 'image/webp'],
-            'video' => ['video/mp4', 'video/webm'],
-            'chat' => ['image/jpeg', 'image/png', 'video/mp4'],
+            'video'   => ['video/mp4', 'video/webm'],
+            'chat'    => ['image/jpeg', 'image/png', 'video/mp4'],
         ];
 
         $file = $request->file('file');
-        $mimeType = $file->getMimeType();
-        if (!in_array($mimeType, $mimeRules[$request->type])) {
+
+        if (!in_array($file->getMimeType(), $mimeRules[$request->type])) {
             return response()->json(['message' => 'Tipo de ficheiro não permitido'], 422);
         }
 
-        $user = $request->user();
-        $uid = $user->uid;
+        $uid = $request->user()->uid;
 
-        $ext = $file->getClientOriginalExtension();
         $folder = match ($request->type) {
             'profile' => "users/{$uid}/profile/",
             'image'   => "users/{$uid}/images/",
@@ -53,30 +55,29 @@ class MediaController extends Controller
             'chat'    => "users/{$uid}/chats/",
         };
 
-        $filename = now()->timestamp . '-' . Str::uuid() . '.' . $ext;
-        $key = $folder . $filename;
+        $filename = Str::uuid() . '.' . $file->getClientOriginalExtension();
+        $path = $folder . $filename;
 
-        $this->gcs->uploadFile($file->getPathname(), $key, $mimeType);
+        try {
+            $this->b2->uploadFile($file->getPathname(), $path, $file->getMimeType());
+        } catch (\Throwable $e) {
+            return response()->json(['message' => 'Erro ao enviar ficheiro'], 500);
+        }
 
         $media = Media::create([
             'user_uid' => $uid,
             'type' => $request->type,
             'filename' => $file->getClientOriginalName(),
-            'path' => $key,
+            'path' => $path,
             'size' => $file->getSize(),
         ]);
 
-        $url = $this->gcs->getPresignedGetUrl($key, 3600);
-
         return response()->json([
             'media' => $media,
-            'url' => $url,
+            'url' => $this->b2->getPresignedGetUrl($path, 3600),
         ], 201);
     }
 
-    /**
-     * 3) Listar mídias do usuário autenticado (JWT).
-     */
     public function index(Request $request)
     {
         $user = $request->user();
@@ -88,39 +89,31 @@ class MediaController extends Controller
         return response()->json($items);
     }
 
-    /**
-     * 4) Deletar mídia pertencente ao usuário autenticado (JWT).
-     */
     public function destroy(Request $request, $id)
     {
-        $user = $request->user();
         $media = Media::where('id', $id)
-            ->where('user_uid', $user->uid)
+            ->where('user_uid', $request->user()->uid)
             ->firstOrFail();
 
-        // O arquivo físico será removido pelo evento deleting em Media::deleteStorage()
         $media->delete();
 
         return response()->json(null, 204);
     }
 
-    /**
-     * 5) Gerar URL temporária (presigned GET) para visualizar uma mídia.
-     */
     public function generateViewUrl(Request $request)
     {
         $request->validate([
             'path' => 'required|string',
         ]);
 
-        $user = $request->user();
+        $uid = $request->user()->uid;
 
-        if (!str_starts_with($request->path, "users/{$user->uid}/")) {
-            abort(403);
+        if (!str_starts_with($request->path, "users/{$uid}/")) {
+            return response()->json(['message' => 'Acesso negado'], 403);
         }
 
         return response()->json([
-            'url' => $this->gcs->getPresignedGetUrl($request->path, 3600),
+            'url' => $this->b2->getPresignedGetUrl($request->path, 3600),
         ]);
     }
 }

@@ -64,11 +64,9 @@ Route::middleware('auth:api')->group(function () {
     Route::apiResource('provincias', ProvinciaController::class)->except(['index','show']);
     Route::apiResource('cidades', CidadeController::class)->except(['index','show']);
 
-    // Rotas de mídia agora também usam JWT (auth:api)
-    Route::post('/upload', [MediaController::class, 'upload']);
+    // Rotas de mídia (JWT)
+    Route::post('/media/upload', [MediaController::class, 'upload']);
     Route::get('/media', [MediaController::class, 'index']);
     Route::delete('/media/{id}', [MediaController::class, 'destroy']);
-
-    // URL temporária para visualização
-    Route::get('/media/view-url', [MediaController::class, 'generateViewUrl']);
+    Route::post('/media/view-url', [MediaController::class, 'generateViewUrl']);
 });

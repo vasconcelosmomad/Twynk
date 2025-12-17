@@ -26,7 +26,7 @@ class UploadService {
     });
 
     final resp = await dio.post(
-      '$_basePath/upload',
+      '$_basePath/media/upload',
       data: formData,
     );
 
@@ -51,7 +51,7 @@ class UploadService {
     });
 
     final resp = await dio.post(
-      '$_basePath/upload',
+      '$_basePath/media/upload',
       data: formData,
     );
 
@@ -64,8 +64,10 @@ class UploadService {
 
   /// 3) Obter URL temporária de visualização para uma mídia já armazenada.
   Future<String> getViewUrl(String path) async {
-    final resp = await dio.get('$_basePath/media/view-url',
-        queryParameters: {'path': path});
+    final resp = await dio.post(
+      '$_basePath/media/view-url',
+      data: {'path': path},
+    );
 
     final data = resp.data;
     if (data is Map && data['url'] is String) {

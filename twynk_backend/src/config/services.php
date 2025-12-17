@@ -41,9 +41,4 @@ return [
         'redirect' => env('GOOGLE_REDIRECT_URI'),
     ],
 
-    'gcs' => [
-        'bucket' => env('GCS_BUCKET', 'nomirro_app_02042024'),
-        'key_file' => env('GCS_KEY_FILE', 'gcs-service-account.json'),
-    ],
-
 ];

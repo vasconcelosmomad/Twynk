@@ -13,6 +13,10 @@ class MediaProvider extends ChangeNotifier {
   String? _error;
   double _uploadProgress = 0.0;
 
+  void setToken(String? token) {
+    // _uploadService.setToken(token); // TODO: Implement setToken in UploadService
+  }
+
   // Getters
   List<Media> get mediaList => _mediaList;
   List<Media> get userMedia => _userMedia;

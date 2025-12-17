@@ -60,13 +60,15 @@ return [
             'report' => false,
         ],
 
-        'gcs'  => [
-            'driver' => 'gcs',
-            'project_id' => env('GCS_PROJECT_ID'),
-            'key_file' => storage_path('app/gcs-service-account.json'), // caminho do JSON
-            'bucket' => env('GCS_BUCKET'),
-            'path_prefix' => null, // opcional
-            'storage_api_uri' => null, // opcional
+        'b2' => [
+            'driver' => 's3',
+            'key' => env('B2_KEY_ID'),
+            'secret' => env('B2_APPLICATION_KEY'),
+            'region' => 'us-east-005',
+            'bucket' => env('B2_BUCKET'),
+            'endpoint' => env('B2_ENDPOINT'),
+            'use_path_style_endpoint' => true,
+            'throw' => true, 
         ],
 
     ],

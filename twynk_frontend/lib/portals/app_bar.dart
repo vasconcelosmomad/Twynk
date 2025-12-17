@@ -214,7 +214,7 @@ class _NomirroAppBarState extends State<NomirroAppBar> {
       child: Builder(
       builder: (context) {
           final appProvider = Provider.of<AppProvider>(context);
-          final user = appProvider.currentUser;
+          final user = appProvider.userProvider.user;
           final String userName;
           if (user == null) {
             userName = 'Conta';
@@ -227,7 +227,7 @@ class _NomirroAppBarState extends State<NomirroAppBar> {
           }
           // Resolve latest profile media URL, if any
           String? profileUrl;
-          final mediaList = appProvider.userMedia;
+          final mediaList = appProvider.mediaProvider.userMedia;
           if (mediaList.isNotEmpty) {
             final profileMedias = mediaList
                 .where((m) => m.isProfile && (m.url).isNotEmpty)
@@ -361,16 +361,28 @@ class _SearchFormFlutterState extends State<SearchFormFlutter> {
             contentPadding:
                 const EdgeInsets.symmetric(vertical: 8, horizontal: 40),
             hintText: 'Search',
-            hintStyle: TextStyle(color: Colors.grey[600]),
+            hintStyle: TextStyle(
+              color: colorScheme.onSurface.withValues(alpha: 0.4),
+            ),
             filled: true,
-            fillColor: theme.brightness == Brightness.dark
-                ? Colors.white12
-                : const Color(0xFFF6EAFE),
+            fillColor: colorScheme.surface,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(20),
               borderSide: BorderSide.none,
             ),
-            // No borders on enabled/focused as requested
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(20),
+              borderSide: BorderSide(
+                color: colorScheme.outline.withValues(alpha: 0.2),
+              ),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(20),
+              borderSide: BorderSide(
+                color: colorScheme.primary,
+                width: 2,
+              ),
+            ),
           ),
         ),
         Positioned(

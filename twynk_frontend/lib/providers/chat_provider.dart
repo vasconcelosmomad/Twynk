@@ -11,6 +11,10 @@ class ChatProvider extends ChangeNotifier {
   String? _error;
   bool _isTyping = false;
 
+  void setToken(String token) {
+    _apiClient.setToken(token);
+  }
+
   // Getters
   List<ChatMensagem> get messages => _messages;
   Map<String, List<ChatMensagem>> get chatMessages => _chatMessages;
