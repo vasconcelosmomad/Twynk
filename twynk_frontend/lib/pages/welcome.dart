@@ -216,7 +216,6 @@ class _WelcomePageState extends State<WelcomePage> {
                                   ),
                                 );
                               },
-                              child: const Text('Já tenho conta'),
                               style: OutlinedButton.styleFrom(
                                 padding: const EdgeInsets.symmetric(
                                   vertical: AppSpacing.md,
@@ -229,6 +228,7 @@ class _WelcomePageState extends State<WelcomePage> {
                                 side: BorderSide(color: cs.primary),
                                 backgroundColor: Colors.transparent,
                               ),
+                              child: const Text('Já tenho conta'),
                             ),
                             const SizedBox(height: 8),
                             RichText(
@@ -326,7 +326,6 @@ class _WelcomePageState extends State<WelcomePage> {
                         ),
                       );
                     },
-                    child: const Text('Já tenho conta'),
                     style: OutlinedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(
                         vertical: AppSpacing.md,

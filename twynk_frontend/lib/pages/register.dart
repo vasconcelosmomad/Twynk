@@ -119,19 +119,6 @@ class _RegisterPageState extends State<RegisterPage> {
   final bool _obscurePassword = true;
   Map<String, String?> _errors = {};
 
-  // Computed Properties (Getters)
-  List<String> get _provinces {
-    // Mantido apenas por compatibilidade; dropdowns agora usam LocationProvider.
-    if (_country == null || !kLocations.containsKey(_country)) return [];
-    return kLocations[_country]!.keys.toList();
-  }
-
-  List<String> get _cities {
-    // Mantido apenas por compatibilidade; dropdowns agora usam LocationProvider.
-    if (_country == null || _province == null) return [];
-    return kLocations[_country]?[_province] ?? [];
-  }
-
   // Handlers
   void _handleChangeCountry(String? value) {
     setState(() {
@@ -353,15 +340,6 @@ class _RegisterPageState extends State<RegisterPage> {
       return '$year-$month-$day';
     }
 
-    String? buildLocalizacao() {
-      final parts = <String>[];
-      if (_city != null && _city!.isNotEmpty) parts.add(_city!);
-      if (_province != null && _province!.isNotEmpty) parts.add(_province!);
-      if (_country != null && _country!.isNotEmpty) parts.add(_country!);
-      if (parts.isEmpty) return null;
-      return parts.join(', ');
-    }
-
     final Map<String, dynamic> data = {
       'nome': _nameController.text.trim(),
       'apelido': _lastNameController.text.trim().isEmpty
@@ -384,9 +362,10 @@ class _RegisterPageState extends State<RegisterPage> {
     _showSnackBar('Enviando cadastro...', isInfo: true);
 
     final result = await AuthService.instance.register(data: data);
+    if (!mounted) return;
+
     if (result['success'] == true) {
       _showSnackBar('Cadastro realizado com sucesso! Faça login.', isInfo: true);
-      if (!mounted) return;
       Navigator.of(context).pop();
     } else {
       final msg = (result['error'] as String?) ?? 'Erro ao registar';
