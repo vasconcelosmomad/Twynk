@@ -6,11 +6,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class Cidade extends Model
+class Distrito extends Model
 {
     use HasFactory;
 
-    protected $table = 'cidade';
+    // Tabela física de distritos
+    protected $table = 'distrito';
 
     protected $fillable = [
         'nome',
@@ -19,9 +20,6 @@ class Cidade extends Model
 
     public $timestamps = false;
 
-    /**
-     * Get the provincia that owns the cidade.
-     */
     public function provincia(): BelongsTo
     {
         return $this->belongsTo(Provincia::class, 'provincia_id');

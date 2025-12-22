@@ -79,7 +79,7 @@ class ProvinciaController extends Controller
     public function show(Provincia $provincia): JsonResponse
     {
         try {
-            $provincia->load(['pais', 'cidades']);
+            $provincia->load(['pais', 'distrito']);
 
             return $this->success(
                 $provincia,

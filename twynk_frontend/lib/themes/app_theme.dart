@@ -2,63 +2,99 @@ import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-/// The [ AppTheme ] defines light and dark themes for the app.
-///
-/// Theme setup for FlexColorScheme package v8.
-/// Use same major flex_color_scheme package version. If you use a
-/// lower minor version, some properties may not be supported.
-/// In that case, remove them after copying this theme to your
-/// app or upgrade the package to version 8.4.0.
-///
-/// Use it in a [ MaterialApp ] like this:
-///
-/// MaterialApp(
-///   theme: AppTheme.light,
-///   darkTheme: AppTheme.dark,
-/// );
 abstract final class AppTheme {
-  // The FlexColorScheme defined light mode ThemeData.
-  static ThemeData light = FlexThemeData.light(
-    // Using FlexColorScheme built-in FlexScheme enum based colors
-    scheme: FlexScheme.flutterDash,
-    // Component theme configurations for light mode.
-    subThemesData: const FlexSubThemesData(
-      interactionEffects: true,
-      tintedDisabledControls: true,
-      useM2StyleDividerInM3: true,
-      inputDecoratorIsFilled: true,
-      inputDecoratorBorderType: FlexInputBorderType.outline,
-      alignedDropdown: true,
-      navigationRailUseIndicator: true,
-    ),
-    // Direct ThemeData properties.
-    visualDensity: FlexColorScheme.comfortablePlatformDensity,
-    cupertinoOverrideTheme: const CupertinoThemeData(applyThemeToAll: true),
-  );
+  // Light Theme
+  static ThemeData light = () {
+    final base = FlexThemeData.light(
+      scheme: FlexScheme.flutterDash,
+      subThemesData: const FlexSubThemesData(
+        interactionEffects: true,
+        tintedDisabledControls: true,
+        useM2StyleDividerInM3: true,
+        inputDecoratorIsFilled: true,
+        inputDecoratorBorderType: FlexInputBorderType.outline,
+        alignedDropdown: true,
+        navigationRailUseIndicator: true,
+        // Adicionando sombras suaves para cards e botões
+        cardElevation: 6,
+        elevatedButtonElevation: 6,
+      ),
+      visualDensity: FlexColorScheme.comfortablePlatformDensity,
+      cupertinoOverrideTheme: const CupertinoThemeData(applyThemeToAll: true),
+    );
 
+    return base.copyWith(
+      colorScheme: base.colorScheme.copyWith(
+        primary: const Color(0xFF1976D2),   // Azul vibrante
+        secondary: const Color(0xFFFF416C), // Rosa/verm. energético
+        tertiary: const Color(0xFFFFC0CB),  // Rosa suave para highlights
+        surface: const Color(0xFFFFFFFF),
+      ),
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          textStyle: const TextStyle(
+            inherit: false,
+            fontWeight: FontWeight.bold,
+            fontSize: 16,
+          ),
+          // Gradiente no botão principal
+          backgroundColor: const Color(0xFFFF416C),
+        ),
+      ),
+    );
+  }();
 
-  // The FlexColorScheme defined dark mode ThemeData.
-  static ThemeData dark = FlexThemeData.dark(
-    // Using FlexColorScheme built-in FlexScheme enum based colors.
-    scheme: FlexScheme.flutterDash,
-    // Component theme configurations for dark mode.
-    subThemesData: const FlexSubThemesData(
-      interactionEffects: true,
-      tintedDisabledControls: true,
-      blendOnColors: true,
-      useM2StyleDividerInM3: true,
-      inputDecoratorIsFilled: true,
-      inputDecoratorBorderType: FlexInputBorderType.outline,
-      alignedDropdown: true,
-      navigationRailUseIndicator: true,
-    ),
-    // Direct ThemeData properties.
-    visualDensity: FlexColorScheme.comfortablePlatformDensity,
-    cupertinoOverrideTheme: const CupertinoThemeData(applyThemeToAll: true),
-  );
+  // Dark Theme
+  static ThemeData dark = () {
+    final base = FlexThemeData.dark(
+      scheme: FlexScheme.flutterDash,
+      subThemesData: const FlexSubThemesData(
+        interactionEffects: true,
+        tintedDisabledControls: true,
+        blendOnColors: true,
+        useM2StyleDividerInM3: true,
+        inputDecoratorIsFilled: true,
+        inputDecoratorBorderType: FlexInputBorderType.outline,
+        alignedDropdown: true,
+        navigationRailUseIndicator: true,
+        cardElevation: 6,
+        elevatedButtonElevation: 6,
+      ),
+      visualDensity: FlexColorScheme.comfortablePlatformDensity,
+      cupertinoOverrideTheme: const CupertinoThemeData(applyThemeToAll: true),
+    );
+
+    return base.copyWith(
+      colorScheme: base.colorScheme.copyWith(
+        primary: const Color(0xFF42A5F5),   // Azul claro
+        secondary: const Color(0xFFFF4B2B), // Vermelho/rosa quente
+        tertiary: const Color(0xFFFF6F91),  // Rosa vibrante
+        surface: const Color(0xFF1E1E1E),
+      ),
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          textStyle: const TextStyle(
+            inherit: false,
+            fontWeight: FontWeight.bold,
+            fontSize: 16,
+          ),
+          // Gradiente no botão principal
+          backgroundColor: const Color(0xFFFF4B2B),
+        ),
+      ),
+    );
+  }();
 }
 
-
+// Mantemos espaçamentos e radius
 class AppSpacing {
   static const double xs = 4.0;
   static const double sm = 8.0;
@@ -67,20 +103,17 @@ class AppSpacing {
   static const double xl = 32.0;
   static const double xxl = 48.0;
 
-
   static const EdgeInsets paddingXs = EdgeInsets.all(xs);
   static const EdgeInsets paddingSm = EdgeInsets.all(sm);
   static const EdgeInsets paddingMd = EdgeInsets.all(md);
   static const EdgeInsets paddingLg = EdgeInsets.all(lg);
   static const EdgeInsets paddingXl = EdgeInsets.all(xl);
 
-
   static const EdgeInsets horizontalXs = EdgeInsets.symmetric(horizontal: xs);
   static const EdgeInsets horizontalSm = EdgeInsets.symmetric(horizontal: sm);
   static const EdgeInsets horizontalMd = EdgeInsets.symmetric(horizontal: md);
   static const EdgeInsets horizontalLg = EdgeInsets.symmetric(horizontal: lg);
   static const EdgeInsets horizontalXl = EdgeInsets.symmetric(horizontal: xl);
-
 
   static const EdgeInsets verticalXs = EdgeInsets.symmetric(vertical: xs);
   static const EdgeInsets verticalSm = EdgeInsets.symmetric(vertical: sm);
@@ -89,7 +122,6 @@ class AppSpacing {
   static const EdgeInsets verticalXl = EdgeInsets.symmetric(vertical: xl);
 }
 
-
 class AppRadius {
   static const double sm = 8.0;
   static const double md = 12.0;
@@ -97,11 +129,9 @@ class AppRadius {
   static const double xl = 24.0;
 }
 
-
 extension TextStyleContext on BuildContext {
   TextTheme get textStyles => Theme.of(this).textTheme;
 }
-
 
 extension TextStyleExtensions on TextStyle {
   TextStyle get bold => copyWith(fontWeight: FontWeight.bold);

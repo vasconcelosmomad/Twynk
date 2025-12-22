@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Models\Distrito;
 
 class Provincia extends Model
 {
@@ -29,10 +30,10 @@ class Provincia extends Model
     }
 
     /**
-     * Get the cidades for the provincia.
+     * Get the distritos for the provincia.
      */
-    public function cidades(): HasMany
+    public function distrito(): HasMany
     {
-        return $this->hasMany(Cidade::class, 'provincia_id');
+        return $this->hasMany(Distrito::class, 'provincia_id');
     }
 }

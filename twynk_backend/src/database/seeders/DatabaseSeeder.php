@@ -29,11 +29,11 @@ class DatabaseSeeder extends Seeder
         // User::factory(10)->create();
 
         User::factory()->create([
-            'nome' => 'Admin',
-            'email' => 'admin@appnamoro.mz',
-            'genero' => 'masculino',
-            'interesse' => 'feminino',
-            'password' => Hash::make('123456'),
+            'nome'      => 'Admin',
+            'email'     => 'admin@appnamoro.mz',
+            'genero'    => 'Homem',
+            'interesse' => 'Mulher',
+            'password'  => Hash::make('123456'),
         ]);
     }
 }

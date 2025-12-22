@@ -24,18 +24,15 @@ class UserFactory extends Factory
     public function definition(): array
     {
         return [
-            'nome' => fake()->name(),
-            'genero' => fake()->randomElement(['masculino', 'feminino', 'outro']),
-            'interesse' => fake()->randomElement(['masculino', 'feminino', 'ambos']),
+            'nome'            => fake()->name(),
+            'genero'          => fake()->randomElement(['Homem', 'Mulher', 'outro']),
+            'interesse'       => fake()->randomElement(['Homem', 'Mulher', 'Ambos']),
             'data_nascimento' => fake()->date('Y-m-d', '-18 years'),
-            'email' => fake()->unique()->safeEmail(),
-            'password' => static::$password ??= Hash::make('password'),
-            'google_id' => null,
-            'foto_perfil' => null,
-            'bio' => fake()->optional()->sentence(),
-            'localizacao' => fake()->optional()->city(),
-            'status' => fake()->randomElement(['ativo', 'inativo', 'banido']),
-            'plano_id' => null,
+            'email'           => fake()->unique()->safeEmail(),
+            'password'        => static::$password ??= Hash::make('password'),
+            'google_id'       => null,
+            'status'          => fake()->randomElement(['ativo', 'inativo', 'banido']),
+            'plano_id'        => null,
         ];
     }
 }

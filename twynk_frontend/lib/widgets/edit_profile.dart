@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
+import 'package:twynk_frontend/themes/app_theme.dart';
 import '../providers/app_provider.dart';
 import '../providers/location_provider.dart';
 import '../models/user.dart';
@@ -546,7 +547,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       !isMobile,
                       hasCidadeOptions
                           ? _buildSelectField(
-                              label: 'Cidade',
+                              label: 'Distrito',
                               value: _cidade,
                               options: cidadeOptions,
                               onChanged: (v) {
@@ -563,7 +564,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                               },
                             )
                           : _buildTextField(
-                              label: 'Cidade',
+                              label: 'Distrito',
                               initialValue: _cidade,
                               onSaved: (v) => _cidade = v ?? '',
                             ),
@@ -656,10 +657,34 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     Align(
                       alignment:
                           isMobile ? Alignment.center : Alignment.centerRight,
-                      child: ElevatedButton.icon(
+                      child: OutlinedButton.icon(
                         onPressed: _handleSave,
-                        icon: const Icon(Icons.save),
-                        label: const Text('Salvar alterações'),
+                        icon: const Icon(
+                          Icons.save,
+                          color: Colors.white,
+                        ),
+                        label: const Text(
+                          'Salvar alterações',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        style: OutlinedButton.styleFrom(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: isMobile ? 24 : 32,
+                            vertical: 14,
+                          ),
+                          minimumSize: isMobile
+                              ? const Size.fromHeight(56)
+                              : const Size(0, 0),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          backgroundColor: theme.colorScheme.primary,
+                          side: BorderSide.none,
+                        ),
                       ),
                     ),
                   ],
@@ -842,6 +867,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
     Widget _buildProfilePhotoSection(bool isMobile) {
       final theme = Theme.of(context);
       final double avatarSize = isMobile ? 96 : 112;
+      final cs = theme.colorScheme;
     
       // Resolve latest profile media URL from MediaProvider via AppProvider, if any
       String? profileUrl;
@@ -925,7 +951,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   style: theme.textTheme.bodySmall,
                 ),
                 const SizedBox(height: 8),
-                ElevatedButton.icon(
+                OutlinedButton.icon(
                   onPressed:
                       _uploadingProfile ? null : _handleChangeProfilePhoto,
                   icon: _uploadingProfile
@@ -934,11 +960,29 @@ class _EditProfilePageState extends State<EditProfilePage> {
                           height: 16,
                           child: CircularProgressIndicator(strokeWidth: 2),
                         )
-                      : const Icon(Icons.camera_alt),
+                      : Icon(
+                          Icons.camera_alt,
+                          color: cs.primary,
+                        ),
                   label: Text(
                     _uploadingProfile
                         ? 'Enviando...'
                         : 'Alterar foto de perfil',
+                    style: TextStyle(
+                      color: cs.primary,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  style: OutlinedButton.styleFrom(
+                    backgroundColor: Colors.transparent,
+                    side: BorderSide(color: cs.primary, width: 2),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(999),
+                    ),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 12,
+                    ),
                   ),
                 ),
               ],
@@ -1161,13 +1205,38 @@ class _EditProfilePageState extends State<EditProfilePage> {
       required List<String> options,
       required void Function(String?) onChanged,
     }) {
+      final theme = Theme.of(context);
+      final cs = theme.colorScheme;
+
       return Padding(
         padding: const EdgeInsets.only(bottom: 12),
         child: DropdownButtonFormField<String>(
           initialValue: value,
           decoration: InputDecoration(
             labelText: label,
-            border: const OutlineInputBorder(),
+            filled: true,
+            fillColor: cs.surface,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(AppRadius.md),
+              borderSide: BorderSide.none,
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(AppRadius.md),
+              borderSide:
+                  BorderSide(color: cs.outline.withValues(alpha: 0.2)),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(AppRadius.md),
+              borderSide: BorderSide(color: cs.primary, width: 2),
+            ),
+            errorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(AppRadius.md),
+              borderSide: BorderSide(color: cs.error),
+            ),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.md,
+              vertical: AppSpacing.md,
+            ),
           ),
           items: options.map((String option) {
             return DropdownMenuItem<String>(
@@ -1185,14 +1254,39 @@ class _EditProfilePageState extends State<EditProfilePage> {
       required String value,
       required void Function(String?) onSaved,
     }) {
+      final theme = Theme.of(context);
+      final cs = theme.colorScheme;
+
       return Padding(
         padding: const EdgeInsets.only(bottom: 12),
         child: TextFormField(
           initialValue: value,
           decoration: InputDecoration(
             labelText: label,
-            border: const OutlineInputBorder(),
             suffixIcon: const Icon(Icons.calendar_today),
+            filled: true,
+            fillColor: cs.surface,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(AppRadius.md),
+              borderSide: BorderSide.none,
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(AppRadius.md),
+              borderSide:
+                  BorderSide(color: cs.outline.withValues(alpha: 0.2)),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(AppRadius.md),
+              borderSide: BorderSide(color: cs.primary, width: 2),
+            ),
+            errorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(AppRadius.md),
+              borderSide: BorderSide(color: cs.error),
+            ),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.md,
+              vertical: AppSpacing.md,
+            ),
           ),
           readOnly: true,
           onTap: () async {
@@ -1203,7 +1297,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
               lastDate: DateTime.now(),
             );
             if (picked != null) {
-              final formattedDate = '${picked.day.toString().padLeft(2, '0')}/${picked.month.toString().padLeft(2, '0')}/${picked.year}';
+              final formattedDate =
+                  '${picked.day.toString().padLeft(2, '0')}/${picked.month.toString().padLeft(2, '0')}/${picked.year}';
               onSaved(formattedDate);
             }
           },
@@ -1218,6 +1313,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
       required void Function(String?) onSaved,
       int maxLines = 1,
     }) {
+      final theme = Theme.of(context);
+      final cs = theme.colorScheme;
+
       return Padding(
         padding: const EdgeInsets.only(bottom: 12),
         child: TextFormField(
@@ -1225,7 +1323,29 @@ class _EditProfilePageState extends State<EditProfilePage> {
           maxLines: maxLines,
           decoration: InputDecoration(
             labelText: label,
-            border: const OutlineInputBorder(),
+            filled: true,
+            fillColor: cs.surface,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(AppRadius.md),
+              borderSide: BorderSide.none,
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(AppRadius.md),
+              borderSide:
+                  BorderSide(color: cs.outline.withValues(alpha: 0.2)),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(AppRadius.md),
+              borderSide: BorderSide(color: cs.primary, width: 2),
+            ),
+            errorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(AppRadius.md),
+              borderSide: BorderSide(color: cs.error),
+            ),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.md,
+              vertical: AppSpacing.md,
+            ),
           ),
           onSaved: onSaved,
         ),
@@ -1237,6 +1357,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
       required String initialValue,
       required void Function(String?) onSaved,
     }) {
+      final theme = Theme.of(context);
+      final cs = theme.colorScheme;
+
       return Padding(
         padding: const EdgeInsets.only(bottom: 12),
         child: TextFormField(
@@ -1247,27 +1370,49 @@ class _EditProfilePageState extends State<EditProfilePage> {
           ],
           decoration: InputDecoration(
             labelText: label,
-            border: const OutlineInputBorder(),
+            filled: true,
+            fillColor: cs.surface,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(AppRadius.md),
+              borderSide: BorderSide.none,
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(AppRadius.md),
+              borderSide:
+                  BorderSide(color: cs.outline.withValues(alpha: 0.2)),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(AppRadius.md),
+              borderSide: BorderSide(color: cs.primary, width: 2),
+            ),
+            errorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(AppRadius.md),
+              borderSide: BorderSide(color: cs.error),
+            ),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.md,
+              vertical: AppSpacing.md,
+            ),
           ),
           validator: (value) {
             final text = (value ?? '').trim();
             if (text.isEmpty) {
               return null; // campo opcional
             }
-    
+
             final parsed = double.tryParse(text.replaceAll(',', '.'));
             if (parsed == null) {
               return 'Informe um número válido';
             }
-    
+
             if (label.contains('Peso') && (parsed < 30 || parsed > 300)) {
               return 'Informe um peso entre 30 e 300 kg';
             }
-    
+
             if (label.contains('Altura') && (parsed < 100 || parsed > 250)) {
               return 'Informe uma altura entre 100 e 250 cm';
             }
-    
+
             return null;
           },
           onSaved: onSaved,

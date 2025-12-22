@@ -105,9 +105,10 @@ class LocationProvider extends ChangeNotifier {
     _setLoading(true);
     _setError(null);
     try {
-      // Usa a rota de relacionamento: /api/provincias/{provincia}/cidades
-      final response = await _apiClient.dio.get('/api/provincias/$provinciaId/cidades');
-      final List<dynamic> items = _extractList(response.data, 'cidades');
+      // Usa a nova rota de relacionamento: /api/provincias/{provincia}/distritos
+      // Mantemos o nome "cidades" no app por compatibilidade visual
+      final response = await _apiClient.dio.get('/api/provincias/$provinciaId/distritos');
+      final List<dynamic> items = _extractList(response.data, 'distritos');
       _cidades = items
           .whereType<Map<String, dynamic>>()
           .map((e) => Cidade.fromJson(e))

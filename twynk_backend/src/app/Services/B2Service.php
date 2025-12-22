@@ -13,12 +13,17 @@ class B2Service
      */
     public function uploadFile(string $localPath, string $key, string $mimeType): void
     {
-        Storage::disk($this->disk)->putFileAs(
-            dirname($key),
-            $localPath,
-            basename($key),
+        $stream = fopen($localPath, 'r');
+
+        Storage::disk($this->disk)->put(
+            $key,
+            $stream,
             ['ContentType' => $mimeType]
         );
+
+        if (is_resource($stream)) {
+            fclose($stream);
+        }
     }
 
     /**
@@ -36,5 +41,18 @@ class B2Service
     public function delete(string $key): void
     {
         Storage::disk($this->disk)->delete($key);
+    }
+
+    /**
+     * Deletar todos os arquivos sob um determinado prefixo/pasta.
+     */
+    public function deleteFolder(string $prefix): void
+    {
+        $disk = Storage::disk($this->disk);
+        $files = $disk->allFiles($prefix);
+
+        if (!empty($files)) {
+            $disk->delete($files);
+        }
     }
 }

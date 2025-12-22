@@ -577,7 +577,7 @@ class _ProfilePageState extends State<ProfilePage> with TickerProviderStateMixin
                         [
                           _buildDetailItem(Icons.public, 'País', dados['pais']),
                           _buildDetailItem(Icons.location_on, 'Província/Estado', dados['provincia']),
-                          _buildDetailItem(Icons.location_city, 'Cidade', dados['cidade']),
+                          _buildDetailItem(Icons.location_city, 'Distrito', dados['cidade']),
                           _buildDetailItem(Icons.home, 'Mora com', dados['moraCom']),
                         ],
                       ),
@@ -620,7 +620,7 @@ class _ProfilePageState extends State<ProfilePage> with TickerProviderStateMixin
               [
                 _buildDetailItem(Icons.public, 'País', dados['pais']),
                 _buildDetailItem(Icons.location_on, 'Província/Estado', dados['provincia']),
-                _buildDetailItem(Icons.location_city, 'Cidade', dados['cidade']),
+                _buildDetailItem(Icons.location_city, 'Distrito', dados['cidade']),
                 _buildDetailItem(Icons.home, 'Mora com', dados['moraCom']),
               ],
             ),

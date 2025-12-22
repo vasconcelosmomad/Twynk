@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Otp;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Mail;
@@ -17,6 +18,13 @@ class OtpController extends Controller
         $request->validate([
             'email' => 'required|email'
         ]);
+
+        // Não permitir envio de OTP para emails já cadastrados na tabela users
+        if (User::where('email', $request->email)->exists()) {
+            return response()->json([
+                'message' => 'Este email já está associado a uma conta.',
+            ], 400);
+        }
 
         $codigo = rand(100000, 999999);
 

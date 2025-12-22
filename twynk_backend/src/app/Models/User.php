@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Tymon\JWTAuth\Contracts\JWTSubject;
+use App\Models\Distrito;
 
 class User extends Authenticatable implements JWTSubject
 {
@@ -160,11 +161,11 @@ class User extends Authenticatable implements JWTSubject
     }
 
     /**
-     * Relacionamento com cidade
+     * Relacionamento com distrito (armazenado na coluna cidade_id)
      */
-    public function cidade(): BelongsTo
+    public function distrito(): BelongsTo
     {
-        return $this->belongsTo(Cidade::class, 'cidade_id');
+        return $this->belongsTo(Distrito::class, 'cidade_id');
     }
 
     /**
@@ -268,7 +269,7 @@ class User extends Authenticatable implements JWTSubject
      */
     public function medias(): HasMany
     {
-        return $this->hasMany(Media::class, 'user_uid', 'uid');
+        return $this->hasMany(Media::class, 'user_uid', 'id');
     }
 
     /**

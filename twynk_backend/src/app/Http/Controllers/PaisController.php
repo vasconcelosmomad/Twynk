@@ -27,6 +27,13 @@ class PaisController extends Controller
                 $query->where('nome', 'like', '%' . $request->nome . '%');
             }
 
+            // Filtro por status (ativo/inativo)
+            if ($request->filled('status')) {
+                $query->where('status', $request->status);
+            } else {
+                $query->where('status', 'ativo');
+            }
+
             // Paginação (default 15)
             $perPage = $request->integer('per_page', 15);
 
@@ -50,6 +57,7 @@ class PaisController extends Controller
         try {
             $validated = $request->validate([
                 'nome' => 'required|string|max:100|unique:pais,nome',
+                'status' => 'nullable|in:ativo,inativo',
             ]);
 
             $pais = Pais::create($validated);
@@ -101,6 +109,10 @@ class PaisController extends Controller
                     'string',
                     'max:100',
                     Rule::unique('pais', 'nome')->ignore($pais->id),
+                ],
+                'status' => [
+                    'sometimes',
+                    'in:ativo,inativo',
                 ],
             ]);
 

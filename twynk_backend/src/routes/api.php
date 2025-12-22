@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PaisController;
 use App\Http\Controllers\ProvinciaController;
-use App\Http\Controllers\CidadeController;
+use App\Http\Controllers\DistritoController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\OtpController;
 use App\Http\Controllers\MediaController;
@@ -20,7 +20,6 @@ use App\Http\Controllers\UserController;
 // Autenticação
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
-Route::post('/login/google', [AuthController::class, 'loginGoogle']);
 
 // OTP
 Route::post('/otp/send', [OtpController::class, 'gerarOtp']);
@@ -29,11 +28,11 @@ Route::post('/otp/verify', [OtpController::class, 'verificarOtp']);
 // Listagem pública dos recursos
 Route::apiResource('paises', PaisController::class)->only(['index', 'show']);
 Route::apiResource('provincias', ProvinciaController::class)->only(['index', 'show']);
-Route::apiResource('cidades', CidadeController::class)->only(['index', 'show']);
+Route::apiResource('distritos', DistritoController::class)->only(['index', 'show']);
 
 // Relacionamentos (RESTful)
 Route::get('/paises/{pais}/provincias', [LocationController::class, 'getProvincias']);
-Route::get('/provincias/{provincia}/cidades', [LocationController::class, 'getCidades']);
+Route::get('/provincias/{provincia}/distritos', [LocationController::class, 'getDistritos']);
 
 /*
 |--------------------------------------------------------------------------
@@ -59,10 +58,10 @@ Route::middleware('auth:api')->group(function () {
     Route::put('/profile', [UserController::class, 'updateProfile']);
     Route::post('/logout', [AuthController::class, 'logout']);
 
-    // CRUD protegido completo para paises / provincias / cidades
+    // CRUD protegido completo para paises / provincias / distritos
     Route::apiResource('paises', PaisController::class)->except(['index','show']);
     Route::apiResource('provincias', ProvinciaController::class)->except(['index','show']);
-    Route::apiResource('cidades', CidadeController::class)->except(['index','show']);
+    Route::apiResource('distritos', DistritoController::class)->except(['index','show']);
 
     // Rotas de mídia (JWT)
     Route::post('/media/upload', [MediaController::class, 'upload']);

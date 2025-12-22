@@ -43,9 +43,10 @@ class UserController extends Controller
             // Dados básicos
             'nome'              => 'required|string|max:100',
             'apelido'           => 'nullable|string|max:100',
-            'genero'            => 'required|in:masculino,feminino,outro',
+            'genero'            => 'required|in:masculino,feminino,outro,Homem,Mulher,Outro',
             'sexualidade'       => 'nullable|string|max:50',
-            'interesse'         => 'nullable|in:masculino,feminino,ambos',
+            // Aceita também rótulos de UI: Homem, Mulher, Ambos
+            'interesse'         => 'nullable|in:masculino,feminino,ambos,Homem,Mulher,Ambos',
             'estado_civil'      => 'nullable|string|max:50',
             'data_nascimento'   => 'required|date',
             'signo'             => 'nullable|string|max:50',
@@ -76,7 +77,7 @@ class UserController extends Controller
             // Localização normalizada
             'pais_id'       => 'nullable|exists:pais,id',
             'provincia_id'  => 'nullable|exists:provincia,id',
-            'cidade_id'     => 'nullable|exists:cidade,id',
+            'cidade_id'     => 'nullable|exists:distrito,id',
             'mora_com'      => 'nullable|string|max:100',
 
             // Aparência física
@@ -109,6 +110,34 @@ class UserController extends Controller
 
         if (!empty($validated['motivo_banimento']) && empty($validated['motivo_banamento'])) {
             $validated['motivo_banamento'] = $validated['motivo_banimento'];
+        }
+
+        // Normaliza genero para os valores do enum do banco: 'Homem', 'Mulher', 'outro'
+        if (isset($validated['genero'])) {
+            $genero = $validated['genero'];
+            if (in_array($genero, ['masculino', 'Homem'], true)) {
+                $genero = 'Homem';
+            } elseif (in_array($genero, ['feminino', 'Mulher'], true)) {
+                $genero = 'Mulher';
+            } elseif (in_array($genero, ['outro', 'Outro'], true)) {
+                $genero = 'outro';
+            }
+            $validated['genero'] = $genero;
+        }
+
+        // Normaliza interesse para os valores do enum do banco: 'Homem', 'Mulher', 'Ambos'
+        if (isset($validated['interesse'])) {
+            $interesse = $validated['interesse'];
+            if (in_array($interesse, ['masculino', 'Homem'], true)) {
+                $interesse = 'Homem';
+            } elseif (in_array($interesse, ['feminino', 'Mulher'], true)) {
+                $interesse = 'Mulher';
+            } elseif (in_array($interesse, ['ambos', 'Ambos'], true)) {
+                $interesse = 'Ambos';
+            } else {
+                $interesse = 'Ambos';
+            }
+            $validated['interesse'] = $interesse;
         }
 
         $usuario = User::create($validated);
@@ -144,9 +173,10 @@ class UserController extends Controller
             // Dados básicos
             'nome'          => 'sometimes|string|max:100',
             'apelido'       => 'sometimes|nullable|string|max:100',
-            'genero'        => 'sometimes|in:masculino,feminino,outro',
+            'genero'        => 'sometimes|in:masculino,feminino,outro,Homem,Mulher,Outro',
             'sexualidade'   => 'sometimes|nullable|string|max:50',
-            'interesse'     => 'sometimes|in:masculino,feminino,ambos',
+            // Aceita também rótulos de UI: Homem, Mulher, Ambos
+            'interesse'     => 'sometimes|in:masculino,feminino,ambos,Homem,Mulher,Ambos',
             'estado_civil'  => 'sometimes|nullable|string|max:50',
             'data_nascimento' => 'sometimes|nullable|date',
             'signo'         => 'sometimes|nullable|string|max:50',
@@ -192,7 +222,7 @@ class UserController extends Controller
             // Localização
             'pais_id'       => 'sometimes|nullable|exists:pais,id',
             'provincia_id'  => 'sometimes|nullable|exists:provincia,id',
-            'cidade_id'     => 'sometimes|nullable|exists:cidade,id',
+            'cidade_id'     => 'sometimes|nullable|exists:distrito,id',
             'mora_com'      => 'sometimes|nullable|string|max:100',
 
             // Aparência
@@ -225,6 +255,34 @@ class UserController extends Controller
 
         if (!empty($validated['motivo_banimento']) && empty($validated['motivo_banamento'])) {
             $validated['motivo_banamento'] = $validated['motivo_banimento'];
+        }
+
+        // Normaliza genero para os valores do enum do banco: 'Homem', 'Mulher', 'outro'
+        if (isset($validated['genero'])) {
+            $genero = $validated['genero'];
+            if (in_array($genero, ['masculino', 'Homem'], true)) {
+                $genero = 'Homem';
+            } elseif (in_array($genero, ['feminino', 'Mulher'], true)) {
+                $genero = 'Mulher';
+            } elseif (in_array($genero, ['outro', 'Outro'], true)) {
+                $genero = 'outro';
+            }
+            $validated['genero'] = $genero;
+        }
+
+        // Normaliza interesse para os valores do enum do banco: 'Homem', 'Mulher', 'Ambos'
+        if (isset($validated['interesse'])) {
+            $interesse = $validated['interesse'];
+            if (in_array($interesse, ['masculino', 'Homem'], true)) {
+                $interesse = 'Homem';
+            } elseif (in_array($interesse, ['feminino', 'Mulher'], true)) {
+                $interesse = 'Mulher';
+            } elseif (in_array($interesse, ['ambos', 'Ambos'], true)) {
+                $interesse = 'Ambos';
+            } else {
+                $interesse = 'Ambos';
+            }
+            $validated['interesse'] = $interesse;
         }
 
         $usuario->update($validated);

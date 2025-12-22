@@ -107,6 +107,7 @@ class AuthService {
         return {
           'success': true,
           'message': (body['message'] ?? 'OTP enviado com sucesso.').toString(),
+          'expires_in_minutes': body['expires_in_minutes'],
         };
       }
 

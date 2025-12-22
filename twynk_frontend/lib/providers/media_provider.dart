@@ -92,6 +92,9 @@ class MediaProvider extends ChangeNotifier {
 
       final media = Media.fromJson(mediaJson);
 
+      if (media.type == MediaType.profile) {
+        _userMedia.removeWhere((m) => m.type == MediaType.profile);
+      }
       _userMedia.add(media);
       notifyListeners();
 
@@ -129,6 +132,9 @@ class MediaProvider extends ChangeNotifier {
 
       final media = Media.fromJson(mediaJson);
 
+      if (media.type == MediaType.profile) {
+        _userMedia.removeWhere((m) => m.type == MediaType.profile);
+      }
       _userMedia.add(media);
       notifyListeners();
 

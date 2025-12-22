@@ -12,6 +12,7 @@ return new class extends Migration
             Schema::create('pais', function (Blueprint $table) {
                 $table->id();
                 $table->string('nome', 100)->unique();
+                $table->enum('status', ['ativo', 'inativo'])->default('ativo');
             });
         }
     }

@@ -14,6 +14,7 @@ class Pais extends Model
 
     protected $fillable = [
         'nome',
+        'status',
     ];
 
     public $timestamps = false;

@@ -16,9 +16,9 @@ return new class extends Migration
             // Dados básicos
             $table->string('nome', 100);
             $table->string('apelido', 100)->nullable();
-            $table->enum('genero', ['masculino', 'feminino', 'outro'])->default('outro');
+            $table->enum('genero', ['Homem', 'Mulher', 'outro'])->default('outro');
             $table->string('sexualidade', 50)->nullable();
-            $table->enum('interesse', ['masculino', 'feminino', 'ambos'])->default('ambos');
+            $table->enum('interesse', ['Homem', 'Mulher', 'Ambos'])->default('Ambos');
             $table->string('estado_civil', 50)->nullable();
             $table->date('data_nascimento');
             $table->string('signo', 50)->nullable();
@@ -48,10 +48,10 @@ return new class extends Migration
             $table->string('religiao', 100)->nullable();
             $table->string('humor', 100)->nullable();
 
-            // Localização normalizada (chaves estrangeiras)
-            $table->foreignId('pais_id')->nullable()->constrained('pais');
-            $table->foreignId('provincia_id')->nullable()->constrained('provincia');
-            $table->foreignId('cidade_id')->nullable()->constrained('cidade');
+            // Localização normalizada (referências opcionais, FKs adicionadas em migration posterior)
+            $table->unsignedBigInteger('pais_id')->nullable();
+            $table->unsignedBigInteger('provincia_id')->nullable();
+            $table->unsignedBigInteger('cidade_id')->nullable();
             $table->string('mora_com', 100)->nullable();
 
             // Aparência física

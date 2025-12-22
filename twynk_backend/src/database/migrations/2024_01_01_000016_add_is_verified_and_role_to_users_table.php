@@ -6,25 +6,12 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->boolean('is_verified')->default(false)->after('email');
-            $table->enum('role', ['user', 'admin', 'support'])->default('user')->after('is_verified');
-        });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn(['is_verified', 'role']);
-        });
     }
 };
 

@@ -81,11 +81,6 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-  void _handleSocialLogin(String provider) {
-    _showMessage('A tentar iniciar sessão com $provider. Funcionalidade em desenvolvimento...', 'info');
-  }
-
-  
 
   @override
   Widget build(BuildContext context) {
@@ -127,7 +122,6 @@ class _LoginPageState extends State<LoginPage> {
         : theme.scaffoldBackgroundColor;
 
     final Color primaryColor = theme.colorScheme.primary;
-    final Color accentColor = theme.colorScheme.secondary;
 
     return Scaffold(
       backgroundColor: scaffoldBackground,
@@ -160,16 +154,25 @@ class _LoginPageState extends State<LoginPage> {
                       children: [
                         Image.asset(
                           'assets/icons/logo_02.png',
-                          height: 48,
+                          height: 56,
                           fit: BoxFit.contain,
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          'Bem-vindo de volta! ✨',
+                          textAlign: TextAlign.center,
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.w700,
+                            color: theme.colorScheme.onSurface,
+                          ),
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          'Encontre sua conexão única.',
-                          style: TextStyle(
-                            // Usa onSurface.withOpacity para se adaptar ao tema
-                            color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
-                            fontSize: 16,
+                          'Entre e continue sua jornada para encontrar aquele reflexo que combina perfeitamente com você.',
+                          textAlign: TextAlign.center,
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
+                            height: 1.4,
                           ),
                         ),
                       ],
@@ -286,53 +289,40 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   const SizedBox(height: 8),
 
-                  // Botão Principal de Login (gradiente laranja → rosa → azul)
-                  OutlinedButton(
-                    onPressed: () async { await _handleLogin(); },
-                    style: OutlinedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      minimumSize: const Size.fromHeight(56),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                  // Botão Principal de Login com gradiente
+                  DecoratedBox(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          theme.colorScheme.primary,
+                          theme.colorScheme.secondary,
+                        ],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
                       ),
-                      backgroundColor: primaryColor,
-                      side: BorderSide.none,
+                      borderRadius: BorderRadius.circular(999),
                     ),
-                    child: const Text(
-                      'Entrar no Nomirro',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
+                    child: OutlinedButton(
+                      onPressed: () async {
+                        await _handleLogin();
+                      },
+                      style: OutlinedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        minimumSize: const Size.fromHeight(56),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(999),
+                        ),
+                        backgroundColor: Colors.transparent,
+                        foregroundColor: Colors.white,
+                        side: BorderSide.none,
                       ),
-                    ),
-                  ),
-                  // O separador "OU" foi removido. Aumentamos o espaçamento para manter a separação visual.
-                  const SizedBox(height: 40), 
-
-                  // Opção de Login Social (Google) com fundo gradiente
-                  ElevatedButton.icon(
-                    onPressed: () => _handleSocialLogin('Google'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: accentColor,
-                      shadowColor: Colors.black26,
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      minimumSize: const Size.fromHeight(56),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      elevation: 6,
-                    ),
-                    icon: Image.asset(
-                      'assets/icons/google_32.png',
-                      fit: BoxFit.contain,
-                    ),
-                    label: const Text(
-                      'Continuar com Google',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
+                      child: const Text(
+                        'Entrar no Nomirro',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ),
                   ),

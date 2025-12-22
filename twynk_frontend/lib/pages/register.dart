@@ -1,8 +1,11 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:twynk_frontend/themes/app_theme.dart';
 import 'welcome.dart';
+import 'proflie.dart';
 import 'package:provider/provider.dart';
 import '../providers/location_provider.dart';
+import '../providers/app_provider.dart';
 import '../services/auth_service.dart';
 
 // --- DADOS E CONSTANTES ---
@@ -11,8 +14,7 @@ const List<String> kGenderOptions = ['Homem', 'Mulher', 'Outro'];
 const List<String> kLookingForOptions = [
   'Homem',
   'Mulher',
-  'Homem ou Mulher',
-  'Mulher ou Homem'
+  'Ambos',
 ];
 const List<String> kAppearanceOptions = [
   'Negro',
@@ -118,7 +120,16 @@ class _RegisterPageState extends State<RegisterPage> {
   // UI State
   final bool _obscurePassword = true;
   Map<String, String?> _errors = {};
+  String? _otpStatusMessage;
+  bool _otpStatusIsError = false;
+  Timer? _otpTimer;
+  int? _otpSecondsRemaining;
 
+  @override
+  void dispose() {
+    _otpTimer?.cancel();
+    super.dispose();
+  }
   // Handlers
   void _handleChangeCountry(String? value) {
     setState(() {
@@ -252,6 +263,8 @@ class _RegisterPageState extends State<RegisterPage> {
       _showSnackBar('Informe um e-mail válido primeiro.', isError: true);
       setState(() {
         _errors['email'] = 'E-mail necessário para OTP';
+        _otpStatusMessage = null;
+        _otpStatusIsError = false;
       });
       return;
     }
@@ -260,14 +273,65 @@ class _RegisterPageState extends State<RegisterPage> {
     final result = await AuthService.instance.sendOtp(email: email);
     if (result['success'] == true) {
       final msg = (result['message'] as String?) ?? 'Código OTP enviado para $email';
-      _showSnackBar(msg, isInfo: true);
+      setState(() {
+        _otpStatusMessage = msg;
+        _otpStatusIsError = false;
+      });
+
+      final expiresInMinutes = result['expires_in_minutes'];
+      int seconds = 0;
+      if (expiresInMinutes is int) {
+        seconds = expiresInMinutes * 60;
+      } else if (expiresInMinutes is num) {
+        seconds = (expiresInMinutes * 60).round();
+      } else {
+        seconds = 5 * 60;
+      }
+
+      _startOtpCountdown(seconds);
     } else {
       final msg = (result['error'] as String?) ?? 'Erro ao enviar código OTP.';
-      _showSnackBar(msg, isError: true);
+      setState(() {
+        _otpStatusMessage = msg;
+        _otpStatusIsError = true;
+        _otpSecondsRemaining = null;
+        _otpTimer?.cancel();
+      });
     }
   }
 
+  void _startOtpCountdown(int totalSeconds) {
+    _otpTimer?.cancel();
+    setState(() {
+      _otpSecondsRemaining = totalSeconds;
+    });
+
+    _otpTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (!mounted) {
+        timer.cancel();
+        return;
+      }
+
+      if (_otpSecondsRemaining == null || _otpSecondsRemaining! <= 1) {
+        timer.cancel();
+        setState(() {
+          _otpSecondsRemaining = 0;
+          _otpStatusIsError = true;
+          _otpStatusMessage = 'O código OTP expirou. Solicite um novo código.';
+        });
+      } else {
+        setState(() {
+          _otpSecondsRemaining = _otpSecondsRemaining! - 1;
+        });
+      }
+    });
+  }
+
   Future<void> _handleSubmit() async {
+    // Obtém dependências baseadas em context antes dos awaits
+    final location = Provider.of<LocationProvider>(context, listen: false);
+    final appProvider = Provider.of<AppProvider>(context, listen: false);
+
     if (!_validate()) {
       _showSnackBar('Verifique os campos obrigatórios.', isError: true);
       return;
@@ -289,8 +353,6 @@ class _RegisterPageState extends State<RegisterPage> {
       });
       return;
     }
-
-    final location = Provider.of<LocationProvider>(context, listen: false);
 
     final paisList =
         location.paises.where((p) => p.nome == _country).toList(growable: false);
@@ -324,6 +386,9 @@ class _RegisterPageState extends State<RegisterPage> {
           return 'masculino';
         case 'Mulher':
           return 'feminino';
+        case 'Ambos':
+          return 'ambos';
+        // Suporte a valores antigos, caso ainda apareçam em algum lugar
         case 'Homem ou Mulher':
         case 'Mulher ou Homem':
           return 'ambos';
@@ -362,11 +427,20 @@ class _RegisterPageState extends State<RegisterPage> {
     _showSnackBar('Enviando cadastro...', isInfo: true);
 
     final result = await AuthService.instance.register(data: data);
-    if (!mounted) return;
-
     if (result['success'] == true) {
-      _showSnackBar('Cadastro realizado com sucesso! Faça login.', isInfo: true);
-      Navigator.of(context).pop();
+      final token = result['token'];
+
+      if (token is String && token.isNotEmpty) {
+        await appProvider.login(token);
+      }
+
+      if (!mounted) return;
+
+      _showSnackBar('Cadastro realizado com sucesso!', isInfo: true);
+
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (_) => const PainelAssinantePage()),
+      );
     } else {
       final msg = (result['error'] as String?) ?? 'Erro ao registar';
       _showSnackBar(msg, isError: true);
@@ -655,7 +729,7 @@ class _RegisterPageState extends State<RegisterPage> {
         errorText: _errors['province'],
       ),
       _buildDropdown(
-        label: "Cidade",
+        label: "Distrito",
         icon: Icons.location_city,
         value: _city,
         items: cidades.map((c) => c.nome).toList(),
@@ -702,9 +776,48 @@ class _RegisterPageState extends State<RegisterPage> {
               child: const Text("Enviar Código OTP", style: TextStyle(fontWeight: FontWeight.bold)),
             ),
           ),
+          const SizedBox(height: 8),
+          if (_otpStatusMessage != null)
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(
+                    _otpStatusIsError ? Icons.error_outline : Icons.check_circle_outline,
+                    size: 18,
+                    color: _otpStatusIsError ? Colors.red.shade700 : Colors.green.shade700,
+                  ),
+                  const SizedBox(width: 6),
+                  Expanded(
+                    child: Text(
+                      _buildOtpStatusWithCountdown(),
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: _otpStatusIsError ? Colors.red.shade700 : Colors.green.shade700,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
         ],
       ),
     ];
+  }
+
+  String _buildOtpStatusWithCountdown() {
+    if (_otpSecondsRemaining == null || _otpSecondsRemaining! <= 0) {
+      return _otpStatusMessage ?? '';
+    }
+
+    final minutes = _otpSecondsRemaining! ~/ 60;
+    final seconds = _otpSecondsRemaining! % 60;
+    final mm = minutes.toString().padLeft(2, '0');
+    final ss = seconds.toString().padLeft(2, '0');
+
+    return '$_otpStatusMessage (expira em $mm:$ss)';
   }
 
   // --- Widgets Reutilizáveis ---
